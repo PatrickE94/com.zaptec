@@ -3,37 +3,35 @@ import https from 'node:https';
 import querystring from 'node:querystring';
 import { paths } from './apiSchema';
 
-export enum GroupBy {
-  Charger = 0,
-  Day = 1,
-  User = 2,
-}
-
-export enum DetailLevel {
-  Summary = 0,
-  EnergyDetails = 1,
-}
-
-export enum CommitMetadata {
-  None = 0,
-  Online = 1,
-  Offline = 2,
-  ReliableClock = 4,
-  StoppedByRFID = 8,
-  Signed = 16,
-  Void = 32,
-  Aborted = 64,
-}
-
+/**
+ * The OAuth token endpoint is untyped in the Swagger document.
+ * Let's type it here to avoid silly mistakes.
+ */
 export interface TokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
 }
 
+/**
+ * A wrapped HTTP response with some convenience
+ */
 export interface Response<T> {
   data: T;
   response: http.IncomingMessage;
+}
+
+/**
+ * Commands
+ *
+ * Reported via /api/constants endpoint
+ */
+export enum Command {
+  RestartCharger = 102,
+  StartCharging = 501,
+  StopCharging = 502,
+  ReportChargingState = 503,
+  ResumeCharging = 507,
 }
 
 /**
@@ -81,6 +79,9 @@ async function request(
   });
 }
 
+/**
+ * Simple HTTP wrapper around the Zaptec API
+ */
 export class ZaptecApi {
   protected bearerToken?: string;
 
@@ -167,6 +168,10 @@ export class ZaptecApi {
     }
   }
 
+  // -------------------------- //
+  //  Chargers
+  // -------------------------- //
+
   public async getChargers(
     params: paths['/api/chargers']['get']['parameters']['query'],
   ) {
@@ -191,48 +196,147 @@ export class ZaptecApi {
     return data;
   }
 
-  /*
-  public static async chargeHistory(
-    installationId: string,
-    userId: string,
-    chargerId: string,
-    from: Date,
-    to: Date,
-    groupBy = GroupBy.Charger,
-    detailLevel = DetailLevel.Summary,
-    sortProperty?: string,
-    sortDescending = false,
-    pageSize = 500,
-    pageIndex = 0,
-    includeDisabled = false,
-    exclude: string[] = [],
-  ): Promise<PagedData<SessionList>> {
-    if (pageSize > 5000) throw new Error('Page size must be lower than 5000');
+  public async updateCharger(
+    id: string,
+    properties: paths['/api/chargers/{id}/update']['post']['requestBody'],
+  ) {
+    const { data, response } = await this.post<
+      paths['/api/chargers/{id}/update']['post']['responses'][200]['content']['application/json']
+    >(`/api/chargers/${id}/update`, properties);
 
-    const response = await http.get<PagedData<SessionList>>({
-      uri: 'https://api.zaptec.com/api/chargehistory',
-      form: {
-        InstallationId: installationId,
-        UserId: userId,
-        ChargerId: chargerId,
-        From: from,
-        To: to,
-        GroupBy: groupBy,
-        DetailLevel: detailLevel,
-        SortProperty: sortProperty,
-        SortDescending: sortDescending,
-        PageSize: pageSize,
-        PageIndex: pageIndex,
-        IncludeDisabled: includeDisabled,
-        Exclude: exclude,
-      },
-    });
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
-    if (response.response.statusCode === 200) return response.data;
-
-    throw new Error(
-      `API request failed with status ${response.response.statusCode}`,
-    );
+    return data;
   }
-  */
+
+  public async getChargerState(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/chargers/{id}/state']['get']['responses'][200]['content']['application/json']
+    >(`/api/chargers/${id}/state`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async sendCommand(chargerId: string, command: Command) {
+    const { data, response } = await this.post<
+      paths['/api/chargers/{id}/sendCommand/{commandId}']['post']['responses'][200]['content']['application/json']
+    >(`/api/chargers/${chargerId}/sendCommand/${command}`);
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  // -------------------------- //
+  //  Installation
+  // -------------------------- //
+
+  public async getInstallations(
+    params: paths['/api/installation']['get']['parameters']['query'],
+  ) {
+    const { data, response } = await this.get<
+      paths['/api/installation']['get']['responses'][200]['content']['application/json']
+    >(`/api/installation?${querystring.stringify(params)}`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async getInstallation(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/installation/{id}']['get']['responses'][200]['content']['application/json']
+    >(`/api/installation/${id}`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async getInstallationMessagingConnectionDetails(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/installation/{id}/messagingConnectionDetails']['get']['responses'][200]['content']['application/json']
+    >(`/api/installation/${id}/messagingConnectionDetails`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async updateInstallation(
+    id: string,
+    properties: paths['/api/installation/{id}/update']['post']['requestBody'],
+  ) {
+    const { data, response } = await this.post<
+      paths['/api/installation/{id}/update']['post']['responses'][200]['content']['application/json']
+    >(`/api/installation/${id}/update`, properties);
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async getInstallationHierarchy(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/installation/{id}/hierarchy']['get']['responses'][200]['content']['application/json']
+    >(`/api/installation/${id}/hierarchy`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  // -------------------------- //
+  //  Session
+  // -------------------------- //
+
+  public async getSession(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/session/{id}']['get']['responses'][200]['content']['application/json']
+    >(`/api/session/${id}`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  public async updateSessionPriority(
+    id: string,
+    properties: paths['/api/session/{id}/priority']['post']['requestBody'],
+  ) {
+    const { data, response } = await this.post<
+      paths['/api/session/{id}/priority']['post']['responses'][200]['content']['application/json']
+    >(`/api/session/${id}/priority`, properties);
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  // -------------------------- //
+  //  UserGroup
+  // -------------------------- //
+
+  public async getUserGroupsMessagingConnectionDetails(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/userGroups/{id}/messagingConnectionDetails']['get']['responses'][200]['content']['application/json']
+    >(`/api/userGroups/${id}/messagingConnectionDetails`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
 }
