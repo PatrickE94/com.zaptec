@@ -1,7 +1,7 @@
 import Homey from 'homey';
 import { ZaptecApi } from '../../lib/ZaptecApi';
 
-class GoCharger extends Homey.Device {
+export class GoCharger extends Homey.Device {
   private pollInterval?: NodeJS.Timer;
   private api?: ZaptecApi;
 
@@ -78,6 +78,18 @@ class GoCharger extends Homey.Device {
       .catch((e) => {
         this.log(`Failed to poll ${e}`);
       });
+  }
+
+  public async setInstallationAvailableCurrent(
+    current1: number,
+    current2: number,
+    current3: number,
+  ) {
+    await this.api?.updateInstallation(this.getData().installationId, {
+      availableCurrentPhase1: current1,
+      availableCurrentPhase2: current2,
+      availableCurrentPhase3: current3,
+    });
   }
 }
 

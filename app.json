@@ -34,6 +34,65 @@
   "dependencies": {
     "net": "*"
   },
+  "flow": {
+    "actions": [
+      {
+        "id": "installation_current_control",
+        "title": {
+          "en": "Set available current for installation per phase"
+        },
+        "titleFormatted": {
+          "en": "Set available circuit current to [[current1]], [[current2]] and [[current3]]"
+        },
+        "hint": {
+          "en": "Changes the available current for all chargers within this installation"
+        },
+        "args": [
+          {
+            "name": "current1",
+            "type": "range",
+            "title": {
+              "en": "Current P1"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current2",
+            "type": "range",
+            "title": {
+              "en": "Current P2"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current3",
+            "type": "range",
+            "title": {
+              "en": "Current P3"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      }
+    ]
+  },
   "drivers": [
     {
       "name": {
@@ -81,5 +140,28 @@
       ],
       "id": "go"
     }
-  ]
+  ],
+  "capabilities": {
+    "available_installation_current": {
+      "title": {
+        "en": "Installation available current"
+      },
+      "type": "number",
+      "desc": {
+        "en": "Set the amount of current available for an installation of chargers."
+      },
+      "min": 0,
+      "max": 40,
+      "decimals": 0,
+      "step": 1,
+      "units": {
+        "en": "A"
+      },
+      "setable": true,
+      "getable": true,
+      "insights": true,
+      "uiComponent": null,
+      "chartType": "stepLine"
+    }
+  }
 }

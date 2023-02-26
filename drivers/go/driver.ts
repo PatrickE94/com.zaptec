@@ -1,5 +1,13 @@
 import Homey from 'homey';
 import { ZaptecApi } from '../../lib/ZaptecApi';
+import type { GoCharger } from './device';
+
+interface InstallationCurrentControlArgs {
+  current1: number;
+  current2: number;
+  current3: number;
+  device: GoCharger;
+}
 
 class GoDriver extends Homey.Driver {
   /**
@@ -7,6 +15,35 @@ class GoDriver extends Homey.Driver {
    */
   async onInit() {
     this.log('GoDriver has been initialized');
+  }
+
+  protected registerFlows() {
+    this.log('GoDriver is registering flows');
+
+    const currControl = this.homey.flow.getActionCard(
+      'installation_current_control',
+    );
+    currControl.registerRunListener(
+      async ({
+        current1,
+        current2,
+        current3,
+        device,
+      }: InstallationCurrentControlArgs) => {
+        this.log(
+          `[${device.getName()}] Action 'installation_current_control' triggered`,
+        );
+        this.log(
+          `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
+        );
+
+        return device.setInstallationAvailableCurrent(
+          current1,
+          current2,
+          current3,
+        );
+      },
+    );
   }
 
   async onPair(session: Homey.Driver.PairSession) {

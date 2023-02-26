@@ -1,7 +1,7 @@
 import http from 'node:http';
 import https from 'node:https';
 import querystring from 'node:querystring';
-import { paths } from './apiSchema';
+import { paths, components } from './apiSchema';
 
 /**
  * The OAuth token endpoint is untyped in the Swagger document.
@@ -273,7 +273,7 @@ export class ZaptecApi {
 
   public async updateInstallation(
     id: string,
-    properties: paths['/api/installation/{id}/update']['post']['requestBody'],
+    properties: components['schemas']['InstallationExternalUpdateModel'],
   ) {
     const { data, response } = await this.post<
       paths['/api/installation/{id}/update']['post']['responses'][200]['content']['application/json']
