@@ -1,0 +1,23 @@
+{
+  "name": {
+    "en": "Zaptec Go"
+  },
+  "class": "other",
+  "capabilities": [
+    "measure_current",
+    "meter_power",
+    "locked",
+    "measure_power",
+    "onoff",
+    "measure_voltage"
+  ],
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/small.png",
+    "large": "{{driverAssetsPath}}/images/large.png",
+    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+  }
+}
