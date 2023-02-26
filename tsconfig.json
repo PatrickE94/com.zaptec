@@ -1,7 +1,19 @@
 {
   "extends": "@tsconfig/node12/tsconfig.json",
   "compilerOptions": {
-    "allowJs": true,
-    "outDir": ".homeybuild/"
-  }
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "outDir": ".homeybuild/",
+    "sourceMap": true,
+    "removeComments": true,
+    "typeRoots": ["./@types",  "./node_modules/@types"]
+  },
+  "include": [
+    "./**/*.ts",
+    "./**/*.js",
+    "./**/*.json",
+    "./.eslintrc.js",
+    "package.json"
+  ],
+  "exclude": ["./build", "./app.json", "./package-lock.json"]
 }

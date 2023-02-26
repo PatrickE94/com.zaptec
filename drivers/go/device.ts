@@ -1,7 +1,6 @@
 import Homey from 'homey';
 
 class MyDevice extends Homey.Device {
-
   /**
    * onInit is called when the device is initialized.
    */
@@ -24,8 +23,12 @@ class MyDevice extends Homey.Device {
    * @param {string[]} event.changedKeys An array of keys changed since the previous version
    * @returns {Promise<string|void>} return a custom message that will be displayed
    */
-  async onSettings({ oldSettings: {}, newSettings: {}, changedKeys: {} }): Promise<string|void> {
-    this.log('MyDevice settings where changed');
+  async onSettings(changes: {
+    oldSettings: { [key: string]: string };
+    newSettings: { [key: string]: string };
+    changedKeys: string[];
+  }): Promise<string | void> {
+    this.log('MyDevice settings where changed: ', JSON.stringify(changes));
   }
 
   /**
@@ -33,7 +36,7 @@ class MyDevice extends Homey.Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(name: string) {
+  async onRenamed(_name: string) {
     this.log('MyDevice was renamed');
   }
 
@@ -43,7 +46,6 @@ class MyDevice extends Homey.Device {
   async onDeleted() {
     this.log('MyDevice has been deleted');
   }
-
 }
 
 module.exports = MyDevice;
