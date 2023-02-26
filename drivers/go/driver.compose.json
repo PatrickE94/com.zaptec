@@ -16,9 +16,9 @@
   ],
   "connectivity": [],
   "images": {
-    "small": "{{driverAssetsPath}}/images/small.png",
-    "large": "{{driverAssetsPath}}/images/large.png",
-    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+    "small": "{{driverAssetsPath}}/images/driver_small.png",
+    "large": "{{driverAssetsPath}}/images/driver_large.png",
+    "xlarge": "{{driverAssetsPath}}/images/driver_xlarge.png"
   },
   "pair": [
     {

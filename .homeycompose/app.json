@@ -1,21 +1,22 @@
 {
-  "id": "dev.wdstrm.zaptec",
+  "id": "com.zaptec",
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
+  "brandColor": "#19312F",
   "platforms": ["local"],
   "name": {
     "en": "Zaptec"
   },
   "description": {
-    "en": "Adds support for Zaptec charging products."
+    "en": "Fully charged for your next adventure"
   },
   "category": ["energy"],
   "permissions": [],
   "images": {
-    "small": "/assets/images/small.png",
-    "large": "/assets/images/large.png",
-    "xlarge": "/assets/images/xlarge.png"
+    "small": "/assets/images/app_small.jpg",
+    "large": "/assets/images/app_large.jpg",
+    "xlarge": "/assets/images/app_xlarge.jpg"
   },
   "author": {
     "name": "Patrick Wadström",
