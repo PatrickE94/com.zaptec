@@ -1,5 +1,5 @@
 import Homey from 'homey';
-import { ZaptecApi } from '../../lib/ZaptecApi';
+import { ZaptecApi, SmartDeviceObservations } from '../../lib/ZaptecApi';
 
 export class GoCharger extends Homey.Device {
   private pollInterval?: NodeJS.Timer;
@@ -69,6 +69,27 @@ export class GoCharger extends Homey.Device {
    */
   protected pollValues() {
     if (this.api === undefined) return;
+
+    this.api
+      .getChargerState(this.getData().id)
+      .then(async (states) => {
+        for (const state of states) {
+          switch (state.stateId) {
+            case SmartDeviceObservations.ChargeMode:
+              // TODO:
+              break;
+            case SmartDeviceObservations.DetectedCar:
+              // TODO:
+              break;
+            default:
+              break;
+          }
+        }
+      })
+      .catch((e) => {
+        this.log(`Failed to poll ${e}`);
+      });
+
     this.api
       .getCharger(this.getData().id)
       .then(async (charger) => {
