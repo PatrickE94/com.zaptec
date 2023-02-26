@@ -180,6 +180,17 @@ export class ZaptecApi {
     return data;
   }
 
+  public async getCharger(id: string) {
+    const { data, response } = await this.get<
+      paths['/api/chargers/{id}']['get']['responses'][200]['content']['application/json']
+    >(`/api/chargers/${id}`, {});
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
   /*
   public static async chargeHistory(
     installationId: string,

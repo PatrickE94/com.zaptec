@@ -1,18 +1,31 @@
 import Homey from 'homey';
+import { ZaptecApi } from '../../lib/ZaptecApi';
 
-class MyDevice extends Homey.Device {
+class GoCharger extends Homey.Device {
+  private pollInterval?: NodeJS.Timer;
+  private api?: ZaptecApi;
+
   /**
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('MyDevice has been initialized');
+    this.log('GoCharger has been initialized');
+    this.api = new ZaptecApi();
+
+    await this.api.authenticate(
+      this.getSetting('username'),
+      this.getSetting('password'),
+    );
+
+    // TODO: Should we make this dynamic? Poll more frequently during charging?
+    this.pollInterval = setInterval(() => this.pollValues(), 30_000);
   }
 
   /**
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('MyDevice has been added');
+    this.log('GoCharger has been added');
   }
 
   /**
@@ -28,7 +41,7 @@ class MyDevice extends Homey.Device {
     newSettings: { [key: string]: string };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log('MyDevice settings where changed: ', JSON.stringify(changes));
+    this.log('GoCharger settings where changed: ', JSON.stringify(changes));
   }
 
   /**
@@ -37,15 +50,35 @@ class MyDevice extends Homey.Device {
    * @param {string} name The new name
    */
   async onRenamed(_name: string) {
-    this.log('MyDevice was renamed');
+    this.log('GoCharger was renamed');
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-    this.log('MyDevice has been deleted');
+    this.log('GoCharger has been deleted');
+    clearInterval(this.pollInterval);
+  }
+
+  /**
+   * Poll values from Portal.
+   *
+   * This is intentionally not async since nothing is catching the errors.
+   * We should catch errors inside this function!
+   */
+  protected pollValues() {
+    if (this.api === undefined) return;
+    this.api
+      .getCharger(this.getData().id)
+      .then(async (charger) => {
+        await this.setCapabilityValue('onoff', charger.active);
+        // TODO: Add more?
+      })
+      .catch((e) => {
+        this.log(`Failed to poll ${e}`);
+      });
   }
 }
 
-module.exports = MyDevice;
+module.exports = GoCharger;
