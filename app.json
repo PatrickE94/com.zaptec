@@ -28,9 +28,9 @@
     "email": "patrick@weblab.se"
   },
   "bugs": {
-    "url": "https://github.com/patricke94/dev.wdstrm.zaptec/issues"
+    "url": "https://github.com/patricke94/com.zaptec/issues"
   },
-  "source": "https://github.com/patricke94/dev.wdstrm.zaptec",
+  "source": "https://github.com/patricke94/com.zaptec",
   "dependencies": {
     "net": "*"
   },

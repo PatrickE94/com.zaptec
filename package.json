@@ -1,5 +1,5 @@
 {
-  "name": "dev.wdstrm.zaptec",
+  "name": "com.zaptec",
   "version": "1.0.0",
   "description": "Integrate Zaptec products into your Homey",
   "main": "app.ts",
