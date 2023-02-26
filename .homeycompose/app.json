@@ -3,18 +3,14 @@
   "version": "1.0.0",
   "compatibility": ">=5.0.0",
   "sdk": 3,
-  "platforms": [
-    "local"
-  ],
+  "platforms": ["local"],
   "name": {
     "en": "Zaptec"
   },
   "description": {
     "en": "Adds support for Zaptec charging products."
   },
-  "category": [
-    "energy"
-  ],
+  "category": ["energy"],
   "permissions": [],
   "images": {
     "small": "/assets/images/small.png",

@@ -1,2 +1,3 @@
 build/
 ./app.json
+lib/apiSchema.d.ts

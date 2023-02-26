@@ -5,8 +5,7 @@
     "resolveJsonModule": true,
     "outDir": ".homeybuild/",
     "sourceMap": true,
-    "removeComments": true,
-    "typeRoots": ["./@types",  "./node_modules/@types"]
+    "removeComments": true
   },
   "include": [
     "./**/*.ts",
