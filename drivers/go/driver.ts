@@ -37,9 +37,10 @@ class GoDriver extends Homey.Driver {
 
       return (
         chargers.data?.map((charger) => ({
-          name: charger.name,
+          name: `${charger.name} (${charger.installationName})`,
           data: {
             id: charger.id,
+            installationId: charger.installationId,
           },
           settings: {
             username,
