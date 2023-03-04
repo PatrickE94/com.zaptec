@@ -1,13 +1,13 @@
 {
     "id": "installation_current_control",
     "title": {
-        "en": "Set available current for installation per phase"
+        "en": "Adjust available current"
     },
     "titleFormatted": {
-        "en": "Set available circuit current to [[current1]], [[current2]] and [[current3]]"
+        "en": "Adjust available current to [[current1]], [[current2]] and [[current3]]"
     },
     "hint": {
-        "en": "Changes the available current for all chargers within this installation"
+        "en": "Changes the available current for all chargers within this installation."
     },
     "args": [
         {

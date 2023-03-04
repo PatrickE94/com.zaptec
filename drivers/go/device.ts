@@ -1,5 +1,9 @@
 import Homey from 'homey';
-import { ZaptecApi, SmartDeviceObservations } from '../../lib/ZaptecApi';
+import {
+  ZaptecApi,
+  SmartDeviceObservations,
+  Command,
+} from '../../lib/ZaptecApi';
 
 export class GoCharger extends Homey.Device {
   private pollInterval?: NodeJS.Timer;
@@ -19,6 +23,8 @@ export class GoCharger extends Homey.Device {
 
     // TODO: Should we make this dynamic? Poll more frequently during charging?
     this.pollInterval = setInterval(() => this.pollValues(), 30_000);
+
+    this.registerCapabilityListeners();
   }
 
   /**
@@ -62,6 +68,16 @@ export class GoCharger extends Homey.Device {
   }
 
   /**
+   * Assign reactions to capability changes triggered by others.
+   */
+  protected registerCapabilityListeners() {
+    this.registerCapabilityListener('onoff', async (value) => {
+      if (value) await this.startCharging();
+      else await this.stopCharging();
+    });
+  }
+
+  /**
    * Poll values from Portal.
    *
    * This is intentionally not async since nothing is catching the errors.
@@ -76,11 +92,24 @@ export class GoCharger extends Homey.Device {
         for (const state of states) {
           switch (state.stateId) {
             case SmartDeviceObservations.ChargeMode:
-              // TODO:
+              await this.setCapabilityValue('charge_mode', state.valueAsString);
+              // TODO: Trigger cards
               break;
+
             case SmartDeviceObservations.DetectedCar:
-              // TODO:
+              await this.setCapabilityValue(
+                'car_connected',
+                state.valueAsString === 'true',
+              );
+              await this.homey.flow
+                .getDeviceTriggerCard(
+                  state.valueAsString === 'true'
+                    ? 'car_connects'
+                    : 'car_disconnects',
+                )
+                .trigger(this);
               break;
+
             default:
               break;
           }
@@ -106,11 +135,57 @@ export class GoCharger extends Homey.Device {
     current2: number,
     current3: number,
   ) {
-    await this.api?.updateInstallation(this.getData().installationId, {
-      availableCurrentPhase1: current1,
-      availableCurrentPhase2: current2,
-      availableCurrentPhase3: current3,
-    });
+    return this.api
+      ?.updateInstallation(this.getData().installationId, {
+        availableCurrentPhase1: current1,
+        availableCurrentPhase2: current2,
+        availableCurrentPhase3: current3,
+      })
+      .then(async () => {
+        await this.setCapabilityValue('available_installation_current.phase1', current1);
+        await this.setCapabilityValue('available_installation_current.phase2', current2);
+        await this.setCapabilityValue('available_installation_current.phase3', current3);
+        return true;
+      })
+      .catch((e) => {
+        throw new Error(`Failed to adjust current: ${e}`);
+      });
+  }
+
+  public async startCharging() {
+    return this.api
+      ?.sendCommand(this.getData().id, Command.StartCharging)
+      .then(() => true)
+      .catch((e) => {
+        throw new Error(`Failed to turn on the charger: ${e}`);
+      });
+  }
+
+  public async stopCharging() {
+    return this.api
+      ?.sendCommand(this.getData().id, Command.StopCharging)
+      .then(() => true)
+      .catch((e) => {
+        throw new Error(`Failed to turn off the charger: ${e}`);
+      });
+  }
+
+  public async pauseCharging() {
+    return this.api
+      ?.sendCommand(this.getData().id, Command.PauseCharging)
+      .then(() => true)
+      .catch((e) => {
+        throw new Error(`Failed to pause charging: ${e}`);
+      });
+  }
+
+  public async resumeCharging() {
+    return this.api
+      ?.sendCommand(this.getData().id, Command.ResumeCharging)
+      .then(() => true)
+      .catch((e) => {
+        throw new Error(`Failed to resume charging: ${e}`);
+      });
   }
 }
 

@@ -6,10 +6,13 @@
   "capabilities": [
     "measure_current",
     "meter_power",
-    "locked",
     "measure_power",
     "onoff",
-    "measure_voltage"
+    "measure_voltage",
+    "charge_mode",
+    "available_installation_current.phase1",
+    "available_installation_current.phase2",
+    "available_installation_current.phase3"
   ],
   "platforms": [
     "local"

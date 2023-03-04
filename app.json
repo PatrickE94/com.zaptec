@@ -35,17 +35,46 @@
     "net": "*"
   },
   "flow": {
+    "triggers": [
+      {
+        "title": {
+          "en": "Car connects"
+        },
+        "hint": {
+          "en": "When a car becomes connected to the charger"
+        },
+        "id": "car_connects"
+      },
+      {
+        "title": {
+          "en": "Charging starts"
+        },
+        "hint": {
+          "en": "When a charging session is started"
+        },
+        "id": "charging_starts"
+      },
+      {
+        "title": {
+          "en": "Charging stops"
+        },
+        "hint": {
+          "en": "When a charging session is stopped"
+        },
+        "id": "charging_stops"
+      }
+    ],
     "actions": [
       {
         "id": "installation_current_control",
         "title": {
-          "en": "Set available current for installation per phase"
+          "en": "Adjust available current"
         },
         "titleFormatted": {
-          "en": "Set available circuit current to [[current1]], [[current2]] and [[current3]]"
+          "en": "Adjust available current to [[current1]], [[current2]] and [[current3]]"
         },
         "hint": {
-          "en": "Changes the available current for all chargers within this installation"
+          "en": "Changes the available current for all chargers within this installation."
         },
         "args": [
           {
@@ -102,7 +131,6 @@
       "capabilities": [
         "measure_current",
         "meter_power",
-        "locked",
         "measure_power",
         "onoff",
         "measure_voltage"
@@ -139,6 +167,30 @@
         }
       ],
       "id": "go"
+    },
+    {
+      "name": {
+        "en": "sense"
+      },
+      "class": "sensor",
+      "capabilities": [
+        "measure_current",
+        "meter_power",
+        "measure_power",
+        "measure_voltage"
+      ],
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "lan"
+      ],
+      "images": {
+        "small": "/drivers/sense/assets/images/driver_small.jpg",
+        "large": "/drivers/sense/assets/images/driver_large.jpg",
+        "xlarge": "/drivers/sense/assets/images/driver_xlarge.jpg"
+      },
+      "id": "sense"
     }
   ],
   "capabilities": {

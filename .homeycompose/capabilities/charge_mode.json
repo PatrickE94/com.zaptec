@@ -1,0 +1,41 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Charge mode"
+  },
+  "getable": true,
+  "setable": false,
+  "uiComponent": "",
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Unknown"
+      }
+    },
+    {
+      "id": "1",
+      "title": {
+        "en": "Disconnected"
+      }
+    },
+    {
+      "id": "2",
+      "title": {
+        "en": "Connecting to car"
+      }
+    },
+    {
+      "id": "3",
+      "title": {
+        "en": "Charging"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Charging finished"
+      }
+    }
+  ]
+}

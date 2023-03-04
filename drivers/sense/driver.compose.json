@@ -16,8 +16,8 @@
     "lan"
   ],
   "images": {
-    "small": "{{driverAssetsPath}}/images/small.png",
-    "large": "{{driverAssetsPath}}/images/large.png",
-    "xlarge": "{{driverAssetsPath}}/images/xlarge.png"
+    "small": "{{driverAssetsPath}}/images/driver_small.jpg",
+    "large": "{{driverAssetsPath}}/images/driver_large.jpg",
+    "xlarge": "{{driverAssetsPath}}/images/driver_xlarge.jpg"
   }
 }

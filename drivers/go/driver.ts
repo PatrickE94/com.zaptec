@@ -15,35 +15,43 @@ class GoDriver extends Homey.Driver {
    */
   async onInit() {
     this.log('GoDriver has been initialized');
+    this.registerFlows();
   }
 
   protected registerFlows() {
     this.log('GoDriver is registering flows');
 
-    const currControl = this.homey.flow.getActionCard(
-      'installation_current_control',
-    );
-    currControl.registerRunListener(
-      async ({
-        current1,
-        current2,
-        current3,
-        device,
-      }: InstallationCurrentControlArgs) => {
-        this.log(
-          `[${device.getName()}] Action 'installation_current_control' triggered`,
-        );
-        this.log(
-          `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
-        );
-
-        return device.setInstallationAvailableCurrent(
+    this.homey.flow
+      .getActionCard('installation_current_control')
+      .registerRunListener(
+        async ({
           current1,
           current2,
           current3,
-        );
-      },
-    );
+          device,
+        }: InstallationCurrentControlArgs) => {
+          this.log(
+            `[${device.getName()}] Action 'installation_current_control' triggered`,
+          );
+          this.log(
+            `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
+          );
+
+          return device.setInstallationAvailableCurrent(
+            current1,
+            current2,
+            current3,
+          );
+        },
+      );
+
+    this.homey.flow
+      .getActionCard('pause_charging')
+      .registerRunListener(async ({ device }) => device.pauseCharging());
+
+    this.homey.flow
+      .getActionCard('resume_charging')
+      .registerRunListener(async ({ device }) => device.resumeCharging());
   }
 
   async onPair(session: Homey.Driver.PairSession) {

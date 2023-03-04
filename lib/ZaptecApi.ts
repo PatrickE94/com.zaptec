@@ -31,6 +31,7 @@ export enum Command {
   StartCharging = 501,
   StopCharging = 502,
   ReportChargingState = 503,
+  PauseCharging = 506,
   ResumeCharging = 507,
 }
 
@@ -246,10 +247,17 @@ export class ZaptecApi {
       ...options,
     });
 
-    return {
-      data: JSON.parse(response.data),
-      response: response.response,
-    };
+    try {
+      return {
+        data:
+          response.response.statusCode === 200
+            ? JSON.parse(response.data)
+            : response.data,
+        response: response.response,
+      };
+    } catch (e) {
+      throw new Error(`Failed to parse response: ${response.data}`);
+    }
   }
 
   protected async post<T>(
@@ -278,10 +286,17 @@ export class ZaptecApi {
       typeof data === 'object' ? JSON.stringify(data) : data,
     );
 
-    return {
-      data: JSON.parse(response.data),
-      response: response.response,
-    };
+    try {
+      return {
+        data:
+          response.response.statusCode === 200
+            ? JSON.parse(response.data)
+            : response.data,
+        response: response.response,
+      };
+    } catch (e) {
+      throw new Error(`Failed to parse response: ${response.data}`);
+    }
   }
 
   public async authenticate(username: string, password: string): Promise<void> {
