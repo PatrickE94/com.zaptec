@@ -4,5 +4,8 @@
   },
   "1.0.1": {
     "en": "Improve icons and fixed urls"
+  },
+  "1.0.2": {
+    "en": "First working PoC"
   }
 }
