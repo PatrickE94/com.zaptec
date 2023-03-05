@@ -252,30 +252,6 @@
         }
       ],
       "id": "go"
-    },
-    {
-      "name": {
-        "en": "sense"
-      },
-      "class": "sensor",
-      "capabilities": [
-        "measure_current",
-        "meter_power",
-        "measure_power",
-        "measure_voltage"
-      ],
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [
-        "lan"
-      ],
-      "images": {
-        "small": "/drivers/sense/assets/images/driver_small.jpg",
-        "large": "/drivers/sense/assets/images/driver_large.jpg",
-        "xlarge": "/drivers/sense/assets/images/driver_xlarge.jpg"
-      },
-      "id": "sense"
     }
   ],
   "capabilities": {
