@@ -1,9 +1,10 @@
 import Homey from 'homey';
 import {
   ZaptecApi,
-  SmartDeviceObservations,
+  ApolloDeviceObservation,
   Command,
-} from '../../lib/ZaptecApi';
+  ChargerOperationMode,
+} from '../../lib/zaptec';
 
 export class GoCharger extends Homey.Device {
   private pollInterval?: NodeJS.Timer;
@@ -32,6 +33,7 @@ export class GoCharger extends Homey.Device {
    */
   async onAdded() {
     this.log('GoCharger has been added');
+    this.pollValues(); // Trigger initial poll to make it look nice immediately!
   }
 
   /**
@@ -55,8 +57,8 @@ export class GoCharger extends Homey.Device {
    * This method can be used this to synchronise the name to the device.
    * @param {string} name The new name
    */
-  async onRenamed(_name: string) {
-    this.log('GoCharger was renamed');
+  async onRenamed(name: string) {
+    this.log(`GoCharger ${this.getName()} was renamed to ${name}`);
   }
 
   /**
@@ -90,24 +92,103 @@ export class GoCharger extends Homey.Device {
       .getChargerState(this.getData().id)
       .then(async (states) => {
         for (const state of states) {
-          switch (state.stateId) {
-            case SmartDeviceObservations.ChargeMode:
-              await this.setCapabilityValue('charge_mode', state.valueAsString);
-              // TODO: Trigger cards
+          switch (state.StateId) {
+            case ApolloDeviceObservation.ChargerOperationMode:
+              if (
+                state.ValueAsString !== undefined &&
+                state.ValueAsString !== null
+              ) {
+                await this.updateChargeMode(
+                  Number(state.ValueAsString) as ChargerOperationMode,
+                );
+              }
               break;
 
-            case SmartDeviceObservations.DetectedCar:
+            case ApolloDeviceObservation.IsOnline:
+              if (state.ValueAsString === '1') await this.setAvailable();
+              else await this.setUnavailable('Charger is offline');
+              break;
+
+            case ApolloDeviceObservation.CurrentPhase1:
+              await this.setCapabilityValue(
+                'measure_current.phase1',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.CurrentPhase2:
+              await this.setCapabilityValue(
+                'measure_current.phase2',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.CurrentPhase3:
+              await this.setCapabilityValue(
+                'measure_current.phase3',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.VoltagePhase1:
+              await this.setCapabilityValue(
+                'measure_voltage.phase1',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.VoltagePhase2:
+              await this.setCapabilityValue(
+                'measure_voltage.phase2',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.VoltagePhase3:
+              await this.setCapabilityValue(
+                'measure_voltage.phase3',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.TotalChargePower:
+              await this.setCapabilityValue(
+                'measure_power',
+                Number(state.ValueAsString),
+              );
+              break;
+
+            case ApolloDeviceObservation.SignedMeterValue:
+              if (state.ValueAsString?.startsWith('OCMF')) {
+                try {
+                  const mv = JSON.parse(state.ValueAsString.substring(5));
+                  if ('RD' in mv && 'RV' in mv.RD[0])
+                    await this.setCapabilityValue('meter_power', mv.RD[0].RV);
+                } catch (e) {
+                  this.log(`Failed to extract meter value: ${e}`);
+                }
+              }
+              break;
+
+            case ApolloDeviceObservation.DetectedCar:
               await this.setCapabilityValue(
                 'car_connected',
-                state.valueAsString === 'true',
+                state.ValueAsString === '1',
               );
               await this.homey.flow
                 .getDeviceTriggerCard(
-                  state.valueAsString === 'true'
+                  state.ValueAsString === '1'
                     ? 'car_connects'
                     : 'car_disconnects',
                 )
                 .trigger(this);
+              break;
+
+            case ApolloDeviceObservation.SessionIdentifier:
+              await this.setStoreValue(
+                'active_session_id',
+                state.ValueAsString,
+              );
               break;
 
             default:
@@ -119,15 +200,9 @@ export class GoCharger extends Homey.Device {
         this.log(`Failed to poll ${e}`);
       });
 
-    this.api
-      .getCharger(this.getData().id)
-      .then(async (charger) => {
-        await this.setCapabilityValue('onoff', charger.active);
-        // TODO: Add more?
-      })
-      .catch((e) => {
-        this.log(`Failed to poll ${e}`);
-      });
+    this.updateAvailableCurrent().catch((e) => {
+      this.log(`Failed to poll ${e}`);
+    });
   }
 
   public async setInstallationAvailableCurrent(
@@ -137,55 +212,147 @@ export class GoCharger extends Homey.Device {
   ) {
     return this.api
       ?.updateInstallation(this.getData().installationId, {
-        availableCurrentPhase1: current1,
-        availableCurrentPhase2: current2,
-        availableCurrentPhase3: current3,
+        AvailableCurrentPhase1: current1,
+        AvailableCurrentPhase2: current2,
+        AvailableCurrentPhase3: current3,
       })
       .then(async () => {
-        await this.setCapabilityValue('available_installation_current.phase1', current1);
-        await this.setCapabilityValue('available_installation_current.phase2', current2);
-        await this.setCapabilityValue('available_installation_current.phase3', current3);
+        // Update capability values to see what was set
+        await this.updateAvailableCurrent();
         return true;
       })
       .catch((e) => {
+        this.log(`adjustCurrent failure: ${e}`);
         throw new Error(`Failed to adjust current: ${e}`);
       });
   }
 
   public async startCharging() {
+    // TODO: Send different command if it has old firmware
     return this.api
-      ?.sendCommand(this.getData().id, Command.StartCharging)
+      ?.sendCommand(this.getData().id, Command.ResumeCharging)
       .then(() => true)
       .catch((e) => {
+        this.log(`startCharging failure: ${e}`);
         throw new Error(`Failed to turn on the charger: ${e}`);
       });
   }
 
   public async stopCharging() {
+    // TODO: Send different command if it has old firmware
     return this.api
-      ?.sendCommand(this.getData().id, Command.StopCharging)
+      ?.sendCommand(this.getData().id, Command.StopChargingFinal)
       .then(() => true)
       .catch((e) => {
+        this.log(`stopCharging failure: ${e}`);
         throw new Error(`Failed to turn off the charger: ${e}`);
       });
   }
 
-  public async pauseCharging() {
+  public async prioritizeThisCharger() {
+    const sessionId = this.getStoreValue('active_session_id');
+    if (typeof sessionId !== 'string' || sessionId.length === 0)
+      throw new Error(`No active session, can't prioritize charger`);
+
     return this.api
-      ?.sendCommand(this.getData().id, Command.PauseCharging)
+      ?.updateSessionPriority(sessionId, {})
       .then(() => true)
       .catch((e) => {
-        throw new Error(`Failed to pause charging: ${e}`);
+        this.log(`prioritizeThisCharger failure: ${e}`);
+        throw new Error(`Failed to prioritize charger: ${e}`);
       });
   }
 
-  public async resumeCharging() {
-    return this.api
-      ?.sendCommand(this.getData().id, Command.ResumeCharging)
-      .then(() => true)
-      .catch((e) => {
-        throw new Error(`Failed to resume charging: ${e}`);
-      });
+  /**
+   * Update the charge_mode capability and trigger relevant flow cards
+   */
+  protected async updateChargeMode(newMode: ChargerOperationMode) {
+    await this.setCapabilityValue(
+      'onoff',
+      newMode === ChargerOperationMode.Connected_Charging ||
+        newMode === ChargerOperationMode.Connected_Requesting ||
+        newMode === ChargerOperationMode.Connected_Finishing,
+    );
+
+    const previousMode = Number(this.getCapabilityValue('charge_mode'));
+    if (previousMode === newMode) return; // No-op
+    await this.setCapabilityValue('charge_mode', String(newMode));
+
+    // Car connects
+    if (
+      newMode !== ChargerOperationMode.Unknown &&
+      newMode !== ChargerOperationMode.Disconnected &&
+      (previousMode === ChargerOperationMode.Disconnected ||
+        previousMode === ChargerOperationMode.Unknown)
+    )
+      await this.homey.flow.getDeviceTriggerCard('car_connects').trigger(this);
+
+    // Car disconnects
+    if (
+      newMode === ChargerOperationMode.Disconnected &&
+      previousMode !== ChargerOperationMode.Disconnected
+    ) {
+      await this.homey.flow
+        .getDeviceTriggerCard('car_disconnects')
+        .trigger(this);
+    }
+
+    // Charging starts
+    if (
+      newMode === ChargerOperationMode.Connected_Charging &&
+      previousMode !== ChargerOperationMode.Connected_Charging
+    ) {
+      await this.homey.flow
+        .getDeviceTriggerCard('charging_starts')
+        .trigger(this);
+    }
+
+    // Charging stops
+    if (
+      newMode !== ChargerOperationMode.Connected_Charging &&
+      previousMode === ChargerOperationMode.Connected_Charging
+    ) {
+      await this.homey.flow
+        .getDeviceTriggerCard('charging_stops')
+        .trigger(this);
+    }
+  }
+
+  protected async updateAvailableCurrent() {
+    if (this.api === undefined) return;
+    const info = await this.api.getInstallation(this.getData().installationId);
+    // Available Phase1
+    if (
+      info.AvailableCurrentPhase1 !== null &&
+      info.AvailableCurrentPhase1 !== undefined
+    ) {
+      await this.setCapabilityValue(
+        'available_installation_current.phase1',
+        info.AvailableCurrentPhase1,
+      );
+    }
+
+    // Available Phase2
+    if (
+      info.AvailableCurrentPhase2 !== null &&
+      info.AvailableCurrentPhase2 !== undefined
+    ) {
+      await this.setCapabilityValue(
+        'available_installation_current.phase2',
+        info.AvailableCurrentPhase2,
+      );
+    }
+
+    // Available Phase3
+    if (
+      info.AvailableCurrentPhase3 !== null &&
+      info.AvailableCurrentPhase3 !== undefined
+    ) {
+      await this.setCapabilityValue(
+        'available_installation_current.phase3',
+        info.AvailableCurrentPhase3,
+      );
+    }
   }
 }
 

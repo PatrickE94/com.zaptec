@@ -5,7 +5,7 @@
   },
   "getable": true,
   "setable": false,
-  "uiComponent": "",
+  "uiComponent": "picker",
   "values": [
     {
       "id": "0",

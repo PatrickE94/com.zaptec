@@ -13,9 +13,10 @@
   "units": {
     "en": "A"
   },
-  "setable": true,
+  "setable": false,
   "getable": true,
   "insights": true,
-  "uiComponent": null,
-  "chartType": "stepLine"
+  "uiComponent": "sensor",
+  "chartType": "stepLine",
+  "icon": "/assets/current_limit.svg"
 }

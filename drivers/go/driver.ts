@@ -1,5 +1,5 @@
 import Homey from 'homey';
-import { ZaptecApi } from '../../lib/ZaptecApi';
+import { ZaptecApi } from '../../lib/zaptec';
 import type { GoCharger } from './device';
 
 interface InstallationCurrentControlArgs {
@@ -46,12 +46,11 @@ class GoDriver extends Homey.Driver {
       );
 
     this.homey.flow
-      .getActionCard('pause_charging')
-      .registerRunListener(async ({ device }) => device.pauseCharging());
-
-    this.homey.flow
-      .getActionCard('resume_charging')
-      .registerRunListener(async ({ device }) => device.resumeCharging());
+      .getActionCard('prioritize_charger')
+      .registerRunListener(async ({ device }) => {
+        this.log(`[${device.getName()}] Action 'prioritize_charger' triggered`);
+        return device.prioritizeThisCharger();
+      });
   }
 
   async onPair(session: Homey.Driver.PairSession) {
@@ -76,16 +75,16 @@ class GoDriver extends Homey.Driver {
 
     session.setHandler('list_devices', async () => {
       const chargers = await api.getChargers({
-        Roles: 2,
-        ReturnIdNameOnly: true,
+        DeviceType: 4,
+        InstallationType: 1,
       });
 
       return (
-        chargers.data?.map((charger) => ({
-          name: `${charger.name} (${charger.installationName})`,
+        chargers.Data?.map((charger) => ({
+          name: `${charger.Name}`,
           data: {
-            id: charger.id,
-            installationId: charger.installationId,
+            id: charger.Id,
+            installationId: charger.InstallationId,
           },
           settings: {
             username,

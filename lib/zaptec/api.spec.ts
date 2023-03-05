@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { ZaptecApi } from './ZaptecApi';
+import { ZaptecApi } from './api';
 
 describe('Zaptec API Client', () => {
   it('should use token after authentication', async () => {
@@ -19,5 +19,6 @@ describe('Zaptec API Client', () => {
 
     await api.authenticate('test', '123');
     await api.getChargers({});
+    api.close();
   });
 });
