@@ -611,3 +611,37 @@ export interface TokenResponse {
   token_type: string;
   expires_in: number;
 }
+
+export interface SessionListModel {
+  Id: string;
+  DeviceId?: string | null;
+  StartDateTime: string;
+  EndDateTime?: string | null;
+  Energy: number;
+  CommitMetadata: number;
+  CommitEndDateTime?: string | null;
+  UserFullName?: string | null;
+  ChargerId: string;
+  DeviceName?: string | null;
+  UserEmail?: string | null;
+  UserId?: string | null;
+  TokenName?: string | null;
+  ExternalId?: string | null;
+  ExternallyEnded: boolean;
+  EnergyDetails?:
+    | {
+        Timestamp: string;
+        Energy: number;
+      }[]
+    | null;
+  ChargerFirmwareVersion: {
+    major: number;
+    minor: number;
+    build: number;
+    revision: number;
+    majorRevision: number;
+    minorRevision: number;
+  };
+  SignedSession?: boolean | null;
+  ReplacedBySessionId?: string | null;
+}

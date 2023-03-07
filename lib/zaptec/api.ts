@@ -16,6 +16,7 @@ import {
   SessionEndData,
   TokenResponse,
   ZapChargerViewModel,
+  SessionListModel,
 } from './models';
 
 /**
@@ -194,6 +195,36 @@ export class ZaptecApi {
         `Unexpected authentication response of ${response.statusCode}`,
       );
     }
+  }
+
+  // -------------------------- //
+  //  Charge History
+  // -------------------------- //
+
+  public async getChargeHistory(params: {
+    InstallationId?: string;
+    UserId?: string;
+    ChargerId?: string;
+    From?: string;
+    To?: string;
+    GroupBy?: 0 | 1 | 2;
+    DetailLevel?: 0 | 1;
+    SortProperty?: string;
+    SortDescending?: boolean;
+    PageSize?: number;
+    PageIndex?: number;
+    IncludeDisabled?: boolean;
+    Exclude?: string[];
+  }) {
+    const { data, response } = await this.get<PagedData<SessionListModel>>(
+      `/api/chargehistory?${querystring.stringify(params)}`,
+      {},
+    );
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
   }
 
   // -------------------------- //
