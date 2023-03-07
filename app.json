@@ -37,91 +37,37 @@
   "flow": {
     "triggers": [
       {
+        "id": "car_connects",
         "title": {
           "en": "Car connects"
         },
         "hint": {
           "en": "When a car becomes connected to the charger"
         },
-        "id": "car_connects"
-      },
-      {
-        "title": {
-          "en": "Car disconnects"
-        },
-        "hint": {
-          "en": "When a car disconnects it's cable from the charger."
-        },
-        "id": "car_disconnects"
-      },
-      {
-        "title": {
-          "en": "Charging starts"
-        },
-        "hint": {
-          "en": "When a charging session is started"
-        },
-        "id": "charging_starts"
-      },
-      {
-        "title": {
-          "en": "Charging stops"
-        },
-        "hint": {
-          "en": "When a charging session is stopped"
-        },
-        "id": "charging_stops"
-      }
-    ],
-    "actions": [
-      {
-        "id": "installation_current_control",
-        "title": {
-          "en": "Adjust available current"
-        },
-        "titleFormatted": {
-          "en": "Adjust available current to [[current1]], [[current2]] and [[current3]]"
-        },
-        "hint": {
-          "en": "Changes the available current for all chargers within this installation."
-        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
         "args": [
-          {
-            "name": "current1",
-            "type": "range",
-            "title": {
-              "en": "Current P1"
-            },
-            "min": 0,
-            "max": 40,
-            "step": 1,
-            "label": " A",
-            "labelDecimals": 0
-          },
-          {
-            "name": "current2",
-            "type": "range",
-            "title": {
-              "en": "Current P2"
-            },
-            "min": 0,
-            "max": 40,
-            "step": 1,
-            "label": " A",
-            "labelDecimals": 0
-          },
-          {
-            "name": "current3",
-            "type": "range",
-            "title": {
-              "en": "Current P3"
-            },
-            "min": 0,
-            "max": 40,
-            "step": 1,
-            "label": " A",
-            "labelDecimals": 0
-          },
           {
             "type": "device",
             "name": "device",
@@ -130,18 +76,193 @@
         ]
       },
       {
-        "id": "prioritize_charger",
+        "id": "car_disconnects",
         "title": {
-          "en": "Prioritize charger"
+          "en": "Car disconnects"
         },
         "hint": {
-          "en": "Prioritize a specific charger in an installation when load balancing."
+          "en": "When a car disconnects it's cable from the charger."
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "charging_starts",
+        "title": {
+          "en": "Charging starts"
+        },
+        "hint": {
+          "en": "When a charging session is started"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "charging_stops",
+        "title": {
+          "en": "Charging stops"
+        },
+        "hint": {
+          "en": "When a charging session is stopped"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      }
+    ],
+    "conditions": [
+      {
+        "id": "is_charging",
+        "title": {
+          "en": "Car !{{is|is not}} charging"
         },
         "args": [
           {
             "type": "device",
             "name": "device",
             "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "is_connected",
+        "title": {
+          "en": "Car !{{is|is not}} connected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "charging_is_finished",
+        "title": {
+          "en": "Charging !{{is|is not}} finished"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      }
+    ],
+    "actions": [
+      {
+        "id": "installation_current_control",
+        "title": {
+          "en": "Set available current to"
+        },
+        "titleFormatted": {
+          "en": "Set available current to [[current]]"
+        },
+        "hint": {
+          "en": "Changes the available current for all chargers within this installation."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          },
+          {
+            "name": "current",
+            "type": "range",
+            "title": {
+              "en": "Current"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
           }
         ]
       }
@@ -157,21 +278,25 @@
         "measure_current.phase1",
         "measure_current.phase2",
         "measure_current.phase3",
-        "meter_power",
+        "meter_power.this_year",
+        "meter_power.last_session",
         "measure_power",
-        "onoff",
+        "charging_button",
         "measure_voltage.phase1",
         "measure_voltage.phase2",
         "measure_voltage.phase3",
         "charge_mode",
-        "available_installation_current.phase1",
-        "available_installation_current.phase2",
-        "available_installation_current.phase3"
+        "available_installation_current"
       ],
       "capabilitiesOptions": {
-        "onoff": {
+        "meter_power.this_year": {
           "title": {
-            "en": "Charging"
+            "en": "Energy this year"
+          }
+        },
+        "meter_power.last_session": {
+          "title": {
+            "en": "Energy previous session"
           }
         },
         "measure_current.phase1": {
@@ -204,19 +329,9 @@
             "en": "Voltage L3"
           }
         },
-        "available_installation_current.phase1": {
+        "available_installation_current": {
           "title": {
-            "en": "Current limit L1"
-          }
-        },
-        "available_installation_current.phase2": {
-          "title": {
-            "en": "Current limit L2"
-          }
-        },
-        "available_installation_current.phase3": {
-          "title": {
-            "en": "Current limit L3"
+            "en": "Current limit"
           }
         }
       },
@@ -251,7 +366,25 @@
           "template": "add_devices"
         }
       ],
-      "id": "go"
+      "id": "go",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Capabilities"
+          },
+          "children": [
+            {
+              "id": "showVoltage",
+              "type": "checkbox",
+              "label": {
+                "en": "Show voltage per phase"
+              },
+              "value": false
+            }
+          ]
+        }
+      ]
     }
   ],
   "capabilities": {
@@ -317,6 +450,15 @@
           }
         }
       ]
+    },
+    "charging_button": {
+      "type": "boolean",
+      "uiComponent": "button",
+      "getable": true,
+      "setable": true,
+      "title": {
+        "en": "Charging"
+      }
     }
   }
 }

@@ -1,11 +1,9 @@
 import Homey from 'homey';
-import { ZaptecApi } from '../../lib/zaptec';
+import { ChargerOperationMode, ZaptecApi } from '../../lib/zaptec';
 import type { GoCharger } from './device';
 
 interface InstallationCurrentControlArgs {
-  current1: number;
-  current2: number;
-  current3: number;
+  current: number;
   device: GoCharger;
 }
 
@@ -24,33 +22,41 @@ class GoDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('installation_current_control')
       .registerRunListener(
-        async ({
-          current1,
-          current2,
-          current3,
-          device,
-        }: InstallationCurrentControlArgs) => {
+        async ({ current, device }: InstallationCurrentControlArgs) => {
           this.log(
             `[${device.getName()}] Action 'installation_current_control' triggered`,
           );
-          this.log(
-            `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
-          );
+          this.log(`[${device.getName()}] - current: '${current}' amps`);
 
           return device.setInstallationAvailableCurrent(
-            current1,
-            current2,
-            current3,
+            current,
+            current,
+            current,
           );
         },
       );
 
     this.homey.flow
-      .getActionCard('prioritize_charger')
-      .registerRunListener(async ({ device }) => {
-        this.log(`[${device.getName()}] Action 'prioritize_charger' triggered`);
-        return device.prioritizeThisCharger();
-      });
+      .getConditionCard('is_charging')
+      .registerRunListener(
+        async ({ device }) =>
+          device.getCapabilityValue('charge_mode') ===
+          String(ChargerOperationMode.Connected_Charging),
+      );
+
+    this.homey.flow
+      .getConditionCard('is_connected')
+      .registerRunListener(async ({ device }) =>
+        device.getCapabilityValue('car_connected'),
+      );
+
+    this.homey.flow
+      .getConditionCard('charging_is_finished')
+      .registerRunListener(
+        async ({ device }) =>
+          device.getCapabilityValue('charge_mode') ===
+          String(ChargerOperationMode.Connected_Finishing),
+      );
   }
 
   async onPair(session: Homey.Driver.PairSession) {

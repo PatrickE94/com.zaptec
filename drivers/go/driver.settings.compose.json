@@ -1,0 +1,18 @@
+[
+    {
+        "type": "group",
+        "label": {
+            "en": "Capabilities"
+        },
+        "children": [
+            {
+                "id": "showVoltage",
+                "type": "checkbox",
+                "label": {
+                    "en": "Show voltage per phase"
+                },
+                "value": false
+            }
+        ]
+    }
+]

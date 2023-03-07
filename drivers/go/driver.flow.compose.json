@@ -1,0 +1,180 @@
+{
+  "triggers": [
+    {
+      "id": "car_connects",
+      "title": {
+        "en": "Car connects"
+      },
+      "hint": {
+        "en": "When a car becomes connected to the charger"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "car_disconnects",
+      "title": {
+        "en": "Car disconnects"
+      },
+      "hint": {
+        "en": "When a car disconnects it's cable from the charger."
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "charging_starts",
+      "title": {
+        "en": "Charging starts"
+      },
+      "hint": {
+        "en": "When a charging session is started"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "charging_stops",
+      "title": {
+        "en": "Charging stops"
+      },
+      "hint": {
+        "en": "When a charging session is stopped"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "is_charging",
+      "title": {
+        "en": "Car !{{is|is not}} charging"
+      }
+    },
+    {
+      "id": "is_connected",
+      "title": {
+        "en": "Car !{{is|is not}} connected"
+      }
+    },
+    {
+      "id": "charging_is_finished",
+      "title": {
+        "en": "Charging !{{is|is not}} finished"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "installation_current_control",
+      "title": {
+        "en": "Set available current to"
+      },
+      "titleFormatted": {
+        "en": "Set available current to [[current]]"
+      },
+      "hint": {
+        "en": "Changes the available current for all chargers within this installation."
+      },
+      "args": [
+        {
+          "name": "current",
+          "type": "range",
+          "title": {
+            "en": "Current"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        }
+      ]
+    }
+  ]
+}

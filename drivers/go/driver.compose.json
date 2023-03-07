@@ -7,21 +7,25 @@
     "measure_current.phase1",
     "measure_current.phase2",
     "measure_current.phase3",
-    "meter_power",
+    "meter_power.this_year",
+    "meter_power.last_session",
     "measure_power",
-    "onoff",
+    "charging_button",
     "measure_voltage.phase1",
     "measure_voltage.phase2",
     "measure_voltage.phase3",
     "charge_mode",
-    "available_installation_current.phase1",
-    "available_installation_current.phase2",
-    "available_installation_current.phase3"
+    "available_installation_current"
   ],
   "capabilitiesOptions": {
-    "onoff": {
+    "meter_power.this_year": {
       "title": {
-        "en": "Charging"
+        "en": "Energy this year"
+      }
+    },
+    "meter_power.last_session": {
+      "title": {
+        "en": "Energy previous session"
       }
     },
     "measure_current.phase1": {
@@ -54,19 +58,9 @@
         "en": "Voltage L3"
       }
     },
-    "available_installation_current.phase1": {
+    "available_installation_current": {
       "title": {
-        "en": "Current limit L1"
-      }
-    },
-    "available_installation_current.phase2": {
-      "title": {
-        "en": "Current limit L2"
-      }
-    },
-    "available_installation_current.phase3": {
-      "title": {
-        "en": "Current limit L3"
+        "en": "Current limit"
       }
     }
   },

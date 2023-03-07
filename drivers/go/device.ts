@@ -1,4 +1,5 @@
 import Homey from 'homey';
+import cron from 'node-cron';
 import {
   ZaptecApi,
   ApolloDeviceObservation,
@@ -7,7 +8,8 @@ import {
 } from '../../lib/zaptec';
 
 export class GoCharger extends Homey.Device {
-  private pollInterval?: NodeJS.Timer;
+  private fastCron?: cron.ScheduledTask;
+  private slowCron?: cron.ScheduledTask;
   private api?: ZaptecApi;
 
   /**
@@ -22,10 +24,40 @@ export class GoCharger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    if (this.hasCapability('available_installation_current.phase1'))
+      await this.removeCapability('available_installation_current.phase1');
+
+    if (this.hasCapability('available_installation_current.phase2'))
+      await this.removeCapability('available_installation_current.phase2');
+
+    if (this.hasCapability('available_installation_current.phase3'))
+      await this.removeCapability('available_installation_current.phase3');
+
+    if (!this.hasCapability('available_installation_current'))
+      await this.addCapability('available_installation_current');
+
+    if (this.hasCapability('meter_power'))
+      await this.removeCapability('meter_power');
+
+    if (!this.hasCapability('meter_power.last_session'))
+      await this.addCapability('meter_power.last_session');
+
+    if (!this.hasCapability('meter_power.this_year'))
+      await this.addCapability('meter_power.this_year');
+
+    if (this.hasCapability('onoff')) await this.removeCapability('onoff');
+
+    if (!this.hasCapability('charging_button'))
+      await this.addCapability('charging_button');
+
     // TODO: Should we make this dynamic? Poll more frequently during charging?
-    this.pollInterval = setInterval(() => this.pollValues(), 30_000);
+    this.fastCron = cron.schedule('0,30 * * * *', () => this.pollValues());
+    this.slowCron = cron.schedule('0 0 7 * * *', () => this.pollSlowValues());
 
     this.registerCapabilityListeners();
+
+    // Do initial slow poll
+    this.pollSlowValues();
   }
 
   /**
@@ -50,6 +82,18 @@ export class GoCharger extends Homey.Device {
     changedKeys: string[];
   }): Promise<string | void> {
     this.log('GoCharger settings where changed: ', JSON.stringify(changes));
+
+    if (changes.changedKeys.some((k) => k === 'showVoltage')) {
+      if (changes.newSettings.showVoltage) {
+        await this.addCapability('measure_voltage.phase1');
+        await this.addCapability('measure_voltage.phase2');
+        await this.addCapability('measure_voltage.phase3');
+      } else {
+        await this.removeCapability('measure_voltage.phase1');
+        await this.removeCapability('measure_voltage.phase2');
+        await this.removeCapability('measure_voltage.phase3');
+      }
+    }
   }
 
   /**
@@ -66,17 +110,39 @@ export class GoCharger extends Homey.Device {
    */
   async onDeleted() {
     this.log('GoCharger has been deleted');
-    clearInterval(this.pollInterval);
+    if (this.fastCron) this.fastCron.stop();
+    if (this.slowCron) this.slowCron.stop();
   }
 
   /**
    * Assign reactions to capability changes triggered by others.
    */
   protected registerCapabilityListeners() {
-    this.registerCapabilityListener('onoff', async (value) => {
+    this.registerCapabilityListener('charging_button', async (value) => {
       if (value) await this.startCharging();
       else await this.stopCharging();
     });
+  }
+
+  protected pollSlowValues() {
+    if (this.api === undefined) return;
+    const year = new Date().getFullYear();
+
+    this.api
+      .getChargeHistory({
+        ChargerId: this.getData().id,
+        From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
+        DetailLevel: 0,
+        PageSize: 5000,
+      })
+      .then((charges) => {
+        const yearlyEnergy =
+          charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+        return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
+      })
+      .catch((e) => {
+        console.error(`Failed to poll slow values: ${e}`);
+      });
   }
 
   /**
@@ -91,6 +157,7 @@ export class GoCharger extends Homey.Device {
     this.api
       .getChargerState(this.getData().id)
       .then(async (states) => {
+        console.log(states);
         for (const state of states) {
           switch (state.StateId) {
             case ApolloDeviceObservation.ChargerOperationMode:
@@ -158,17 +225,24 @@ export class GoCharger extends Homey.Device {
               );
               break;
 
+            case ApolloDeviceObservation.CompletedSession:
+              if (state.ValueAsString)
+                await this.onLastSession(state.ValueAsString);
+              break;
+
+            /* Lifetime measurement
             case ApolloDeviceObservation.SignedMeterValue:
               if (state.ValueAsString?.startsWith('OCMF')) {
                 try {
                   const mv = JSON.parse(state.ValueAsString.substring(5));
                   if ('RD' in mv && 'RV' in mv.RD[0])
-                    await this.setCapabilityValue('meter_power', mv.RD[0].RV);
+                    await this.setCapabilityValue('meter_power.lifetime', mv.RD[0].RV);
                 } catch (e) {
                   this.log(`Failed to extract meter value: ${e}`);
                 }
               }
               break;
+            */
 
             case ApolloDeviceObservation.DetectedCar:
               await this.setCapabilityValue(
@@ -181,7 +255,11 @@ export class GoCharger extends Homey.Device {
                     ? 'car_connects'
                     : 'car_disconnects',
                 )
-                .trigger(this);
+                .trigger(this, {
+                  charging: this.getCapabilityValue('charge_mode') === String(ChargerOperationMode.Connected_Charging),
+                  car_connected: this.getCapabilityValue('car_connected'),
+                  current_limit: this.getCapabilityValue('available_installation_current'),
+                });
               break;
 
             case ApolloDeviceObservation.SessionIdentifier:
@@ -249,26 +327,12 @@ export class GoCharger extends Homey.Device {
       });
   }
 
-  public async prioritizeThisCharger() {
-    const sessionId = this.getStoreValue('active_session_id');
-    if (typeof sessionId !== 'string' || sessionId.length === 0)
-      throw new Error(`No active session, can't prioritize charger`);
-
-    return this.api
-      ?.updateSessionPriority(sessionId, {})
-      .then(() => true)
-      .catch((e) => {
-        this.log(`prioritizeThisCharger failure: ${e}`);
-        throw new Error(`Failed to prioritize charger: ${e}`);
-      });
-  }
-
   /**
    * Update the charge_mode capability and trigger relevant flow cards
    */
   protected async updateChargeMode(newMode: ChargerOperationMode) {
     await this.setCapabilityValue(
-      'onoff',
+      'charging_button',
       newMode === ChargerOperationMode.Connected_Charging ||
         newMode === ChargerOperationMode.Connected_Requesting ||
         newMode === ChargerOperationMode.Connected_Finishing,
@@ -278,14 +342,23 @@ export class GoCharger extends Homey.Device {
     if (previousMode === newMode) return; // No-op
     await this.setCapabilityValue('charge_mode', String(newMode));
 
+    const tokens = {
+      charging: newMode === ChargerOperationMode.Connected_Charging,
+      car_connected: this.getCapabilityValue('car_connected'),
+      current_limit: this.getCapabilityValue('available_installation_current'),
+    };
+
     // Car connects
     if (
       newMode !== ChargerOperationMode.Unknown &&
       newMode !== ChargerOperationMode.Disconnected &&
       (previousMode === ChargerOperationMode.Disconnected ||
         previousMode === ChargerOperationMode.Unknown)
-    )
-      await this.homey.flow.getDeviceTriggerCard('car_connects').trigger(this);
+    ) {
+      await this.homey.flow
+        .getDeviceTriggerCard('car_connects')
+        .trigger(this, tokens);
+    }
 
     // Car disconnects
     if (
@@ -294,7 +367,7 @@ export class GoCharger extends Homey.Device {
     ) {
       await this.homey.flow
         .getDeviceTriggerCard('car_disconnects')
-        .trigger(this);
+        .trigger(this, tokens);
     }
 
     // Charging starts
@@ -304,7 +377,7 @@ export class GoCharger extends Homey.Device {
     ) {
       await this.homey.flow
         .getDeviceTriggerCard('charging_starts')
-        .trigger(this);
+        .trigger(this, tokens);
     }
 
     // Charging stops
@@ -314,44 +387,42 @@ export class GoCharger extends Homey.Device {
     ) {
       await this.homey.flow
         .getDeviceTriggerCard('charging_stops')
-        .trigger(this);
+        .trigger(this, tokens);
     }
   }
 
   protected async updateAvailableCurrent() {
     if (this.api === undefined) return;
     const info = await this.api.getInstallation(this.getData().installationId);
-    // Available Phase1
-    if (
-      info.AvailableCurrentPhase1 !== null &&
-      info.AvailableCurrentPhase1 !== undefined
-    ) {
-      await this.setCapabilityValue(
-        'available_installation_current.phase1',
-        info.AvailableCurrentPhase1,
-      );
-    }
+    const availableCurrent = Math.min(
+      info.AvailableCurrentPhase1 || 40,
+      info.AvailableCurrentPhase2 || 40,
+      info.AvailableCurrentPhase3 || 40,
+      info.MaxCurrent || 40,
+    );
 
-    // Available Phase2
-    if (
-      info.AvailableCurrentPhase2 !== null &&
-      info.AvailableCurrentPhase2 !== undefined
-    ) {
-      await this.setCapabilityValue(
-        'available_installation_current.phase2',
-        info.AvailableCurrentPhase2,
-      );
-    }
+    await this.setCapabilityValue(
+      'available_installation_current',
+      availableCurrent,
+    );
+  }
 
-    // Available Phase3
-    if (
-      info.AvailableCurrentPhase3 !== null &&
-      info.AvailableCurrentPhase3 !== undefined
-    ) {
-      await this.setCapabilityValue(
-        'available_installation_current.phase3',
-        info.AvailableCurrentPhase3,
-      );
+  protected async onLastSession(data: string) {
+    try {
+      const session: {
+        SessionId: string;
+        Energy: string;
+        StartDateTime: string;
+        EndDateTime: string;
+        ReliableClock: boolean;
+        StoppedByRFID: boolean;
+        AuthenticationCode: string;
+        SignedSession: string;
+      } = JSON.parse(data);
+
+      await this.setCapabilityValue('meter_power.last_session', session.Energy);
+    } catch (e) {
+      console.log(e);
     }
   }
 }
