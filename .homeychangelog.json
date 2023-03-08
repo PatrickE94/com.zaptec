@@ -10,5 +10,8 @@
   },
   "1.1.0": {
     "en": "Optionally hide voltage. Avoid quick toggling charging sessions. Replace energy meter with last charging session. Add energy meter for energy consumption this year. Add condition cards. Add tokens to flow cards."
+  },
+  "1.1.1": {
+    "en": "Restored start and stop charging cards."
   }
 }
