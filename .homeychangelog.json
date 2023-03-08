@@ -13,5 +13,8 @@
   },
   "1.1.1": {
     "en": "Restored start and stop charging cards."
+  },
+  "1.1.2": {
+    "en": "Fixed polling bugs and added a debug log to the settings view!"
   }
 }
