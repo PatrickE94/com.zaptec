@@ -409,6 +409,22 @@
               "value": false
             }
           ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Troubleshooting"
+          },
+          "children": [
+            {
+              "id": "log",
+              "type": "textarea",
+              "label": {
+                "en": "Log"
+              },
+              "value": "Empty"
+            }
+          ]
         }
       ]
     }

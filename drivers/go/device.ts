@@ -6,10 +6,11 @@ import {
   Command,
   ChargerOperationMode,
 } from '../../lib/zaptec';
+import { ChargerStateModel } from '../../lib/zaptec/models';
 
 export class GoCharger extends Homey.Device {
-  private fastCron?: cron.ScheduledTask;
-  private slowCron?: cron.ScheduledTask;
+  private debugLog: string[] = [];
+  private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
 
   /**
@@ -51,8 +52,9 @@ export class GoCharger extends Homey.Device {
       await this.addCapability('charging_button');
 
     // TODO: Should we make this dynamic? Poll more frequently during charging?
-    this.fastCron = cron.schedule('0,30 * * * *', () => this.pollValues());
-    this.slowCron = cron.schedule('0 0 7 * * *', () => this.pollSlowValues());
+    this.cronTasks.push(cron.schedule('0,30 * * * * *', () => this.pollValues()));
+    this.cronTasks.push(cron.schedule('59 * * * * *', () => this.updateDebugLog()));
+    this.cronTasks.push(cron.schedule('0 0 7 * * * *', () => this.pollSlowValues()));
 
     this.registerCapabilityListeners();
 
@@ -110,8 +112,7 @@ export class GoCharger extends Homey.Device {
    */
   async onDeleted() {
     this.log('GoCharger has been deleted');
-    if (this.fastCron) this.fastCron.stop();
-    if (this.slowCron) this.slowCron.stop();
+    for (const task of this.cronTasks) task.stop();
   }
 
   /**
@@ -141,8 +142,117 @@ export class GoCharger extends Homey.Device {
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
       })
       .catch((e) => {
-        console.error(`Failed to poll slow values: ${e}`);
+        this.logToDebug(`Failed to poll charge history: ${e}`);
       });
+  }
+
+  protected async handleState(state: ChargerStateModel) {
+    switch (state.StateId) {
+      case ApolloDeviceObservation.ChargerOperationMode:
+        if (state.ValueAsString !== undefined && state.ValueAsString !== null) {
+          await this.updateChargeMode(
+            Number(state.ValueAsString) as ChargerOperationMode,
+          );
+        }
+        break;
+
+      case ApolloDeviceObservation.IsOnline:
+        if (state.ValueAsString === '1') await this.setAvailable();
+        else await this.setUnavailable('Charger is offline');
+        break;
+
+      case ApolloDeviceObservation.CurrentPhase1:
+        await this.setCapabilityValue(
+          'measure_current.phase1',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.CurrentPhase2:
+        await this.setCapabilityValue(
+          'measure_current.phase2',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.CurrentPhase3:
+        await this.setCapabilityValue(
+          'measure_current.phase3',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.VoltagePhase1:
+        await this.setCapabilityValue(
+          'measure_voltage.phase1',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.VoltagePhase2:
+        await this.setCapabilityValue(
+          'measure_voltage.phase2',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.VoltagePhase3:
+        await this.setCapabilityValue(
+          'measure_voltage.phase3',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.TotalChargePower:
+        await this.setCapabilityValue(
+          'measure_power',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.CompletedSession:
+        if (state.ValueAsString) await this.onLastSession(state.ValueAsString);
+        break;
+
+      /* Lifetime measurement
+      case ApolloDeviceObservation.SignedMeterValue:
+        if (state.ValueAsString?.startsWith('OCMF')) {
+          try {
+            const mv = JSON.parse(state.ValueAsString.substring(5));
+            if ('RD' in mv && 'RV' in mv.RD[0])
+              await this.setCapabilityValue('meter_power.lifetime', mv.RD[0].RV);
+          } catch (e) {
+            this.logToDebug(`Failed to extract meter value: ${e}`);
+          }
+        }
+        break;
+      */
+
+      case ApolloDeviceObservation.DetectedCar:
+        await this.setCapabilityValue(
+          'car_connected',
+          state.ValueAsString === '1',
+        );
+        await this.homey.flow
+          .getDeviceTriggerCard(
+            state.ValueAsString === '1' ? 'car_connects' : 'car_disconnects',
+          )
+          .trigger(this, {
+            charging:
+              this.getCapabilityValue('charge_mode') ===
+              String(ChargerOperationMode.Connected_Charging),
+            car_connected: this.getCapabilityValue('car_connected'),
+            current_limit: this.getCapabilityValue('available_installation_current'),
+          });
+        break;
+
+      case ApolloDeviceObservation.SessionIdentifier:
+        await this.setStoreValue('active_session_id', state.ValueAsString);
+        break;
+
+      default:
+        break;
+    }
   }
 
   /**
@@ -157,129 +267,20 @@ export class GoCharger extends Homey.Device {
     this.api
       .getChargerState(this.getData().id)
       .then(async (states) => {
-        console.log(states);
         for (const state of states) {
-          switch (state.StateId) {
-            case ApolloDeviceObservation.ChargerOperationMode:
-              if (
-                state.ValueAsString !== undefined &&
-                state.ValueAsString !== null
-              ) {
-                await this.updateChargeMode(
-                  Number(state.ValueAsString) as ChargerOperationMode,
-                );
-              }
-              break;
-
-            case ApolloDeviceObservation.IsOnline:
-              if (state.ValueAsString === '1') await this.setAvailable();
-              else await this.setUnavailable('Charger is offline');
-              break;
-
-            case ApolloDeviceObservation.CurrentPhase1:
-              await this.setCapabilityValue(
-                'measure_current.phase1',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.CurrentPhase2:
-              await this.setCapabilityValue(
-                'measure_current.phase2',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.CurrentPhase3:
-              await this.setCapabilityValue(
-                'measure_current.phase3',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.VoltagePhase1:
-              await this.setCapabilityValue(
-                'measure_voltage.phase1',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.VoltagePhase2:
-              await this.setCapabilityValue(
-                'measure_voltage.phase2',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.VoltagePhase3:
-              await this.setCapabilityValue(
-                'measure_voltage.phase3',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.TotalChargePower:
-              await this.setCapabilityValue(
-                'measure_power',
-                Number(state.ValueAsString),
-              );
-              break;
-
-            case ApolloDeviceObservation.CompletedSession:
-              if (state.ValueAsString)
-                await this.onLastSession(state.ValueAsString);
-              break;
-
-            /* Lifetime measurement
-            case ApolloDeviceObservation.SignedMeterValue:
-              if (state.ValueAsString?.startsWith('OCMF')) {
-                try {
-                  const mv = JSON.parse(state.ValueAsString.substring(5));
-                  if ('RD' in mv && 'RV' in mv.RD[0])
-                    await this.setCapabilityValue('meter_power.lifetime', mv.RD[0].RV);
-                } catch (e) {
-                  this.log(`Failed to extract meter value: ${e}`);
-                }
-              }
-              break;
-            */
-
-            case ApolloDeviceObservation.DetectedCar:
-              await this.setCapabilityValue(
-                'car_connected',
-                state.ValueAsString === '1',
-              );
-              await this.homey.flow
-                .getDeviceTriggerCard(
-                  state.ValueAsString === '1'
-                    ? 'car_connects'
-                    : 'car_disconnects',
-                )
-                .trigger(this, {
-                  charging: this.getCapabilityValue('charge_mode') === String(ChargerOperationMode.Connected_Charging),
-                  car_connected: this.getCapabilityValue('car_connected'),
-                  current_limit: this.getCapabilityValue('available_installation_current'),
-                });
-              break;
-
-            case ApolloDeviceObservation.SessionIdentifier:
-              await this.setStoreValue(
-                'active_session_id',
-                state.ValueAsString,
-              );
-              break;
-
-            default:
-              break;
+          try {
+            await this.handleState(state);
+          } catch (e) {
+            this.logToDebug(`Failed to handle charger state: ${e}`);
           }
         }
       })
       .catch((e) => {
-        this.log(`Failed to poll ${e}`);
+        this.logToDebug(`Failed to poll charger state: ${e}`);
       });
 
     this.updateAvailableCurrent().catch((e) => {
-      this.log(`Failed to poll ${e}`);
+      this.logToDebug(`Failed to poll available current: ${e}`);
     });
   }
 
@@ -300,7 +301,7 @@ export class GoCharger extends Homey.Device {
         return true;
       })
       .catch((e) => {
-        this.log(`adjustCurrent failure: ${e}`);
+        this.logToDebug(`adjustCurrent failure: ${e}`);
         throw new Error(`Failed to adjust current: ${e}`);
       });
   }
@@ -311,7 +312,7 @@ export class GoCharger extends Homey.Device {
       ?.sendCommand(this.getData().id, Command.ResumeCharging)
       .then(() => true)
       .catch((e) => {
-        this.log(`startCharging failure: ${e}`);
+        this.logToDebug(`startCharging failure: ${e}`);
         throw new Error(`Failed to turn on the charger: ${e}`);
       });
   }
@@ -322,7 +323,7 @@ export class GoCharger extends Homey.Device {
       ?.sendCommand(this.getData().id, Command.StopChargingFinal)
       .then(() => true)
       .catch((e) => {
-        this.log(`stopCharging failure: ${e}`);
+        this.logToDebug(`stopCharging failure: ${e}`);
         throw new Error(`Failed to turn off the charger: ${e}`);
       });
   }
@@ -422,8 +423,20 @@ export class GoCharger extends Homey.Device {
 
       await this.setCapabilityValue('meter_power.last_session', session.Energy);
     } catch (e) {
-      console.log(e);
+      this.logToDebug(`onLastSession fail: ${e}`);
     }
+  }
+
+  protected logToDebug(line: string) {
+    this.debugLog.push(`[${new Date().toJSON()}] ${line}`);
+    if (this.debugLog.length > 50) this.debugLog.shift();
+    this.log(line);
+  }
+
+  protected updateDebugLog() {
+    this.setSettings({ log: this.debugLog.join('\n') }).catch((e) =>
+      this.error('Failed to update debug log', e),
+    );
   }
 }
 
