@@ -4,18 +4,18 @@
   },
   "class": "other",
   "capabilities": [
-    "measure_current.phase1",
-    "measure_current.phase2",
-    "measure_current.phase3",
     "meter_power.this_year",
     "meter_power.last_session",
     "measure_power",
     "charging_button",
+    "charge_mode",
+    "available_installation_current",
+    "measure_current.phase1",
+    "measure_current.phase2",
+    "measure_current.phase3",
     "measure_voltage.phase1",
     "measure_voltage.phase2",
-    "measure_voltage.phase3",
-    "charge_mode",
-    "available_installation_current"
+    "measure_voltage.phase3"
   ],
   "capabilitiesOptions": {
     "meter_power.this_year": {
