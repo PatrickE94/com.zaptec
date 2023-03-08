@@ -183,24 +183,30 @@ export class GoCharger extends Homey.Device {
         break;
 
       case ApolloDeviceObservation.VoltagePhase1:
-        await this.setCapabilityValue(
-          'measure_voltage.phase1',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_voltage.phase1')) {
+          await this.setCapabilityValue(
+            'measure_voltage.phase1',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.VoltagePhase2:
-        await this.setCapabilityValue(
-          'measure_voltage.phase2',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_voltage.phase2')) {
+          await this.setCapabilityValue(
+            'measure_voltage.phase2',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.VoltagePhase3:
-        await this.setCapabilityValue(
-          'measure_voltage.phase3',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_voltage.phase3')) {
+          await this.setCapabilityValue(
+            'measure_voltage.phase3',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.TotalChargePower:
