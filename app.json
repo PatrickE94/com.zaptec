@@ -265,6 +265,32 @@
             "labelDecimals": 0
           }
         ]
+      },
+      {
+        "id": "start_charging",
+        "title": {
+          "en": "Start charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "stop_charging",
+        "title": {
+          "en": "Stop charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
       }
     ]
   },

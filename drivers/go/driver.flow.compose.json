@@ -175,6 +175,18 @@
           "labelDecimals": 0
         }
       ]
+    },
+    {
+      "id": "start_charging",
+      "title": {
+        "en": "Start charging"
+      }
+    },
+    {
+      "id": "stop_charging",
+      "title": {
+        "en": "Stop charging"
+      }
     }
   ]
 }

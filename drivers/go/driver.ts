@@ -57,6 +57,14 @@ class GoDriver extends Homey.Driver {
           device.getCapabilityValue('charge_mode') ===
           String(ChargerOperationMode.Connected_Finishing),
       );
+
+    this.homey.flow
+      .getActionCard('start_charging')
+      .registerRunListener(async ({ device }) => device.startCharging());
+
+    this.homey.flow
+      .getActionCard('stop_charging')
+      .registerRunListener(async ({ device }) => device.stopCharging());
   }
 
   async onPair(session: Homey.Driver.PairSession) {
