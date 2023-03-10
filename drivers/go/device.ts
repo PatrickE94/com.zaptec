@@ -5,6 +5,8 @@ import {
   ApolloDeviceObservation,
   Command,
   ChargerOperationMode,
+  chargerOperationModeStr,
+  chargerOperationModeFromStr,
 } from '../../lib/zaptec';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 
@@ -246,7 +248,7 @@ export class GoCharger extends Homey.Device {
           .trigger(this, {
             charging:
               this.getCapabilityValue('charge_mode') ===
-              String(ChargerOperationMode.Connected_Charging),
+              chargerOperationModeStr(ChargerOperationMode.Connected_Charging),
             car_connected: this.getCapabilityValue('car_connected'),
             current_limit: this.getCapabilityValue('available_installation_current'),
           });
@@ -345,9 +347,14 @@ export class GoCharger extends Homey.Device {
         newMode === ChargerOperationMode.Connected_Finishing,
     );
 
-    const previousMode = Number(this.getCapabilityValue('charge_mode'));
+    const previousMode = chargerOperationModeFromStr(
+      this.getCapabilityValue('charge_mode'),
+    );
     if (previousMode === newMode) return; // No-op
-    await this.setCapabilityValue('charge_mode', String(newMode));
+    await this.setCapabilityValue(
+      'charge_mode',
+      chargerOperationModeStr(newMode),
+    );
 
     const tokens = {
       charging: newMode === ChargerOperationMode.Connected_Charging,

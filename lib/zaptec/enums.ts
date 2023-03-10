@@ -11,6 +11,38 @@ export enum ChargerOperationMode {
   Connected_Finishing = 5,
 }
 
+export function chargerOperationModeStr(mode: ChargerOperationMode) {
+  switch (mode) {
+    case ChargerOperationMode.Disconnected:
+      return 'Disconnected';
+    case ChargerOperationMode.Connected_Requesting:
+      return 'Connecting to car';
+    case ChargerOperationMode.Connected_Charging:
+      return 'Charging';
+    case ChargerOperationMode.Connected_Finishing:
+      return 'Charging finished';
+    case ChargerOperationMode.Unknown:
+    default:
+      return 'Unknown';
+  }
+}
+
+export function chargerOperationModeFromStr(str: string) {
+  switch (str) {
+    case 'Disconnected':
+      return ChargerOperationMode.Disconnected;
+    case 'Connecting to car':
+      return ChargerOperationMode.Connected_Requesting;
+    case 'Charging':
+      return ChargerOperationMode.Connected_Charging;
+    case 'Charging finished':
+      return ChargerOperationMode.Connected_Finishing;
+    case 'Unknown':
+    default:
+      return ChargerOperationMode.Unknown;
+  }
+}
+
 export enum InstallationType {
   Pro = 0,
   Smart = 1,
