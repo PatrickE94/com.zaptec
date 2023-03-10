@@ -53,6 +53,9 @@ export class GoCharger extends Homey.Device {
     if (!this.hasCapability('charging_button'))
       await this.addCapability('charging_button');
 
+    if (!this.hasCapability('meter_power.current_session'))
+      await this.addCapability('meter_power.current_session');
+
     // TODO: Should we make this dynamic? Poll more frequently during charging?
     this.cronTasks.push(cron.schedule('0,30 * * * * *', () => this.pollValues()));
     this.cronTasks.push(cron.schedule('59 * * * * *', () => this.updateDebugLog()));
@@ -214,6 +217,13 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.TotalChargePower:
         await this.setCapabilityValue(
           'measure_power',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.TotalChargePowerSession:
+        await this.setCapabilityValue(
+          'meter_power.current_session',
           Number(state.ValueAsString),
         );
         break;

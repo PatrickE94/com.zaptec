@@ -4,6 +4,7 @@
   },
   "class": "other",
   "capabilities": [
+    "meter_power.current_session",
     "meter_power.this_year",
     "meter_power.last_session",
     "measure_power",
@@ -18,6 +19,11 @@
     "measure_voltage.phase3"
   ],
   "capabilitiesOptions": {
+    "meter_power.current_session": {
+      "title": {
+        "en": "Energy current session"
+      }
+    },
     "meter_power.this_year": {
       "title": {
         "en": "Energy this year"
