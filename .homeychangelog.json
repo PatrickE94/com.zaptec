@@ -19,5 +19,8 @@
   },
   "1.1.3": {
     "en": "Added kwh for current session. Translated charge mode token to a string. Fixed charge mode never getting to finished."
+  },
+  "1.1.4": {
+    "en": "Fixed bad enum value for charge mode capability."
   }
 }
