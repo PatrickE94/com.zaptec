@@ -8,31 +8,31 @@
   "uiComponent": "picker",
   "values": [
     {
-      "id": "0",
+      "id": "Unknown",
       "title": {
         "en": "Unknown"
       }
     },
     {
-      "id": "1",
+      "id": "Disconnected",
       "title": {
         "en": "Disconnected"
       }
     },
     {
-      "id": "2",
+      "id": "Connecting to car",
       "title": {
         "en": "Connecting to car"
       }
     },
     {
-      "id": "3",
+      "id": "Charging",
       "title": {
         "en": "Charging"
       }
     },
     {
-      "id": "5",
+      "id": "Charging finished",
       "title": {
         "en": "Charging finished"
       }
