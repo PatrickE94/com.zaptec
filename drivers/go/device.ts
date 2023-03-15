@@ -14,6 +14,7 @@ export class GoCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
+  private tokenRenewalTimeout: NodeJS.Timeout | undefined;
 
   /**
    * onInit is called when the device is initialized.
@@ -21,6 +22,7 @@ export class GoCharger extends Homey.Device {
   async onInit() {
     this.log('GoCharger has been initialized');
     this.api = new ZaptecApi();
+    this.renewToken();
 
     await this.api.authenticate(
       this.getSetting('username'),
@@ -120,6 +122,37 @@ export class GoCharger extends Homey.Device {
     for (const task of this.cronTasks) task.stop();
   }
 
+  protected renewToken() {
+    if (this.api === undefined) {
+      if (this.tokenRenewalTimeout === undefined) {
+        // retry in 30 seconds
+        this.tokenRenewalTimeout = setTimeout(this.renewToken.bind(this), 30);
+      }
+
+      this.logToDebug(`API class not created`);
+      return;
+    }
+
+    clearTimeout(this.tokenRenewalTimeout);
+    this.tokenRenewalTimeout = undefined;
+
+    this.api
+      ?.authenticate(this.getSetting('username'), this.getSetting('password'))
+      .then((expires) => {
+        // Renew 30 seconds before expiry
+        this.tokenRenewalTimeout = setTimeout(
+          this.renewToken.bind(this),
+          (expires - 30) * 1000,
+        );
+        this.logToDebug(`Renewed token successfully`);
+      })
+      .catch((e) => {
+        this.logToDebug(`Failed to renew authentication token: ${e}`);
+        // retry in 30 seconds
+        this.tokenRenewalTimeout = setTimeout(this.renewToken.bind(this), 30_000);
+      });
+  }
+
   /**
    * Assign reactions to capability changes triggered by others.
    */
@@ -145,6 +178,9 @@ export class GoCharger extends Homey.Device {
         const yearlyEnergy =
           charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
+      })
+      .then(() => {
+        this.logToDebug(`Got yearly power history`);
       })
       .catch((e) => {
         this.logToDebug(`Failed to poll charge history: ${e}`);
@@ -292,6 +328,7 @@ export class GoCharger extends Homey.Device {
             this.logToDebug(`Failed to handle charger state: ${e}`);
           }
         }
+        this.logToDebug(`Updated charger state`);
       })
       .catch((e) => {
         this.logToDebug(`Failed to poll charger state: ${e}`);
@@ -316,6 +353,7 @@ export class GoCharger extends Homey.Device {
       .then(async () => {
         // Update capability values to see what was set
         await this.updateAvailableCurrent();
+        this.logToDebug(`Updated available current`);
         return true;
       })
       .catch((e) => {
@@ -417,7 +455,14 @@ export class GoCharger extends Homey.Device {
 
   protected async updateAvailableCurrent() {
     if (this.api === undefined) return;
-    const info = await this.api.getInstallation(this.getData().installationId);
+    const info = await this.api
+      .getInstallation(this.getData().installationId)
+      .catch((e) => {
+        this.logToDebug(
+          `Failed to get installation info when updating available current: ${e}`,
+        );
+        throw e;
+      });
     const availableCurrent = Math.min(
       info.AvailableCurrentPhase1 || 40,
       info.AvailableCurrentPhase2 || 40,

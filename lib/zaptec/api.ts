@@ -77,11 +77,6 @@ async function request(
  */
 export class ZaptecApi {
   protected bearerToken?: string;
-  protected tokenRenewalTimeout: NodeJS.Timer | undefined;
-
-  public close() {
-    clearTimeout(this.tokenRenewalTimeout);
-  }
 
   protected async get<T>(
     path: string,
@@ -166,7 +161,10 @@ export class ZaptecApi {
     };
   }
 
-  public async authenticate(username: string, password: string): Promise<void> {
+  public async authenticate(
+    username: string,
+    password: string,
+  ): Promise<number> {
     const { data, response } = await this.post<TokenResponse>(
       '/oauth/token',
       querystring.stringify({
@@ -184,11 +182,10 @@ export class ZaptecApi {
       }
 
       this.bearerToken = data.access_token;
-      this.tokenRenewalTimeout = setTimeout(
-        () => this.authenticate(username, password),
-        data.expires_in - 30, // 30 seconds before expiry
-      );
-    } else if (response.statusCode === 400) {
+      return data.expires_in;
+    }
+
+    if (response.statusCode === 400) {
       throw new Error(`Username or password is invalid`);
     } else {
       throw new Error(

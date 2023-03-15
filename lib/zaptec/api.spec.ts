@@ -19,6 +19,5 @@ describe('Zaptec API Client', () => {
 
     await api.authenticate('test', '123');
     await api.getChargers({});
-    api.close();
   });
 });
