@@ -22,5 +22,8 @@
   },
   "1.1.4": {
     "en": "Fixed bad enum value for charge mode capability."
+  },
+  "1.1.5": {
+    "en": "Improved token renewal and fault handling."
   }
 }
