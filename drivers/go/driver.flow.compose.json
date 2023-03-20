@@ -156,17 +156,41 @@
         "en": "Set available current to"
       },
       "titleFormatted": {
-        "en": "Set available current to [[current]]"
+        "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
       },
       "hint": {
         "en": "Changes the available current for all chargers within this installation."
       },
       "args": [
         {
-          "name": "current",
+          "name": "current1",
           "type": "range",
           "title": {
-            "en": "Current"
+            "en": "Current P1"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current2",
+          "type": "range",
+          "title": {
+            "en": "Current P2"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current3",
+          "type": "range",
+          "title": {
+            "en": "Current P3"
           },
           "min": 0,
           "max": 40,

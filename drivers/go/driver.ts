@@ -3,7 +3,9 @@ import { ChargerOperationMode, ZaptecApi } from '../../lib/zaptec';
 import type { GoCharger } from './device';
 
 interface InstallationCurrentControlArgs {
-  current: number;
+  current1: number;
+  current2: number;
+  current3: number;
   device: GoCharger;
 }
 
@@ -22,16 +24,23 @@ class GoDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('installation_current_control')
       .registerRunListener(
-        async ({ current, device }: InstallationCurrentControlArgs) => {
+        async ({
+          current1,
+          current2,
+          current3,
+          device,
+        }: InstallationCurrentControlArgs) => {
           this.log(
             `[${device.getName()}] Action 'installation_current_control' triggered`,
           );
-          this.log(`[${device.getName()}] - current: '${current}' amps`);
+          this.log(
+            `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
+          );
 
           return device.setInstallationAvailableCurrent(
-            current,
-            current,
-            current,
+            current1,
+            current2,
+            current3,
           );
         },
       );
