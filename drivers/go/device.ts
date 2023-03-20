@@ -404,39 +404,16 @@ export class GoCharger extends Homey.Device {
       chargerOperationModeStr(newMode),
     );
 
+    this.logToDebug(`Charge mode update: ${previousMode} to ${newMode}`);
+
     const tokens = {
       charging: newMode === ChargerOperationMode.Connected_Charging,
       car_connected: this.getCapabilityValue('car_connected'),
       current_limit: this.getCapabilityValue('available_installation_current'),
     };
 
-    // Car connects
-    if (
-      newMode !== ChargerOperationMode.Unknown &&
-      newMode !== ChargerOperationMode.Disconnected &&
-      (previousMode === ChargerOperationMode.Disconnected ||
-        previousMode === ChargerOperationMode.Unknown)
-    ) {
-      await this.homey.flow
-        .getDeviceTriggerCard('car_connects')
-        .trigger(this, tokens);
-    }
-
-    // Car disconnects
-    if (
-      newMode === ChargerOperationMode.Disconnected &&
-      previousMode !== ChargerOperationMode.Disconnected
-    ) {
-      await this.homey.flow
-        .getDeviceTriggerCard('car_disconnects')
-        .trigger(this, tokens);
-    }
-
     // Charging starts
-    if (
-      newMode === ChargerOperationMode.Connected_Charging &&
-      previousMode !== ChargerOperationMode.Connected_Charging
-    ) {
+    if (newMode === ChargerOperationMode.Connected_Charging) {
       await this.homey.flow
         .getDeviceTriggerCard('charging_starts')
         .trigger(this, tokens);
