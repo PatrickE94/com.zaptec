@@ -325,7 +325,7 @@ export class GoCharger extends Homey.Device {
           try {
             await this.handleState(state);
           } catch (e) {
-            this.logToDebug(`Failed to handle charger state: ${e}`);
+            this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`);
           }
         }
         this.logToDebug(`Updated charger state`);
