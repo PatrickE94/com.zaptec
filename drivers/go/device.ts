@@ -301,7 +301,9 @@ export class GoCharger extends Homey.Device {
         break;
 
       case ApolloDeviceObservation.SessionIdentifier:
-        await this.setStoreValue('active_session_id', state.ValueAsString);
+        // TODO: This seems to throw unexpected JSON errors.
+        // Both string and undefined should be JSON serializable?
+        // await this.setStoreValue('active_session_id', state.ValueAsString);
         break;
 
       default:
