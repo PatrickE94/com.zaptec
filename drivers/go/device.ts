@@ -408,9 +408,14 @@ export class GoCharger extends Homey.Device {
 
     const tokens = {
       charging: newMode === ChargerOperationMode.Connected_Charging,
-      car_connected: this.getCapabilityValue('car_connected'),
+      car_connected: !!this.getCapabilityValue('car_connected'),
       current_limit: this.getCapabilityValue('available_installation_current'),
     };
+
+    // Debug why it doesn't return a boolean
+    this.logToDebug(
+      `Car connected: ${this.getCapabilityValue('car_connected')}`,
+    );
 
     // Charging starts
     if (newMode === ChargerOperationMode.Connected_Charging) {
