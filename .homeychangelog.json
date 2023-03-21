@@ -31,5 +31,8 @@
   },
   "1.2.1": {
     "en": "Added fix for car_connected token and debug line to improve it."
+  },
+  "1.2.2": {
+    "en": "Improved debug logging for failed state handling."
   }
 }
