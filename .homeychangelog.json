@@ -34,5 +34,8 @@
   },
   "1.2.2": {
     "en": "Improved debug logging for failed state handling."
+  },
+  "1.3.0": {
+    "en": "Car (dis)connected triggers now rely on ChargingOperationMode to trigger."
   }
 }
