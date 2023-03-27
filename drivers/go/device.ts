@@ -282,7 +282,9 @@ export class GoCharger extends Homey.Device {
         break;
       */
 
+      /*
       case ApolloDeviceObservation.DetectedCar:
+        console.log('DETECTED CAR',  state.ValueAsString);
         await this.setCapabilityValue(
           'car_connected',
           state.ValueAsString === '1',
@@ -299,6 +301,7 @@ export class GoCharger extends Homey.Device {
             current_limit: this.getCapabilityValue('available_installation_current'),
           });
         break;
+      */
 
       case ApolloDeviceObservation.SessionIdentifier:
         // TODO: This seems to throw unexpected JSON errors.
@@ -401,23 +404,27 @@ export class GoCharger extends Homey.Device {
       this.getCapabilityValue('charge_mode'),
     );
     if (previousMode === newMode) return; // No-op
+
+    const previouslyDisconnected =
+      previousMode === ChargerOperationMode.Unknown ||
+      previousMode === ChargerOperationMode.Disconnected;
+    const newModeConnected =
+      newMode !== ChargerOperationMode.Unknown &&
+      newMode !== ChargerOperationMode.Disconnected;
+
     await this.setCapabilityValue(
       'charge_mode',
       chargerOperationModeStr(newMode),
     );
+    await this.setCapabilityValue('car_connected', newModeConnected);
 
     this.logToDebug(`Charge mode update: ${previousMode} to ${newMode}`);
 
     const tokens = {
       charging: newMode === ChargerOperationMode.Connected_Charging,
-      car_connected: !!this.getCapabilityValue('car_connected'),
+      car_connected: newModeConnected,
       current_limit: this.getCapabilityValue('available_installation_current'),
     };
-
-    // Debug why it doesn't return a boolean
-    this.logToDebug(
-      `Car connected: ${this.getCapabilityValue('car_connected')}`,
-    );
 
     // Charging starts
     if (newMode === ChargerOperationMode.Connected_Charging) {
@@ -433,6 +440,20 @@ export class GoCharger extends Homey.Device {
     ) {
       await this.homey.flow
         .getDeviceTriggerCard('charging_stops')
+        .trigger(this, tokens);
+    }
+
+    // Car connected
+    if (newModeConnected && previouslyDisconnected) {
+      await this.homey.flow
+        .getDeviceTriggerCard('car_connects')
+        .trigger(this, tokens);
+    }
+
+    // Car disconnected
+    if (!newModeConnected && !previouslyDisconnected) {
+      await this.homey.flow
+        .getDeviceTriggerCard('car_disconnects')
         .trigger(this, tokens);
     }
   }
