@@ -58,6 +58,9 @@ export class GoCharger extends Homey.Device {
     if (!this.hasCapability('meter_power.current_session'))
       await this.addCapability('meter_power.current_session');
 
+    if (!this.hasCapability('alarm_generic.car_connected'))
+      await this.addCapability('alarm_generic.car_connected');
+
     // TODO: Should we make this dynamic? Poll more frequently during charging?
     this.cronTasks.push(cron.schedule('0,30 * * * * *', () => this.pollValues()));
     this.cronTasks.push(cron.schedule('59 * * * * *', () => this.updateDebugLog()));
@@ -286,7 +289,7 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.DetectedCar:
         console.log('DETECTED CAR',  state.ValueAsString);
         await this.setCapabilityValue(
-          'car_connected',
+          'alarm_generic.car_connected',
           state.ValueAsString === '1',
         );
         await this.homey.flow
@@ -297,7 +300,7 @@ export class GoCharger extends Homey.Device {
             charging:
               this.getCapabilityValue('charge_mode') ===
               chargerOperationModeStr(ChargerOperationMode.Connected_Charging),
-            car_connected: this.getCapabilityValue('car_connected'),
+            car_connected: this.getCapabilityValue('alarm_generic.car_connected'),
             current_limit: this.getCapabilityValue('available_installation_current'),
           });
         break;
@@ -416,7 +419,10 @@ export class GoCharger extends Homey.Device {
       'charge_mode',
       chargerOperationModeStr(newMode),
     );
-    await this.setCapabilityValue('car_connected', newModeConnected);
+    await this.setCapabilityValue(
+      'alarm_generic.car_connected',
+      newModeConnected,
+    );
 
     this.logToDebug(`Charge mode update: ${previousMode} to ${newMode}`);
 

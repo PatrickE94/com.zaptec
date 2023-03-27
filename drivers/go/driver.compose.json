@@ -10,6 +10,7 @@
     "measure_power",
     "charging_button",
     "charge_mode",
+    "alarm_generic.car_connected",
     "available_installation_current",
     "measure_current.phase1",
     "measure_current.phase2",
@@ -67,6 +68,11 @@
     "available_installation_current": {
       "title": {
         "en": "Current limit"
+      }
+    },
+    "alarm_generic.car_connected": {
+      "title": {
+        "en": "Car connected"
       }
     }
   },
