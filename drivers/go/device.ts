@@ -398,9 +398,7 @@ export class GoCharger extends Homey.Device {
   protected async updateChargeMode(newMode: ChargerOperationMode) {
     await this.setCapabilityValue(
       'charging_button',
-      newMode === ChargerOperationMode.Connected_Charging ||
-        newMode === ChargerOperationMode.Connected_Requesting ||
-        newMode === ChargerOperationMode.Connected_Finishing,
+      newMode === ChargerOperationMode.Connected_Charging,
     );
 
     const previousMode = chargerOperationModeFromStr(
