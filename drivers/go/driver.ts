@@ -47,10 +47,8 @@ class GoDriver extends Homey.Driver {
 
     this.homey.flow
       .getConditionCard('is_charging')
-      .registerRunListener(
-        async ({ device }) =>
-          device.getCapabilityValue('charge_mode') ===
-          String(ChargerOperationMode.Connected_Charging),
+      .registerRunListener(async ({ device }) =>
+        device.getCapabilityValue('charging_button'),
       );
 
     this.homey.flow
