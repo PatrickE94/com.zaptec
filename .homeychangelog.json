@@ -40,5 +40,8 @@
   },
   "1.3.1": {
     "en": "Fix missing car connected capability causing charge mode updates to fail."
+  },
+  "1.3.2": {
+    "en": "Charging  button is now only charging when the car is actively charging."
   }
 }
