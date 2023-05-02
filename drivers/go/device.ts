@@ -352,10 +352,10 @@ export class GoCharger extends Homey.Device {
 
     // TODO: Should we bring back phase individual installation current?
     const availableCurrent = Math.min(
-      info.AvailableCurrentPhase1 || 40,
-      info.AvailableCurrentPhase2 || 40,
-      info.AvailableCurrentPhase3 || 40,
-      info.MaxCurrent || 40,
+      info.AvailableCurrentPhase1 ?? 40,
+      info.AvailableCurrentPhase2 ?? 40,
+      info.AvailableCurrentPhase3 ?? 40,
+      info.MaxCurrent ?? 40,
     );
 
     // TODO: Is this interesting as a capability or should we expose it as a
