@@ -1,5 +1,5 @@
 import Homey from 'homey';
-import { ChargerOperationMode, ZaptecApi } from '../../lib/zaptec';
+import { ChargerOperationMode, chargerOperationModeStr, ZaptecApi } from '../../lib/zaptec';
 import type { GoCharger } from './device';
 
 interface InstallationCurrentControlArgs {
@@ -53,8 +53,9 @@ class GoDriver extends Homey.Driver {
 
     this.homey.flow
       .getConditionCard('is_connected')
-      .registerRunListener(async ({ device }) =>
-        device.getCapabilityValue('car_connected'),
+      .registerRunListener(
+        async ({ device }) =>
+          !!device.getCapabilityValue('alarm_generic.car_connected'),
       );
 
     this.homey.flow
@@ -62,7 +63,7 @@ class GoDriver extends Homey.Driver {
       .registerRunListener(
         async ({ device }) =>
           device.getCapabilityValue('charge_mode') ===
-          String(ChargerOperationMode.Connected_Finishing),
+          chargerOperationModeStr(ChargerOperationMode.Connected_Finishing),
       );
 
     this.homey.flow
