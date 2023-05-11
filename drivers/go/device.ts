@@ -350,12 +350,21 @@ export class GoCharger extends Homey.Device {
         throw e;
       });
 
+    const isNumber = (n: number | undefined | null): n is number =>
+      n !== undefined && n !== null;
+    const maxCurrent = isNumber(info.MaxCurrent) ? info.MaxCurrent : 40;
+
     // TODO: Should we bring back phase individual installation current?
     const availableCurrent = Math.min(
-      info.AvailableCurrentPhase1 ?? 40,
-      info.AvailableCurrentPhase2 ?? 40,
-      info.AvailableCurrentPhase3 ?? 40,
-      info.MaxCurrent ?? 40,
+      isNumber(info.AvailableCurrentPhase1)
+        ? info.AvailableCurrentPhase1
+        : maxCurrent,
+      isNumber(info.AvailableCurrentPhase2)
+        ? info.AvailableCurrentPhase2
+        : maxCurrent,
+      isNumber(info.AvailableCurrentPhase3)
+        ? info.AvailableCurrentPhase3
+        : maxCurrent,
     );
 
     // TODO: Is this interesting as a capability or should we expose it as a
