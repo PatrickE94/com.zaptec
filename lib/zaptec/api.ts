@@ -1,6 +1,6 @@
-import http from 'node:http';
-import https from 'node:https';
-import querystring from 'node:querystring';
+import http from 'http';
+import https from 'https';
+import querystring from 'querystring';
 import { ApiError } from './error';
 import { Command, DeviceType, InstallationType, UserRole } from './enums';
 import {
