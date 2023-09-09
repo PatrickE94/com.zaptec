@@ -1,0 +1,108 @@
+{
+  "name": {
+    "en": "Zaptec Pro"
+  },
+  "class": "other",
+  "capabilities": [
+    "meter_power.current_session",
+    "meter_power.this_year",
+    "meter_power.last_session",
+    "measure_power",
+    "charging_button",
+    "charge_mode",
+    "alarm_generic.car_connected",
+    "available_installation_current",
+    "measure_current.phase1",
+    "measure_current.phase2",
+    "measure_current.phase3",
+    "measure_voltage.phase1",
+    "measure_voltage.phase2",
+    "measure_voltage.phase3"
+  ],
+  "capabilitiesOptions": {
+    "meter_power.current_session": {
+      "title": {
+        "en": "Energy current session"
+      }
+    },
+    "meter_power.this_year": {
+      "title": {
+        "en": "Energy this year"
+      }
+    },
+    "meter_power.last_session": {
+      "title": {
+        "en": "Energy previous session"
+      }
+    },
+    "measure_current.phase1": {
+      "title": {
+        "en": "Current L1"
+      }
+    },
+    "measure_current.phase2": {
+      "title": {
+        "en": "Current L2"
+      }
+    },
+    "measure_current.phase3": {
+      "title": {
+        "en": "Current L3"
+      }
+    },
+    "measure_voltage.phase1": {
+      "title": {
+        "en": "Voltage L1"
+      }
+    },
+    "measure_voltage.phase2": {
+      "title": {
+        "en": "Voltage L2"
+      }
+    },
+    "measure_voltage.phase3": {
+      "title": {
+        "en": "Voltage L3"
+      }
+    },
+    "available_installation_current": {
+      "title": {
+        "en": "Current limit"
+      }
+    },
+    "alarm_generic.car_connected": {
+      "title": {
+        "en": "Car connected"
+      }
+    }
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [],
+  "images": {
+    "small": "{{driverAssetsPath}}/images/driver_small.png",
+    "large": "{{driverAssetsPath}}/images/driver_large.png",
+    "xlarge": "{{driverAssetsPath}}/images/driver_xlarge.png"
+  },
+  "pair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "title": {
+          "en": "Zaptec Login"
+        }
+      }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

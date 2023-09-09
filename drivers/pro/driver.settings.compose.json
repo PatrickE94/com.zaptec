@@ -1,0 +1,34 @@
+[
+    {
+        "type": "group",
+        "label": {
+            "en": "Capabilities"
+        },
+        "children": [
+            {
+                "id": "showVoltage",
+                "type": "checkbox",
+                "label": {
+                    "en": "Show voltage per phase"
+                },
+                "value": false
+            }
+        ]
+    },
+     {
+        "type": "group",
+        "label": {
+            "en": "Troubleshooting"
+        },
+        "children": [
+            {
+                "id": "log",
+                "type": "textarea",
+                "label": {
+                    "en": "Log"
+                },
+                "value": "Empty"
+            }
+        ]
+    }
+]
