@@ -29,6 +29,11 @@
   "bugs": {
     "url": "https://github.com/patricke94/com.zaptec/issues"
   },
+  "contributing": {
+    "donate": {
+      "username": "pwadstrom"
+    }
+  },
   "source": "https://github.com/patricke94/com.zaptec",
   "dependencies": {
     "net": "*"
