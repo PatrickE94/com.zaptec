@@ -30,6 +30,13 @@
   "bugs": {
     "url": "https://github.com/patricke94/com.zaptec/issues"
   },
+  "contributing": {
+    "donate": {
+      "paypal": {
+        "username": "pwadstrom"
+      }
+    }
+  },
   "source": "https://github.com/patricke94/com.zaptec",
   "dependencies": {
     "net": "*"
@@ -189,6 +196,162 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "home_car_connects",
+        "title": {
+          "en": "Car connects"
+        },
+        "hint": {
+          "en": "When a car becomes connected to the charger"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_car_disconnects",
+        "title": {
+          "en": "Car disconnects"
+        },
+        "hint": {
+          "en": "When a car disconnects it's cable from the charger."
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_charging_starts",
+        "title": {
+          "en": "Charging starts"
+        },
+        "hint": {
+          "en": "When a charging session is started"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_charging_stops",
+        "title": {
+          "en": "Charging stops"
+        },
+        "hint": {
+          "en": "When a charging session is stopped"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
           }
         ]
       },
@@ -390,6 +553,45 @@
         ]
       },
       {
+        "id": "home_is_charging",
+        "title": {
+          "en": "Car !{{is|is not}} charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_is_connected",
+        "title": {
+          "en": "Car !{{is|is not}} connected"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_charging_is_finished",
+        "title": {
+          "en": "Charging !{{is|is not}} finished"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
         "id": "pro_is_charging",
         "title": {
           "en": "Car !{{is|is not}} charging"
@@ -508,6 +710,87 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "home_installation_current_control",
+        "title": {
+          "en": "Set available current to"
+        },
+        "titleFormatted": {
+          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
+        },
+        "hint": {
+          "en": "Changes the available current for all chargers within this installation."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          },
+          {
+            "name": "current1",
+            "type": "range",
+            "title": {
+              "en": "Current P1"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current2",
+            "type": "range",
+            "title": {
+              "en": "Current P2"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current3",
+            "type": "range",
+            "title": {
+              "en": "Current P3"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          }
+        ]
+      },
+      {
+        "id": "home_start_charging",
+        "title": {
+          "en": "Start charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_stop_charging",
+        "title": {
+          "en": "Stop charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
           }
         ]
       },
@@ -705,6 +988,151 @@
         }
       ],
       "id": "go",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Capabilities"
+          },
+          "children": [
+            {
+              "id": "showVoltage",
+              "type": "checkbox",
+              "label": {
+                "en": "Show voltage per phase"
+              },
+              "value": false
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Troubleshooting"
+          },
+          "children": [
+            {
+              "id": "log",
+              "type": "textarea",
+              "label": {
+                "en": "Log"
+              },
+              "value": "Empty"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": {
+        "en": "Zaptec Pro"
+      },
+      "class": "other",
+      "capabilities": [
+        "meter_power.current_session",
+        "meter_power.this_year",
+        "meter_power.last_session",
+        "measure_power",
+        "charging_button",
+        "charge_mode",
+        "alarm_generic.car_connected",
+        "available_installation_current",
+        "measure_current.phase1",
+        "measure_current.phase2",
+        "measure_current.phase3",
+        "measure_voltage.phase1",
+        "measure_voltage.phase2",
+        "measure_voltage.phase3"
+      ],
+      "capabilitiesOptions": {
+        "meter_power.current_session": {
+          "title": {
+            "en": "Energy current session"
+          }
+        },
+        "meter_power.this_year": {
+          "title": {
+            "en": "Energy this year"
+          }
+        },
+        "meter_power.last_session": {
+          "title": {
+            "en": "Energy previous session"
+          }
+        },
+        "measure_current.phase1": {
+          "title": {
+            "en": "Current L1"
+          }
+        },
+        "measure_current.phase2": {
+          "title": {
+            "en": "Current L2"
+          }
+        },
+        "measure_current.phase3": {
+          "title": {
+            "en": "Current L3"
+          }
+        },
+        "measure_voltage.phase1": {
+          "title": {
+            "en": "Voltage L1"
+          }
+        },
+        "measure_voltage.phase2": {
+          "title": {
+            "en": "Voltage L2"
+          }
+        },
+        "measure_voltage.phase3": {
+          "title": {
+            "en": "Voltage L3"
+          }
+        },
+        "available_installation_current": {
+          "title": {
+            "en": "Current limit"
+          }
+        },
+        "alarm_generic.car_connected": {
+          "title": {
+            "en": "Car connected"
+          }
+        }
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [],
+      "images": {
+        "small": "/drivers/home/assets/images/driver_small.png",
+        "large": "/drivers/home/assets/images/driver_large.png",
+        "xlarge": "/drivers/home/assets/images/driver_xlarge.png"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Zaptec Login"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "id": "home",
       "settings": [
         {
           "type": "group",

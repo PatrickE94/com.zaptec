@@ -31,7 +31,9 @@
   },
   "contributing": {
     "donate": {
-      "username": "pwadstrom"
+      "paypal": {
+        "username": "pwadstrom"
+      }
     }
   },
   "source": "https://github.com/patricke94/com.zaptec",

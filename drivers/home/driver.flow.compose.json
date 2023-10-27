@@ -1,0 +1,216 @@
+{
+  "triggers": [
+    {
+      "id": "home_car_connects",
+      "title": {
+        "en": "Car connects"
+      },
+      "hint": {
+        "en": "When a car becomes connected to the charger"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "home_car_disconnects",
+      "title": {
+        "en": "Car disconnects"
+      },
+      "hint": {
+        "en": "When a car disconnects it's cable from the charger."
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "home_charging_starts",
+      "title": {
+        "en": "Charging starts"
+      },
+      "hint": {
+        "en": "When a charging session is started"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    },
+    {
+      "id": "home_charging_stops",
+      "title": {
+        "en": "Charging stops"
+      },
+      "hint": {
+        "en": "When a charging session is stopped"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit"
+          }
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "home_is_charging",
+      "title": {
+        "en": "Car !{{is|is not}} charging"
+      }
+    },
+    {
+      "id": "home_is_connected",
+      "title": {
+        "en": "Car !{{is|is not}} connected"
+      }
+    },
+    {
+      "id": "home_charging_is_finished",
+      "title": {
+        "en": "Charging !{{is|is not}} finished"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "home_installation_current_control",
+      "title": {
+        "en": "Set available current to"
+      },
+      "titleFormatted": {
+        "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
+      },
+      "hint": {
+        "en": "Changes the available current for all chargers within this installation."
+      },
+      "args": [
+        {
+          "name": "current1",
+          "type": "range",
+          "title": {
+            "en": "Current P1"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current2",
+          "type": "range",
+          "title": {
+            "en": "Current P2"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current3",
+          "type": "range",
+          "title": {
+            "en": "Current P3"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        }
+      ]
+    },
+    {
+      "id": "home_start_charging",
+      "title": {
+        "en": "Start charging"
+      }
+    },
+    {
+      "id": "home_stop_charging",
+      "title": {
+        "en": "Stop charging"
+      }
+    }
+  ]
+}
