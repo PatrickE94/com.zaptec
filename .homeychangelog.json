@@ -55,5 +55,8 @@
   },
   "1.4.0": {
     "en": "Initial support for the Zaptec Pro charger"
+  },
+  "1.4.1": {
+    "en": "PoC driver for the Home device."
   }
 }
