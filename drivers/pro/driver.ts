@@ -98,7 +98,7 @@ class ProDriver extends Homey.Driver {
     session.setHandler('list_devices', async () => {
       const chargers = await api.getChargers({
         DeviceType: 1 /* smart */,
-        InstallationType: 0 /* pro */,
+        //InstallationType: 0 /* pro */,
       });
 
       return (
