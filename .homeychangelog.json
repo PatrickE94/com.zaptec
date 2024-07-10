@@ -58,5 +58,8 @@
   },
   "1.4.1": {
     "en": "PoC driver for the Home device."
+  },
+  "1.4.2": {
+    "en": "Bugfix for Home and Pro charger flow cards. Temperature and humidity capabilities added."
   }
 }
