@@ -22,7 +22,7 @@ class ProDriver extends Homey.Driver {
     this.log('ProDriver is registering flows');
 
     this.homey.flow
-      .getActionCard('installation_current_control')
+      .getActionCard('pro_installation_current_control')
       .registerRunListener(
         async ({
           current1,

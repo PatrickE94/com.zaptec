@@ -22,7 +22,7 @@ class HomeDriver extends Homey.Driver {
     this.log('HomeDriver is registering flows');
 
     this.homey.flow
-      .getActionCard('installation_current_control')
+      .getActionCard('home_installation_current_control')
       .registerRunListener(
         async ({
           current1,
@@ -46,20 +46,20 @@ class HomeDriver extends Homey.Driver {
       );
 
     this.homey.flow
-      .getConditionCard('pro_is_charging')
+      .getConditionCard('home_is_charging')
       .registerRunListener(async ({ device }) =>
         device.getCapabilityValue('charging_button'),
       );
 
     this.homey.flow
-      .getConditionCard('pro_is_connected')
+      .getConditionCard('home_is_connected')
       .registerRunListener(
         async ({ device }) =>
           !!device.getCapabilityValue('alarm_generic.car_connected'),
       );
 
     this.homey.flow
-      .getConditionCard('pro_charging_is_finished')
+      .getConditionCard('home_charging_is_finished')
       .registerRunListener(
         async ({ device }) =>
           device.getCapabilityValue('charge_mode') ===
@@ -67,11 +67,11 @@ class HomeDriver extends Homey.Driver {
       );
 
     this.homey.flow
-      .getActionCard('pro_start_charging')
+      .getActionCard('home_start_charging')
       .registerRunListener(async ({ device }) => device.startCharging());
 
     this.homey.flow
-      .getActionCard('pro_stop_charging')
+      .getActionCard('home_stop_charging')
       .registerRunListener(async ({ device }) => device.stopCharging());
   }
 
