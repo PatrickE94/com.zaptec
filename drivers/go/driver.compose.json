@@ -17,7 +17,9 @@
     "measure_current.phase3",
     "measure_voltage.phase1",
     "measure_voltage.phase2",
-    "measure_voltage.phase3"
+    "measure_voltage.phase3",
+    "measure_humidity",
+    "measure_temperature"
   ],
   "capabilitiesOptions": {
     "meter_power.current_session": {

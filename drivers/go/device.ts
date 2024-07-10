@@ -68,6 +68,8 @@ export class GoCharger extends Homey.Device {
       'meter_power.current_session',
       'alarm_generic.car_connected',
       'charging_button', // replaces onoff
+      'measure_temperature',
+      'measure_humidity',
     ];
 
     for (const cap of add)
@@ -322,6 +324,20 @@ export class GoCharger extends Homey.Device {
         await this.setCapabilityValue(
           'meter_power.current_session',
           Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.Humidity:
+        await this.setCapabilityValue(
+          'measure_humidity',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case ApolloDeviceObservation.TemperatureInternal5:
+        await this.setCapabilityValue(
+          'measure_temperature',
+          Number(state.ValueAsString) / 10.0,
         );
         break;
 

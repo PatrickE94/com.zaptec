@@ -29,6 +29,7 @@ export class ProCharger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateCapabilities();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -41,6 +42,27 @@ export class ProCharger extends Homey.Device {
     this.pollSlowValues();
 
     this.log('ProCharger has been initialized');
+  }
+
+  /**
+   * Verify all expected capabilities and apply changes to capabilities.
+   *
+   * This avoids having to re-add the device when modifying capabilities.
+   */
+  private async migrateCapabilities() {
+    const remove: string[] = [
+    ];
+
+    for (const cap of remove)
+      if (this.hasCapability(cap)) await this.removeCapability(cap);
+
+    const add = [
+      'measure_temperature',
+      'measure_humidity',
+    ];
+
+    for (const cap of add)
+      if (!this.hasCapability(cap)) await this.addCapability(cap);
   }
 
   /**
@@ -290,6 +312,20 @@ export class ProCharger extends Homey.Device {
       case SmartDeviceObservation.TotalChargePowerSession:
         await this.setCapabilityValue(
           'meter_power.current_session',
+          Number(state.ValueAsString),
+        );
+        break;
+
+      case SmartDeviceObservation.TemperatureInternal6:
+        await this.setCapabilityValue(
+          'measure_temperature',
+          Number(state.ValueAsString) / 10.0,
+        );
+        break;
+
+      case SmartDeviceObservation.Humidity:
+        await this.setCapabilityValue(
+          'measure_humidity',
           Number(state.ValueAsString),
         );
         break;
