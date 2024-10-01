@@ -41,6 +41,7 @@
   "dependencies": {
     "net": "*"
   },
+  "homepage": "https://www.zaptec.com/",
   "flow": {
     "triggers": [
       {
