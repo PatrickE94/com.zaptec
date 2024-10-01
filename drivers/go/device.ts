@@ -482,7 +482,7 @@ export class GoCharger extends Homey.Device {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue('meter_power.last_session', session.Energy);
+      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }
