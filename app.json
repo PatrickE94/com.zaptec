@@ -30,6 +30,13 @@
   "bugs": {
     "url": "https://github.com/patricke94/com.zaptec/issues"
   },
+  "contributors": {
+    "developers": [
+      {
+        "name": "Philip Østli"
+      }
+    ]
+  },
   "contributing": {
     "donate": {
       "paypal": {
@@ -41,6 +48,7 @@
   "dependencies": {
     "net": "*"
   },
+  "homepage": "https://www.zaptec.com/",
   "flow": {
     "triggers": [
       {
