@@ -16,10 +16,14 @@
     "homey"
   ],
   "scripts": {
-    "build": "tsc",
-    "lint": "eslint --ext .js,.ts .",
+    "check": "tsc",
+    "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
     "test": "mocha",
-    "prettier": "prettier --write **/*.ts"
+    "prettier": "prettier --write **/*.ts", 
+    "validate": "homey app validate --level verified",
+    "build": "homey app build",
+    "start": "homey app run",
+    "publish": "homey app publish"
   },
   "devDependencies": {
     "@tsconfig/node12": "^1.0.11",
