@@ -2,7 +2,9 @@
   "name": {
     "en": "Zaptec Go"
   },
-  "class": "other",
+  "$extends": [
+    "defaults"
+  ],
   "capabilities": [
     "meter_power.current_session",
     "meter_power.this_year",
@@ -77,34 +79,5 @@
         "en": "Car connected"
       }
     }
-  },
-  "platforms": [
-    "local"
-  ],
-  "connectivity": [],
-  "images": {
-    "small": "{{driverAssetsPath}}/images/driver_small.png",
-    "large": "{{driverAssetsPath}}/images/driver_large.png",
-    "xlarge": "{{driverAssetsPath}}/images/driver_xlarge.png"
-  },
-  "pair": [
-    {
-      "id": "login_credentials",
-      "template": "login_credentials",
-      "options": {
-        "title": {
-          "en": "Zaptec Login"
-        }
-      }
-    },
-    {
-      "id": "list_devices",
-      "template": "list_devices",
-      "navigation": { "next": "add_devices" }
-    },
-    {
-      "id": "add_devices",
-      "template": "add_devices"
-    }
-  ]
+  }
 }

@@ -1,0 +1,35 @@
+{
+  "icon": "{{driverAssetsPath}}/icon.svg",
+  "images": {
+    "small": "{{driverAssetsPath}}/images/driver_small.png",
+    "large": "{{driverAssetsPath}}/images/driver_large.png",
+    "xlarge": "{{driverAssetsPath}}/images/driver_xlarge.png"
+  },
+  "platforms": [
+    "local"
+  ],
+  "connectivity": [
+    "cloud"
+  ],
+  "class": "other",
+  "pair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "title": {
+          "en": "Zaptec Login"
+        }
+      }
+    },
+    {
+      "id": "list_devices",
+      "template": "list_devices",
+      "navigation": { "next": "add_devices" }
+    },
+    {
+      "id": "add_devices",
+      "template": "add_devices"
+    }
+  ]
+}

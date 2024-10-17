@@ -887,10 +887,44 @@
   },
   "drivers": [
     {
+      "icon": "/drivers/go/assets/icon.svg",
+      "images": {
+        "small": "/drivers/go/assets/images/driver_small.png",
+        "large": "/drivers/go/assets/images/driver_large.png",
+        "xlarge": "/drivers/go/assets/images/driver_xlarge.png"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "class": "other",
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Zaptec Login"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
       "name": {
         "en": "Zaptec Go"
       },
-      "class": "other",
       "capabilities": [
         "meter_power.current_session",
         "meter_power.this_year",
@@ -966,37 +1000,6 @@
           }
         }
       },
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [],
-      "images": {
-        "small": "/drivers/go/assets/images/driver_small.png",
-        "large": "/drivers/go/assets/images/driver_large.png",
-        "xlarge": "/drivers/go/assets/images/driver_xlarge.png"
-      },
-      "pair": [
-        {
-          "id": "login_credentials",
-          "template": "login_credentials",
-          "options": {
-            "title": {
-              "en": "Zaptec Login"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
       "id": "go",
       "settings": [
         {
@@ -1034,10 +1037,44 @@
       ]
     },
     {
+      "icon": "/drivers/home/assets/icon.svg",
+      "images": {
+        "small": "/drivers/home/assets/images/driver_small.png",
+        "large": "/drivers/home/assets/images/driver_large.png",
+        "xlarge": "/drivers/home/assets/images/driver_xlarge.png"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "class": "other",
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Zaptec Login"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
       "name": {
         "en": "Zaptec Home"
       },
-      "class": "other",
       "capabilities": [
         "meter_power.current_session",
         "meter_power.this_year",
@@ -1111,37 +1148,6 @@
           }
         }
       },
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [],
-      "images": {
-        "small": "/drivers/home/assets/images/driver_small.png",
-        "large": "/drivers/home/assets/images/driver_large.png",
-        "xlarge": "/drivers/home/assets/images/driver_xlarge.png"
-      },
-      "pair": [
-        {
-          "id": "login_credentials",
-          "template": "login_credentials",
-          "options": {
-            "title": {
-              "en": "Zaptec Login"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
       "id": "home",
       "settings": [
         {
@@ -1179,10 +1185,44 @@
       ]
     },
     {
+      "icon": "/drivers/pro/assets/icon.svg",
+      "images": {
+        "small": "/drivers/pro/assets/images/driver_small.png",
+        "large": "/drivers/pro/assets/images/driver_large.png",
+        "xlarge": "/drivers/pro/assets/images/driver_xlarge.png"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "class": "other",
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Zaptec Login"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
       "name": {
         "en": "Zaptec Pro"
       },
-      "class": "other",
       "capabilities": [
         "meter_power.current_session",
         "meter_power.this_year",
@@ -1256,37 +1296,6 @@
           }
         }
       },
-      "platforms": [
-        "local"
-      ],
-      "connectivity": [],
-      "images": {
-        "small": "/drivers/pro/assets/images/driver_small.png",
-        "large": "/drivers/pro/assets/images/driver_large.png",
-        "xlarge": "/drivers/pro/assets/images/driver_xlarge.png"
-      },
-      "pair": [
-        {
-          "id": "login_credentials",
-          "template": "login_credentials",
-          "options": {
-            "title": {
-              "en": "Zaptec Login"
-            }
-          }
-        },
-        {
-          "id": "list_devices",
-          "template": "list_devices",
-          "navigation": {
-            "next": "add_devices"
-          }
-        },
-        {
-          "id": "add_devices",
-          "template": "add_devices"
-        }
-      ],
       "id": "pro",
       "settings": [
         {
