@@ -47,5 +47,6 @@
   "dependencies": {
     "net": "*"
   },
-  "homepage": "https://www.zaptec.com/"
+  "homepage": "https://www.zaptec.com/",
+  "homeyCommunityTopicId": "118631"
 }
