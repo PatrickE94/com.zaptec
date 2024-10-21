@@ -882,6 +882,38 @@
             "filter": "driver_id=pro"
           }
         ]
+      },
+      {
+        "id": "pro_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
       }
     ]
   },
