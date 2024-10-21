@@ -12,6 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: athombv/github-action-homey-app-validate@master
+
+      - uses: actions/setup-node@v3
         with:
-          level: verified
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts --audit=false
+
+      - name: Install Homey CLI
+        run: npm -g install homey
+
+      - name: App needs to pass verified level validation
+        run: homey app validate --level=verified
+        
