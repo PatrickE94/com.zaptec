@@ -70,6 +70,7 @@ export class GoCharger extends Homey.Device {
       'charging_button', // replaces onoff
       'measure_temperature',
       'measure_humidity',
+      'cable_permanent_lock',
     ];
 
     for (const cap of add)
@@ -83,6 +84,10 @@ export class GoCharger extends Homey.Device {
     this.registerCapabilityListener('charging_button', async (value) => {
       if (value) await this.startCharging();
       else await this.stopCharging();
+    });
+    this.registerCapabilityListener('cable_permanent_lock', async (value) => {
+      if (value) await this.lockCable(true);
+      else await this.lockCable(false);
     });
   }
 
@@ -347,6 +352,13 @@ export class GoCharger extends Homey.Device {
         if (state.ValueAsString) await this.onLastSession(state.ValueAsString);
         break;
 
+      case ApolloDeviceObservation.PermanentCableLock:
+        await this.setCapabilityValue(
+          'cable_permanent_lock',
+          Number(state.ValueAsString) === 1 ? true : false,
+        );
+        break;
+
       default:
         break;
     }
@@ -546,6 +558,17 @@ export class GoCharger extends Homey.Device {
       .catch((e) => {
         this.logToDebug(`stopCharging failure: ${e}`);
         throw new Error(`Failed to turn off the charger: ${e}`);
+      });
+  }
+
+  public async lockCable(lockCable: boolean) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .lockCharger(this.getData().id, lockCable)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`lockCable failure: ${e}`);
+        throw new Error(`Failed to lock/unlock cable: ${e}`);
       });
   }
 
