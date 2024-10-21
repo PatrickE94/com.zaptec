@@ -298,6 +298,21 @@ export class ZaptecApi {
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
+  public async lockCharger(chargerId: string, lock: boolean): Promise<void> {
+    
+    const { data, response } = await this.post<TokenResponse>(
+      `/api/chargers/${chargerId}/localSettings`,
+      {
+        "Cable": {
+          "PermanentLock": lock
+        },
+      },
+    );
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+  }
+
   // -------------------------- //
   //  Installation
   // -------------------------- //
