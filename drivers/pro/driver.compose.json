@@ -10,6 +10,7 @@
     "meter_power.this_year",
     "meter_power.last_session",
     "measure_power",
+    "cable_permanent_lock",
     "charging_button",
     "charge_mode",
     "alarm_generic.car_connected",
