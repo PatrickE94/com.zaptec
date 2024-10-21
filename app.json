@@ -1356,6 +1356,22 @@
       "chartType": "stepLine",
       "icon": "/assets/current_limit.svg"
     },
+    "cable_permanent_lock": {
+      "type": "boolean",
+      "uiComponent": "button",
+      "getable": true,
+      "setable": true,
+      "title": {
+        "en": "Cable locked"
+      },
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Cable permanently locked to charger"
+      },
+      "insightsTitleFalse": {
+        "en": "Cable unlocked from charger"
+      }
+    },
     "charge_mode": {
       "type": "enum",
       "title": {
