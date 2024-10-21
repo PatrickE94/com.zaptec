@@ -722,6 +722,38 @@
         ]
       },
       {
+        "id": "go_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "go_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
         "id": "home_installation_current_control",
         "title": {
           "en": "Set available current to"
@@ -793,6 +825,38 @@
         "id": "home_stop_charging",
         "title": {
           "en": "Stop charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
         },
         "args": [
           {
