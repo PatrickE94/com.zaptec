@@ -49,7 +49,7 @@
     "net": "*"
   },
   "homepage": "https://www.zaptec.com/",
-  "homeyCommunityTopicId": "118631",
+  "homeyCommunityTopicId": 118631,
   "flow": {
     "triggers": [
       {
