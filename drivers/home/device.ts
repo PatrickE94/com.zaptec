@@ -330,6 +330,12 @@ export class ProCharger extends Homey.Device {
         );
         break;
 
+      case SmartDeviceObservation.SmartComputerSoftwareApplicationVersion:
+        await this.setSettings({
+          firmware: state.ValueAsString,
+        });
+        break;  
+
       // The data for the previous session is JSON stringified into this state
       // variable
       case SmartDeviceObservation.CompletedSession:

@@ -341,6 +341,12 @@ export class GoCharger extends Homey.Device {
         );
         break;
 
+      case ApolloDeviceObservation.SmartComputerSoftwareApplicationVersion:
+          await this.setSettings({
+            firmware: state.ValueAsString,
+          });
+          break;
+
       // The data for the previous session is JSON stringified into this state
       // variable
       case ApolloDeviceObservation.CompletedSession:
