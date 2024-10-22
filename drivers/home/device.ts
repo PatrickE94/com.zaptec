@@ -51,13 +51,15 @@ export class ProCharger extends Homey.Device {
    */
   private async migrateCapabilities() {
     const remove: string[] = [
+      'measure_temperature'
     ];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
 
     const add = [
-      'measure_temperature',
+      'measure_temperature.sensor1',
+      'measure_temperature.sensor2',
       'measure_humidity',
     ];
 
@@ -316,9 +318,16 @@ export class ProCharger extends Homey.Device {
         );
         break;
 
+     case SmartDeviceObservation.TemperatureInternal5:
+        await this.setCapabilityValue(
+          'measure_temperature.sensor1',
+          Number(state.ValueAsString),
+        );
+        break;
+
       case SmartDeviceObservation.TemperatureInternal6:
         await this.setCapabilityValue(
-          'measure_temperature',
+          'measure_temperature.sensor2',
           Number(state.ValueAsString),
         );
         break;

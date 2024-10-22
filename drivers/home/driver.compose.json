@@ -19,7 +19,10 @@
     "measure_current.phase3",
     "measure_voltage.phase1",
     "measure_voltage.phase2",
-    "measure_voltage.phase3"
+    "measure_voltage.phase3",
+    "measure_humidity",
+    "measure_temperature.sensor1",
+    "measure_temperature.sensor2"
   ],
   "capabilitiesOptions": {
     "meter_power.current_session": {
@@ -75,6 +78,16 @@
     "alarm_generic.car_connected": {
       "title": {
         "en": "Car connected"
+      }
+    },
+    "measure_temperature.sensor1": {
+      "title": {
+        "en": "Temperature Sensor 1"
+      }
+    },
+    "measure_temperature.sensor2": {
+      "title": {
+        "en": "Temperature Sensor 2"
       }
     }
   }
