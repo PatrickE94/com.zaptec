@@ -1,10 +1,10 @@
-
+name: Translate Homey App
 on:
   workflow_dispatch:
 
 jobs:  
     main:
-      name: Translate App
+      name: Translate Homey App
       runs-on: ubuntu-latest
       steps:
         - uses: actions/checkout@v3
