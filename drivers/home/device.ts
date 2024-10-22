@@ -319,7 +319,7 @@ export class ProCharger extends Homey.Device {
       case SmartDeviceObservation.TemperatureInternal6:
         await this.setCapabilityValue(
           'measure_temperature',
-          Number(state.ValueAsString) / 10.0,
+          Number(state.ValueAsString),
         );
         break;
 
