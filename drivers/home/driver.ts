@@ -111,6 +111,7 @@ class HomeDriver extends Homey.Driver {
           settings: {
             username,
             password,
+            deviceid: charger.DeviceId,
           },
         })) || []
       );

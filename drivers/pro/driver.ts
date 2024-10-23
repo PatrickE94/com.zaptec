@@ -111,6 +111,7 @@ class ProDriver extends Homey.Driver {
           settings: {
             username,
             password,
+            deviceid: charger.DeviceId,
           },
         })) || []
       );
