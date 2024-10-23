@@ -1,12 +1,12 @@
 import Homey from 'homey';
 import { ChargerOperationMode, chargerOperationModeStr, ZaptecApi } from '../../lib/zaptec';
-import type { ProCharger } from './device';
+import type { HomeCharger } from './device';
 
 interface InstallationCurrentControlArgs {
   current1: number;
   current2: number;
   current3: number;
-  device: ProCharger;
+  device: HomeCharger;
 }
 
 class HomeDriver extends Homey.Driver {
