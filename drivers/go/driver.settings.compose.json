@@ -20,6 +20,14 @@
                     "en": "Firmware version"
                 },
                 "value": ""
+            },
+            {
+                "id": "deviceid",
+                "type": "label",
+                "label": { 
+                    "en": "Device ID"
+                },
+                "value": ""
             }
         ]
     },
