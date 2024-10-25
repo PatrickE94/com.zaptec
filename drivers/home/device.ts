@@ -10,7 +10,7 @@ import {
 } from '../../lib/zaptec';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 
-export class ProCharger extends Homey.Device {
+export class HomeCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
@@ -20,7 +20,7 @@ export class ProCharger extends Homey.Device {
    * onInit is called when the device is initialized.
    */
   async onInit() {
-    this.log('ProCharger is initializing');
+    this.log('HomeCharger is initializing');
     this.api = new ZaptecApi();
     this.renewToken();
 
@@ -41,7 +41,7 @@ export class ProCharger extends Homey.Device {
     // Do initial slow poll at start, we don't know how long ago we read it out.
     this.pollSlowValues();
 
-    this.log('ProCharger has been initialized');
+    this.log('HomeCharger has been initialized');
   }
 
   /**
@@ -84,7 +84,7 @@ export class ProCharger extends Homey.Device {
    * onAdded is called when the user adds the device, called just after pairing.
    */
   async onAdded() {
-    this.log('ProCharger has been added');
+    this.log('HomeCharger has been added');
     // Trigger initial polls to make it look nice immediately!
     this.pollValues();
     this.pollSlowValues();
@@ -103,7 +103,7 @@ export class ProCharger extends Homey.Device {
     newSettings: { [key: string]: string };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log('ProCharger settings where changed: ', JSON.stringify(changes));
+    this.log('HomeCharger settings where changed: ', JSON.stringify(changes));
 
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
@@ -125,14 +125,14 @@ export class ProCharger extends Homey.Device {
    * @param {string} name The new name
    */
   async onRenamed(name: string) {
-    this.log(`ProCharger ${this.getName()} was renamed to ${name}`);
+    this.log(`HomeCharger ${this.getName()} was renamed to ${name}`);
   }
 
   /**
    * onDeleted is called when the user deleted the device.
    */
   async onDeleted() {
-    this.log('ProCharger has been deleted');
+    this.log('HomeCharger has been deleted');
     for (const task of this.cronTasks) task.stop();
   }
 
@@ -439,28 +439,28 @@ export class ProCharger extends Homey.Device {
     // Entering charging state => Charging starts
     if (newMode === ChargerOperationMode.Connected_Charging) {
       await this.homey.flow
-        .getDeviceTriggerCard('pro_charging_starts')
+        .getDeviceTriggerCard('home_charging_starts')
         .trigger(this, tokens);
     }
 
     // Changed from charging state => Charging stops
     if (previousMode === ChargerOperationMode.Connected_Charging) {
       await this.homey.flow
-        .getDeviceTriggerCard('pro_charging_stops')
+        .getDeviceTriggerCard('home_charging_stops')
         .trigger(this, tokens);
     }
 
     // Was disconnected and now becomes connected => Car connected
     if (newModeConnected && previouslyDisconnected) {
       await this.homey.flow
-        .getDeviceTriggerCard('pro_car_connects')
+        .getDeviceTriggerCard('home_car_connects')
         .trigger(this, tokens);
     }
 
     // Was connected and now becomes disconnected => Car disconnected
     if (!newModeConnected && !previouslyDisconnected) {
       await this.homey.flow
-        .getDeviceTriggerCard('pro_car_disconnects')
+        .getDeviceTriggerCard('home_car_disconnects')
         .trigger(this, tokens);
     }
   }
@@ -586,4 +586,4 @@ export class ProCharger extends Homey.Device {
   }
 }
 
-module.exports = ProCharger;
+module.exports = HomeCharger;
