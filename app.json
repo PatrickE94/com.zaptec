@@ -1205,7 +1205,10 @@
         "measure_current.phase3",
         "measure_voltage.phase1",
         "measure_voltage.phase2",
-        "measure_voltage.phase3"
+        "measure_voltage.phase3",
+        "measure_humidity",
+        "measure_temperature.sensor1",
+        "measure_temperature.sensor2"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1370,7 +1373,10 @@
         "measure_current.phase3",
         "measure_voltage.phase1",
         "measure_voltage.phase2",
-        "measure_voltage.phase3"
+        "measure_voltage.phase3",
+        "measure_humidity",
+        "measure_temperature.sensor1",
+        "measure_temperature.sensor2"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1426,6 +1432,18 @@
         "alarm_generic.car_connected": {
           "title": {
             "en": "Car connected"
+          }
+        },
+        "measure_temperature.sensor1": {
+          "title": {
+            "en": "Temperature L1",
+            "no": "Temperatur L1"
+          }
+        },
+        "measure_temperature.sensor2": {
+          "title": {
+            "en": "Temperature L2",
+            "no": "Temperatur L2"
           }
         }
       },
