@@ -120,6 +120,7 @@ class GoDriver extends Homey.Driver {
           settings: {
             username,
             password,
+            deviceid: charger.DeviceId,
           },
         })) || []
       );
