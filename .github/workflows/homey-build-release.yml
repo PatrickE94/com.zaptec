@@ -1,0 +1,55 @@
+name: Build release
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: choice
+        description: Version
+        required: true
+        default: patch
+        options:
+          - major
+          - minor
+          - patch
+      changelog:
+        type: string
+        description: Changelog
+        required: true
+
+jobs:
+  main:
+    name: Build Homey release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update app version
+        uses: athombv/github-action-homey-app-version@master
+        id: update_app_version
+        with:
+          version: ${{ inputs.version }}
+          changelog: ${{ inputs.changelog }}
+
+      - name: Commit and push generated version
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Update Homey App Version to v${{ steps.update_app_version.outputs.version }}
+          tagging_message: v${{ steps.update_app_version.outputs.version }}
+
+      - name: Publish app
+        uses: athombv/github-action-homey-app-publish@master
+        id: publish
+        with:
+          personal_access_token: ${{ secrets.HOMEY_PAT }}
+
+      - name: Add manage URL to job summary
+        run: |
+          echo "App release to be managed at ${{ steps.publish.outputs.url }}" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Generate Github Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ inputs.changelog }}
+          generate_release_notes: true
+          make_latest: true
+          tag_name: v${{ steps.update_app_version.outputs.version }}

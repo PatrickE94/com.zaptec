@@ -36,6 +36,7 @@
       }
     ]
   },
+  "support": "https://github.com/patricke94/com.zaptec/issues",
   "contributing": {
     "donate": {
       "paypal": {
@@ -47,5 +48,6 @@
   "dependencies": {
     "net": "*"
   },
-  "homepage": "https://www.zaptec.com/"
+  "homepage": "https://www.zaptec.com/",
+  "homeyCommunityTopicId": 118631
 }
