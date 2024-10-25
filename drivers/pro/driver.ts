@@ -73,6 +73,16 @@ class ProDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('pro_stop_charging')
       .registerRunListener(async ({ device }) => device.stopCharging());
+
+    this.homey.flow
+      .getActionCard('pro_cable_permanent_lock')
+      .registerRunListener(async ({ device }) => device.lockCable(true).then(() => device.setCapabilityValue('cable_permanent_lock', true)));
+
+    this.homey.flow
+      .getActionCard('pro_cable_permanent_open')
+      .registerRunListener(async ({ device }) => device.lockCable(false).then(() => device.setCapabilityValue('cable_permanent_lock', false)));
+
+
   }
 
   async onPair(session: Homey.Driver.PairSession) {

@@ -1,0 +1,16 @@
+{
+  "type": "boolean",
+  "uiComponent": "button",
+  "getable": true,
+  "setable": true,
+  "title": {
+    "en": "Cable locked"
+  },
+  "insights": true,
+  "insightsTitleTrue": {
+    "en": "Cable permanently locked to charger"
+  },
+  "insightsTitleFalse": {
+    "en": "Cable unlocked from charger"
+  }
+}
