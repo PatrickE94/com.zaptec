@@ -36,6 +36,8 @@ class ProDriver extends Homey.Driver {
           this.log(
             `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
           );
+          if( !device.hasCapability('available_installation_current'))
+            throw new Error('Device does not support setting available current, because of missing access to the installation');
 
           return device.setInstallationAvailableCurrent(
             current1,
