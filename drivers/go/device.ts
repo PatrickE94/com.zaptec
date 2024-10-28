@@ -66,7 +66,18 @@ export class GoCharger extends Homey.Device {
             this.logToDebug(`Failed to poll charger info: ${e}`);
           });
         }
-      }
+ 
+        if (this.getSetting('showVoltage')){
+          await this.addCapability('measure_voltage.phase1');
+          await this.addCapability('measure_voltage.phase2');
+          await this.addCapability('measure_voltage.phase3');
+        }else{
+          await this.removeCapability('measure_voltage.phase1');
+          await this.removeCapability('measure_voltage.phase2');
+          await this.removeCapability('measure_voltage.phase3');    
+        }
+
+    }
 
   /**
    * Verify all expected capabilities and apply changes to capabilities.
@@ -138,7 +149,7 @@ export class GoCharger extends Homey.Device {
     newSettings: { [key: string]: string };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log('GoCharger settings where changed: ', JSON.stringify(changes));
+    //this.log('GoCharger settings where changed: ', JSON.stringify(changes));
 
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
