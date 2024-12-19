@@ -3,7 +3,7 @@ import { ZaptecApi } from './api';
 
 describe('Zaptec API Client', () => {
   it('should use token after authentication', async () => {
-    const api = new ZaptecApi();
+    const api = new ZaptecApi('1.0.0');
     nock('https://api.zaptec.com')
       .post('/oauth/token', 'grant_type=password&username=test&password=123')
       .reply(200, {

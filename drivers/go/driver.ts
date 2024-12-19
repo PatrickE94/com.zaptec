@@ -1,5 +1,9 @@
 import Homey from 'homey';
-import { ChargerOperationMode, chargerOperationModeStr, ZaptecApi } from '../../lib/zaptec';
+import {
+  ChargerOperationMode,
+  chargerOperationModeStr,
+  ZaptecApi,
+} from '../../lib/zaptec';
 import type { GoCharger } from './device';
 
 interface InstallationCurrentControlArgs {
@@ -73,19 +77,27 @@ class GoDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('stop_charging')
       .registerRunListener(async ({ device }) => device.stopCharging());
-    
+
     this.homey.flow
       .getActionCard('go_cable_permanent_lock')
-      .registerRunListener(async ({ device }) => device.lockCable(true).then(() => device.setCapabilityValue('cable_permanent_lock', true)));
-      
+      .registerRunListener(async ({ device }) =>
+        device
+          .lockCable(true)
+          .then(() => device.setCapabilityValue('cable_permanent_lock', true)),
+      );
+
     this.homey.flow
       .getActionCard('go_cable_permanent_open')
-      .registerRunListener(async ({ device }) => device.lockCable(false).then(() => device.setCapabilityValue('cable_permanent_lock', false)));
-
+      .registerRunListener(async ({ device }) =>
+        device
+          .lockCable(false)
+          .then(() => device.setCapabilityValue('cable_permanent_lock', false)),
+      );
   }
 
   async onPair(session: Homey.Driver.PairSession) {
-    const api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    const api = new ZaptecApi(appVersion);
     let username = '';
     let password = '';
 
@@ -94,11 +106,13 @@ class GoDriver extends Homey.Driver {
       async (data: { username: string; password: string }) => {
         username = data.username;
         password = data.password;
+        this.log("Trying to authenticate with Zaptec's API");
 
         try {
           await api.authenticate(username, password);
           return true;
         } catch (_error) {
+          this.log("Failed to authenticate with Zaptec's API. Error:", _error);
           return false;
         }
       },

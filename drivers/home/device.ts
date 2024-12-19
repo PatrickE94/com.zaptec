@@ -21,7 +21,8 @@ export class HomeCharger extends Homey.Device {
    */
   async onInit() {
     this.log('HomeCharger is initializing');
-    this.api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    this.api = new ZaptecApi(appVersion);
     this.renewToken();
 
     await this.api.authenticate(
@@ -36,7 +37,13 @@ export class HomeCharger extends Homey.Device {
     this.cronTasks.push(
       cron.schedule('0,30 * * * * *', () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()),
-      cron.schedule('0 0 7 * * * *', () => this.pollSlowValues()),
+      cron.schedule('0 0 7 * * * *', () => {
+        // Random delay between 0 and 120 seconds
+        const jitter = Math.floor(Math.random() * 120000);
+        setTimeout(() => {
+          this.pollSlowValues();
+        }, jitter);
+      }),
     );
 
     // Do initial slow poll at start, we don't know how long ago we read it out.
@@ -45,16 +52,17 @@ export class HomeCharger extends Homey.Device {
     this.log('HomeCharger has been initialized');
   }
 
-    /**
+  /**
    * Migrate settings from the old settings format to the new one.
    * If the deviceid setting is empty, poll the charger info and store the device id.
    */
-    private async migrateSettings() {
-      if (this.api === undefined) return;
-  
-      if (this.getSetting('deviceid') === ""){
-        await this.api.getCharger(this.getData().id)
-        .then((charger) => {    
+  private async migrateSettings() {
+    if (this.api === undefined) return;
+
+    if (this.getSetting('deviceid') === '') {
+      await this.api
+        .getCharger(this.getData().id)
+        .then((charger) => {
           this.setSettings({
             deviceid: charger.DeviceId,
           });
@@ -65,8 +73,8 @@ export class HomeCharger extends Homey.Device {
         .catch((e) => {
           this.logToDebug(`Failed to poll charger info: ${e}`);
         });
-      }
     }
+  }
 
   /**
    * Verify all expected capabilities and apply changes to capabilities.
@@ -74,8 +82,7 @@ export class HomeCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove: string[] = [
-    ];
+    const remove: string[] = [];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
@@ -246,11 +253,11 @@ export class HomeCharger extends Homey.Device {
         ChargerId: this.getData().id,
         From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
         DetailLevel: 0,
-        PageSize: 5000,
+        PageSize: 50,
       })
       .then((charges) => {
         const yearlyEnergy =
-          charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+          charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
       })
       .then(() => {
@@ -363,7 +370,7 @@ export class HomeCharger extends Homey.Device {
         await this.setSettings({
           firmware: state.ValueAsString,
         });
-        break;  
+        break;
 
       // The data for the previous session is JSON stringified into this state
       // variable
@@ -513,7 +520,10 @@ export class HomeCharger extends Homey.Device {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
+      await this.setCapabilityValue(
+        'meter_power.last_session',
+        Number(session.Energy),
+      );
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }
