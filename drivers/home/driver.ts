@@ -1,5 +1,9 @@
 import Homey from 'homey';
-import { ChargerOperationMode, chargerOperationModeStr, ZaptecApi } from '../../lib/zaptec';
+import {
+  ChargerOperationMode,
+  chargerOperationModeStr,
+  ZaptecApi,
+} from '../../lib/zaptec';
 import type { HomeCharger } from './device';
 
 interface InstallationCurrentControlArgs {
@@ -76,16 +80,24 @@ class HomeDriver extends Homey.Driver {
 
     this.homey.flow
       .getActionCard('home_cable_permanent_lock')
-      .registerRunListener(async ({ device }) => device.lockCable(true).then(() => device.setCapabilityValue('cable_permanent_lock', true)));
-      
+      .registerRunListener(async ({ device }) =>
+        device
+          .lockCable(true)
+          .then(() => device.setCapabilityValue('cable_permanent_lock', true)),
+      );
+
     this.homey.flow
       .getActionCard('home_cable_permanent_open')
-      .registerRunListener(async ({ device }) => device.lockCable(false).then(() => device.setCapabilityValue('cable_permanent_lock', false)));
-
+      .registerRunListener(async ({ device }) =>
+        device
+          .lockCable(false)
+          .then(() => device.setCapabilityValue('cable_permanent_lock', false)),
+      );
   }
 
   async onPair(session: Homey.Driver.PairSession) {
-    const api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    const api = new ZaptecApi(appVersion);
     let username = '';
     let password = '';
 
