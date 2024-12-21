@@ -21,7 +21,8 @@ export class GoCharger extends Homey.Device {
    */
   async onInit() {
     this.log('GoCharger is initializing');
-    this.api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    this.api = new ZaptecApi(appVersion);
     this.renewToken();
 
     await this.api.authenticate(
@@ -30,18 +31,49 @@ export class GoCharger extends Homey.Device {
     );
 
     await this.migrateCapabilities();
+    await this.migrateSettings();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
       cron.schedule('0,30 * * * * *', () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()),
-      cron.schedule('0 0 7 * * * *', () => this.pollSlowValues()),
+      cron.schedule('0 0 7 * * * *', () => {
+        // Random delay between 0 and 120 seconds
+        const jitter = Math.floor(Math.random() * 120000);
+        setTimeout(() => {
+          this.pollSlowValues();
+        }, jitter);
+      }),
     );
 
     // Do initial slow poll at start, we don't know how long ago we read it out.
     this.pollSlowValues();
 
     this.log('GoCharger has been initialized');
+  }
+
+  /**
+   * Migrate settings from the old settings format to the new one.
+   * If the deviceid setting is empty, poll the charger info and store the device id.
+   */
+  private async migrateSettings() {
+    if (this.api === undefined) return;
+
+    if (this.getSetting('deviceid') === '') {
+      await this.api
+        .getCharger(this.getData().id)
+        .then((charger) => {
+          this.setSettings({
+            deviceid: charger.DeviceId,
+          });
+        })
+        .then(() => {
+          this.logToDebug(`Got charger info - added device id`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to poll charger info: ${e}`);
+        });
+    }
   }
 
   /**
@@ -70,6 +102,7 @@ export class GoCharger extends Homey.Device {
       'charging_button', // replaces onoff
       'measure_temperature',
       'measure_humidity',
+      'cable_permanent_lock',
     ];
 
     for (const cap of add)
@@ -83,6 +116,10 @@ export class GoCharger extends Homey.Device {
     this.registerCapabilityListener('charging_button', async (value) => {
       if (value) await this.startCharging();
       else await this.stopCharging();
+    });
+    this.registerCapabilityListener('cable_permanent_lock', async (value) => {
+      if (value) await this.lockCable(true);
+      else await this.lockCable(false);
     });
   }
 
@@ -228,11 +265,11 @@ export class GoCharger extends Homey.Device {
         ChargerId: this.getData().id,
         From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
         DetailLevel: 0,
-        PageSize: 5000,
+        PageSize: 50,
       })
       .then((charges) => {
         const yearlyEnergy =
-          charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+          charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
       })
       .then(() => {
@@ -341,10 +378,23 @@ export class GoCharger extends Homey.Device {
         );
         break;
 
+      case ApolloDeviceObservation.SmartComputerSoftwareApplicationVersion:
+        await this.setSettings({
+          firmware: state.ValueAsString,
+        });
+        break;
+
       // The data for the previous session is JSON stringified into this state
       // variable
       case ApolloDeviceObservation.CompletedSession:
         if (state.ValueAsString) await this.onLastSession(state.ValueAsString);
+        break;
+
+      case ApolloDeviceObservation.PermanentCableLock:
+        await this.setCapabilityValue(
+          'cable_permanent_lock',
+          Number(state.ValueAsString) === 1 ? true : false,
+        );
         break;
 
       default:
@@ -482,7 +532,10 @@ export class GoCharger extends Homey.Device {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
+      await this.setCapabilityValue(
+        'meter_power.last_session',
+        Number(session.Energy),
+      );
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }
@@ -546,6 +599,17 @@ export class GoCharger extends Homey.Device {
       .catch((e) => {
         this.logToDebug(`stopCharging failure: ${e}`);
         throw new Error(`Failed to turn off the charger: ${e}`);
+      });
+  }
+
+  public async lockCable(lockCable: boolean) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .lockCharger(this.getData().id, lockCable)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`lockCable failure: ${e}`);
+        throw new Error(`Failed to lock/unlock cable: ${e}`);
       });
   }
 

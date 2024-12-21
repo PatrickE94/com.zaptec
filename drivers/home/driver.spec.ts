@@ -1,6 +1,6 @@
 import assert from 'assert';
 
-describe('Go driver', () => {
+describe('Home driver', () => {
   it('should do a test', () => {
     assert(true);
   });

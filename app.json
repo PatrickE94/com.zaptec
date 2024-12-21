@@ -37,6 +37,7 @@
       }
     ]
   },
+  "support": "https://github.com/patricke94/com.zaptec/issues",
   "contributing": {
     "donate": {
       "paypal": {
@@ -49,6 +50,7 @@
     "net": "*"
   },
   "homepage": "https://www.zaptec.com/",
+  "homeyCommunityTopicId": 118631,
   "flow": {
     "triggers": [
       {
@@ -722,6 +724,38 @@
         ]
       },
       {
+        "id": "go_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "go_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
         "id": "home_installation_current_control",
         "title": {
           "en": "Set available current to"
@@ -793,6 +827,38 @@
         "id": "home_stop_charging",
         "title": {
           "en": "Stop charging"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
         },
         "args": [
           {
@@ -882,6 +948,38 @@
             "filter": "driver_id=pro"
           }
         ]
+      },
+      {
+        "id": "pro_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
       }
     ]
   },
@@ -930,6 +1028,7 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
+        "cable_permanent_lock",
         "charging_button",
         "charge_mode",
         "alarm_generic.car_connected",
@@ -1015,6 +1114,22 @@
                 "en": "Show voltage per phase"
               },
               "value": false
+            },
+            {
+              "id": "firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware version"
+              },
+              "value": ""
+            },
+            {
+              "id": "deviceid",
+              "type": "label",
+              "label": {
+                "en": "Device ID"
+              },
+              "value": ""
             }
           ]
         },
@@ -1080,6 +1195,7 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
+        "cable_permanent_lock",
         "charging_button",
         "charge_mode",
         "alarm_generic.car_connected",
@@ -1166,6 +1282,22 @@
                 "en": "Show voltage per phase"
               },
               "value": false
+            },
+            {
+              "id": "firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware version"
+              },
+              "value": ""
+            },
+            {
+              "id": "deviceid",
+              "type": "label",
+              "label": {
+                "en": "Device ID"
+              },
+              "value": ""
             }
           ]
         },
@@ -1231,6 +1363,7 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
+        "cable_permanent_lock",
         "charging_button",
         "charge_mode",
         "alarm_generic.car_connected",
@@ -1329,6 +1462,22 @@
                 "en": "Show voltage per phase"
               },
               "value": false
+            },
+            {
+              "id": "firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware version"
+              },
+              "value": ""
+            },
+            {
+              "id": "deviceid",
+              "type": "label",
+              "label": {
+                "en": "Device ID"
+              },
+              "value": ""
             }
           ]
         },
@@ -1373,6 +1522,22 @@
       "uiComponent": "sensor",
       "chartType": "stepLine",
       "icon": "/assets/current_limit.svg"
+    },
+    "cable_permanent_lock": {
+      "type": "boolean",
+      "uiComponent": "button",
+      "getable": true,
+      "setable": true,
+      "title": {
+        "en": "Cable locked"
+      },
+      "insights": true,
+      "insightsTitleTrue": {
+        "en": "Cable permanently locked to charger"
+      },
+      "insightsTitleFalse": {
+        "en": "Cable unlocked from charger"
+      }
     },
     "charge_mode": {
       "type": "enum",

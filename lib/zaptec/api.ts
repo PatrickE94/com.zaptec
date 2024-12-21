@@ -73,10 +73,64 @@ async function request(
 }
 
 /**
+ * Perform a HTTP request against the Zaptec API and handle 429 responses with backoff
+ *
+ * This is a convenience function to promisify the HTTP API, alongside sane defaults.
+ *
+ * Assumes a 15s timeout is wanted.
+ *
+ * @param {string} path - URL path to endpoint
+ * @param {[http.RequestOptions]} options - Generic Node HTTP options to pass with request
+ * @param {[string]} data - Any data to write as the body of the request.
+ * @param {[number]} maxRetries - Maximum number of retries before giving up.
+ * @returns {Response<string>} A response object with the response body and HTTP message object.
+ */
+async function requestWithBackoff(
+  path: string,
+  options: https.RequestOptions,
+  data?: string,
+  maxRetries = 5,
+): Promise<Response<string>> {
+  let retries = 0;
+  let backoff = 500;
+
+  const delay = (ms: number): Promise<void> =>
+    new Promise((resolve) => {
+      setTimeout(() => resolve(), ms);
+    });
+
+  while (retries < maxRetries) {
+    const response = await request(path, options, data);
+
+    // If not a 429 response, return immediately
+    if (response.response.statusCode !== 429) return response;
+
+    // If retry after header is set, use that value
+    const retryAfter = response.response.headers['retry-after'];
+    if (retryAfter !== undefined && retryAfter) {
+      const retryAfterSeconds = Number(retryAfter);
+      if (!Number.isNaN(retryAfterSeconds)) backoff = retryAfterSeconds * 1000;
+    }
+
+    // Wait and increase backoff time
+    await delay(backoff);
+    backoff *= 2; // Exponential backoff
+    retries += 1;
+  }
+
+  throw new Error(`Max retries exceeded for path: ${path}`);
+}
+
+/**
  * Simple HTTP wrapper around the Zaptec API
  */
 export class ZaptecApi {
+  private version: string;
   protected bearerToken?: string;
+
+  constructor(version: string) {
+    this.version = version;
+  }
 
   protected async get<T>(
     path: string,
@@ -84,12 +138,13 @@ export class ZaptecApi {
   ): Promise<Response<T>> {
     const headers: Record<string, string> = {
       Accept: 'application/json',
+      'User-Agent': this.getUserAgent(),
     };
 
     if (this.bearerToken !== undefined)
       headers.Authorization = `Bearer ${this.bearerToken}`;
 
-    const response = await request(path, {
+    const response = await requestWithBackoff(path, {
       method: 'GET',
       headers,
       ...options,
@@ -126,12 +181,13 @@ export class ZaptecApi {
           ? 'application/json'
           : 'application/x-www-form-urlencoded',
       Accept: 'application/json',
+      'User-Agent': this.getUserAgent(),
     };
 
     if (this.bearerToken !== undefined)
       headers.Authorization = `Bearer ${this.bearerToken}`;
 
-    const response = await request(
+    const response = await requestWithBackoff(
       path,
       {
         method: 'POST',
@@ -212,16 +268,44 @@ export class ZaptecApi {
     PageIndex?: number;
     IncludeDisabled?: boolean;
     Exclude?: string[];
-  }) {
-    const { data, response } = await this.get<PagedData<SessionListModel>>(
-      `/api/chargehistory?${querystring.stringify(params)}`,
-      {},
-    );
+  }): Promise<SessionListModel[]> {
+    let allData: SessionListModel[] = [];
+    let currentPage = 0;
+    const pageSize = params.PageSize || 50;
+    let totalPages = 1;
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    while (currentPage < totalPages) {
+      const { data, response } = await this.get<PagedData<SessionListModel>>(
+        `/api/chargehistory?${querystring.stringify({
+          ...params,
+          PageSize: pageSize,
+          PageIndex: currentPage,
+        })}`,
+        {},
+      );
 
-    return data;
+      if (response.statusCode !== 200) {
+        throw new Error(
+          `Unexpected response statusCode ${response.statusCode}`,
+        );
+      }
+
+      const pageData = data.Data ?? [];
+      if (!Array.isArray(pageData)) {
+        throw new Error(
+          `Expected Data to be an array, but got ${typeof pageData}`,
+        );
+      }
+
+      allData = allData.concat(pageData);
+
+      totalPages = data.Pages ?? 0;
+      if (currentPage >= totalPages - 1) break;
+
+      currentPage += 1;
+    }
+
+    return allData;
   }
 
   // -------------------------- //
@@ -292,6 +376,20 @@ export class ZaptecApi {
   public async sendCommand(chargerId: string, command: Command): Promise<void> {
     const { response } = await this.post(
       `/api/chargers/${chargerId}/sendCommand/${command}`,
+    );
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+  }
+
+  public async lockCharger(chargerId: string, lock: boolean): Promise<void> {
+    const { data, response } = await this.post<TokenResponse>(
+      `/api/chargers/${chargerId}/localSettings`,
+      {
+        Cable: {
+          PermanentLock: lock,
+        },
+      },
     );
 
     if (response.statusCode !== 200)
@@ -418,5 +516,13 @@ export class ZaptecApi {
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
+  }
+
+  // -------------------------- //
+  //  User Agent
+  // -------------------------- //
+
+  private getUserAgent(): string {
+    return `AthomHomey/com.zaptec/${this.version} (https://github.com/PatrickE94/com.zaptec)`;
   }
 }

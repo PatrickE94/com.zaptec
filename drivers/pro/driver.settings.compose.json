@@ -12,6 +12,22 @@
                     "en": "Show voltage per phase"
                 },
                 "value": false
+            },
+            {
+                "id": "firmware",
+                "type": "label",
+                "label": { 
+                    "en": "Firmware version"
+                },
+                "value": ""
+            },
+            {
+                "id": "deviceid",
+                "type": "label",
+                "label": { 
+                    "en": "Device ID"
+                },
+                "value": ""
             }
         ]
     },
