@@ -374,7 +374,7 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.TemperatureInternal5:
         await this.setCapabilityValue(
           'measure_temperature',
-          Number(state.ValueAsString) / 10.0,
+          Number(state.ValueAsString),
         );
         break;
 
