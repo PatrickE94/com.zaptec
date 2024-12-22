@@ -4,6 +4,7 @@
   "getable": true,
   "setable": true,
   "title": {
-    "en": "Charging"
+    "en": "Charging",
+    "no": "Lader"
   }
 }
