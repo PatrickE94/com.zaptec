@@ -1028,8 +1028,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1195,8 +1195,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1264,6 +1264,16 @@
         "alarm_generic.car_connected": {
           "title": {
             "en": "Car connected"
+          }
+        },
+        "measure_temperature.sensor1": {
+          "title": {
+            "en": "Temperature Sensor 1"
+          }
+        },
+        "measure_temperature.sensor2": {
+          "title": {
+            "en": "Temperature Sensor 2"
           }
         }
       },
@@ -1363,8 +1373,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1436,14 +1446,12 @@
         },
         "measure_temperature.sensor1": {
           "title": {
-            "en": "Temperature L1",
-            "no": "Temperatur L1"
+            "en": "Temperature Sensor 1"
           }
         },
         "measure_temperature.sensor2": {
           "title": {
-            "en": "Temperature L2",
-            "no": "Temperatur L2"
+            "en": "Temperature Sensor 2"
           }
         }
       },
