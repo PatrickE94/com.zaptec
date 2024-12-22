@@ -1,40 +1,45 @@
 {
   "type": "enum",
   "title": {
-    "en": "Charge mode"
+    "en": "Charge mode",
+    "no": "Ladermodus"
   },
   "getable": true,
   "setable": false,
   "uiComponent": "picker",
   "values": [
     {
-      "id": "Unknown",
-      "title": {
-        "en": "Unknown"
-      }
-    },
-    {
       "id": "Disconnected",
       "title": {
-        "en": "Disconnected"
+        "en": "Disconnected",
+        "no": "Frakoblet"
       }
     },
     {
       "id": "Connecting to car",
       "title": {
-        "en": "Connecting to car"
+        "en": "Connecting to car",
+        "no": "Kommuniserer med bil"
       }
     },
     {
       "id": "Charging",
       "title": {
-        "en": "Charging"
+        "en": "Charging",
+        "no": "Lader"
       }
     },
     {
       "id": "Charging finished",
       "title": {
-        "en": "Charging finished"
+        "en": "Charging finished",
+        "no": "Lading ferdig"
+      }
+    },    {
+      "id": "Unknown",
+      "title": {
+        "en": "Unknown",
+        "no": "Ukjent"
       }
     }
   ]
