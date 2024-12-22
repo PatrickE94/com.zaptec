@@ -21,7 +21,8 @@ export class GoCharger extends Homey.Device {
    */
   async onInit() {
     this.log('GoCharger is initializing');
-    this.api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    this.api = new ZaptecApi(appVersion);
     this.renewToken();
 
     await this.api.authenticate(
@@ -36,7 +37,13 @@ export class GoCharger extends Homey.Device {
     this.cronTasks.push(
       cron.schedule('0,30 * * * * *', () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()),
-      cron.schedule('0 0 7 * * * *', () => this.pollSlowValues()),
+      cron.schedule('0 0 7 * * * *', () => {
+        // Random delay between 0 and 120 seconds
+        const jitter = Math.floor(Math.random() * 120000);
+        setTimeout(() => {
+          this.pollSlowValues();
+        }, jitter);
+      }),
     );
 
     // Do initial slow poll at start, we don't know how long ago we read it out.
@@ -45,39 +52,39 @@ export class GoCharger extends Homey.Device {
     this.log('GoCharger has been initialized');
   }
 
-      /**
+  /**
    * Migrate settings from the old settings format to the new one.
    * If the deviceid setting is empty, poll the charger info and store the device id.
    */
-      private async migrateSettings() {
-        if (this.api === undefined) return;
-    
-        if (this.getSetting('deviceid') === ""){
-          await this.api.getCharger(this.getData().id)
-          .then((charger) => {    
-            this.setSettings({
-              deviceid: charger.DeviceId,
-            });
-          })
-          .then(() => {
-            this.logToDebug(`Got charger info - added device id`);
-          })
-          .catch((e) => {
-            this.logToDebug(`Failed to poll charger info: ${e}`);
-          });
-        }
- 
-        if (this.getSetting('showVoltage')){
-          await this.addCapability('measure_voltage.phase1');
-          await this.addCapability('measure_voltage.phase2');
-          await this.addCapability('measure_voltage.phase3');
-        }else{
-          await this.removeCapability('measure_voltage.phase1');
-          await this.removeCapability('measure_voltage.phase2');
-          await this.removeCapability('measure_voltage.phase3');    
-        }
+  private async migrateSettings() {
+    if (this.api === undefined) return;
 
+    if (this.getSetting('deviceid') === '') {
+      await this.api
+        .getCharger(this.getData().id)
+        .then((charger) => {
+          this.setSettings({
+            deviceid: charger.DeviceId,
+          });
+        })
+        .then(() => {
+          this.logToDebug(`Got charger info - added device id`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to poll charger info: ${e}`);
+        });
     }
+     
+    if (this.getSetting('showVoltage')){
+      await this.addCapability('measure_voltage.phase1');
+      await this.addCapability('measure_voltage.phase2');
+      await this.addCapability('measure_voltage.phase3');
+    }else{
+      await this.removeCapability('measure_voltage.phase1');
+      await this.removeCapability('measure_voltage.phase2');
+      await this.removeCapability('measure_voltage.phase3');    
+    }
+  }
 
   /**
    * Verify all expected capabilities and apply changes to capabilities.
@@ -268,11 +275,11 @@ export class GoCharger extends Homey.Device {
         ChargerId: this.getData().id,
         From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
         DetailLevel: 0,
-        PageSize: 5000,
+        PageSize: 50,
       })
       .then((charges) => {
         const yearlyEnergy =
-          charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+          charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
       })
       .then(() => {
@@ -377,15 +384,15 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.TemperatureInternal5:
         await this.setCapabilityValue(
           'measure_temperature',
-          Number(state.ValueAsString) / 10.0,
+          Number(state.ValueAsString),
         );
         break;
 
       case ApolloDeviceObservation.SmartComputerSoftwareApplicationVersion:
-          await this.setSettings({
-            firmware: state.ValueAsString,
-          });
-          break;
+        await this.setSettings({
+          firmware: state.ValueAsString,
+        });
+        break;
 
       // The data for the previous session is JSON stringified into this state
       // variable
@@ -535,7 +542,10 @@ export class GoCharger extends Homey.Device {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
+      await this.setCapabilityValue(
+        'meter_power.last_session',
+        Number(session.Energy),
+      );
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }

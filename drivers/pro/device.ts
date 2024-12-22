@@ -21,7 +21,8 @@ export class ProCharger extends Homey.Device {
    */
   async onInit() {
     this.log('ProCharger is initializing');
-    this.api = new ZaptecApi();
+    const appVersion = this.homey.app.manifest.version;
+    this.api = new ZaptecApi(appVersion);
     this.renewToken();
 
     await this.api.authenticate(
@@ -36,7 +37,13 @@ export class ProCharger extends Homey.Device {
     this.cronTasks.push(
       cron.schedule('0,30 * * * * *', () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()),
-      cron.schedule('0 0 7 * * * *', () => this.pollSlowValues()),
+      cron.schedule('0 0 7 * * * *', () => {
+        // Random delay between 0 and 120 seconds
+        const jitter = Math.floor(Math.random() * 120000);
+        setTimeout(() => {
+          this.pollSlowValues();
+        }, jitter);
+      }),
     );
 
     // Do initial slow poll at start, we don't know how long ago we read it out.
@@ -52,19 +59,20 @@ export class ProCharger extends Homey.Device {
   private async migrateSettings() {
     if (this.api === undefined) return;
 
-    if (this.getSetting('deviceid') === ""){
-      await this.api.getCharger(this.getData().id)
-      .then((charger) => {    
-        this.setSettings({
-          deviceid: charger.DeviceId,
+    if (this.getSetting('deviceid') === '') {
+      await this.api
+        .getCharger(this.getData().id)
+        .then((charger) => {
+          this.setSettings({
+            deviceid: charger.DeviceId,
+          });
+        })
+        .then(() => {
+          this.logToDebug(`Got charger info - added device id`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to poll charger info: ${e}`);
         });
-      })
-      .then(() => {
-        this.logToDebug(`Got charger info - added device id`);
-      })
-      .catch((e) => {
-        this.logToDebug(`Failed to poll charger info: ${e}`);
-      });
     }
 
     if (this.getSetting('showVoltage')){
@@ -85,13 +93,15 @@ export class ProCharger extends Homey.Device {
    */
   private async migrateCapabilities() {
     const remove: string[] = [
+      'measure_temperature'
     ];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
 
     const add = [
-      'measure_temperature',
+      'measure_temperature.sensor1',
+      'measure_temperature.sensor2',
       'measure_humidity',
       'cable_permanent_lock',
     ];
@@ -113,7 +123,6 @@ export class ProCharger extends Homey.Device {
       if (value) await this.lockCable(true);
       else await this.lockCable(false);
     });
-
   }
 
   /**
@@ -258,11 +267,11 @@ export class ProCharger extends Homey.Device {
         ChargerId: this.getData().id,
         From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
         DetailLevel: 0,
-        PageSize: 5000,
+        PageSize: 50,
       })
       .then((charges) => {
         const yearlyEnergy =
-          charges.Data?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+          charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
       })
       .then(() => {
@@ -357,10 +366,17 @@ export class ProCharger extends Homey.Device {
         );
         break;
 
+      case SmartDeviceObservation.TemperatureInternal5:
+        await this.setCapabilityValue(
+          'measure_temperature.sensor1',
+          Number(state.ValueAsString),
+        );
+        break;
+
       case SmartDeviceObservation.TemperatureInternal6:
         await this.setCapabilityValue(
-          'measure_temperature',
-          Number(state.ValueAsString) / 10.0,
+          'measure_temperature.sensor2',
+          Number(state.ValueAsString),
         );
         break;
 
@@ -408,7 +424,6 @@ export class ProCharger extends Homey.Device {
         );
         throw e;
       });
-
 
     const isNumber = (n: number | undefined | null): n is number =>
       n !== undefined && n !== null;
@@ -526,7 +541,10 @@ export class ProCharger extends Homey.Device {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
+      await this.setCapabilityValue(
+        'meter_power.last_session',
+        Number(session.Energy),
+      );
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }
