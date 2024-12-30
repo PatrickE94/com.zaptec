@@ -32,6 +32,7 @@ export class ProCharger extends Homey.Device {
 
     await this.migrateCapabilities();
     await this.migrateSettings();
+    if (this.getClass() !== 'evcharger') await this.setClass('evcharger').catch(this.error) //migrate from class other
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
