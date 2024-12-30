@@ -16,6 +16,15 @@
                 "value": false
             },
             {
+                "id": "showCurrent",
+                "type": "checkbox",
+                "label": {
+                    "en": "Show current per phase",
+                    "no": "Vis strøm per fase"
+                },
+                "value": true
+            },
+            {
                 "id": "firmware",
                 "type": "label",
                 "label": { 
