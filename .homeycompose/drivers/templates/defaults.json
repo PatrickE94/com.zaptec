@@ -18,7 +18,8 @@
       "template": "login_credentials",
       "options": {
         "title": {
-          "en": "Zaptec Login"
+          "en": "Zaptec Login",
+          "no": "Zaptec innlogging"
         }
       }
     },
