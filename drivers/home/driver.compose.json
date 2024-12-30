@@ -5,7 +5,6 @@
   "$extends": [
     "defaults"
   ],
-  "class": "evcharger",
   "capabilities": [
     "meter_power.current_session",
     "meter_power.this_year",
