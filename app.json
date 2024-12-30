@@ -837,6 +837,24 @@
         ]
       },
       {
+        "id": "go_reboot_charger",
+        "title": {
+          "en": "Reboot charger",
+          "no": "Restart ladeboksen"
+        },
+        "hint": {
+          "en": "Reboots the charger, turing it off and on again",
+          "no": "Restart på ladeboksen, skrur den av og på igjen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
         "id": "home_installation_current_control",
         "title": {
           "en": "Set available current to",
@@ -951,7 +969,25 @@
         },
         "hint": {
           "en": "Removes the permanent lock on the cable from the charging station",
-          "no": "Fjerner permanent lås på kabel fra ladestasjonen"
+          "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
+        "id": "home_reboot_charger",
+        "title": {
+          "en": "Reboot charger",
+          "no": "Restart ladeboksen"
+        },
+        "hint": {
+          "en": "Reboots the charger, turing it off and on again",
+          "no": "Restart på ladeboksen, skrur den av og på igjen"
         },
         "args": [
           {
@@ -1076,7 +1112,25 @@
         },
         "hint": {
           "en": "Removes the permanent lock on the cable from the charging station",
-          "no": "Fjerner permanent lås fra kabel fra ladestasjonen"
+          "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_reboot_charger",
+        "title": {
+          "en": "Reboot charger",
+          "no": "Restart ladeboksen"
+        },
+        "hint": {
+          "en": "Reboots the charger, turing it off and on again",
+          "no": "Restart på ladeboksen, skrur den av og på igjen"
         },
         "args": [
           {

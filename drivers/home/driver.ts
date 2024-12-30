@@ -95,6 +95,11 @@ class HomeDriver extends Homey.Driver {
           .lockCable(false)
           .then(() => device.setCapabilityValue('cable_permanent_lock', false)),
       );
+
+    this.homey.flow
+      .getActionCard('home_reboot_charger')
+      .registerRunListener(async ({ device }) => device.rebootCharger());
+      
   }
 
   async onPair(session: Homey.Driver.PairSession) {

@@ -77,7 +77,7 @@
     {
       "id": "home_charging_starts",
       "title": {
-        "en": "Charging starts",  
+        "en": "Charging starts",
         "no": "Lading starter"
       },
       "hint": {
@@ -239,7 +239,7 @@
     {
       "id": "home_stop_charging",
       "title": {
-        "en": "Stop charging",        
+        "en": "Stop charging",
         "no": "Stopp lading"
       }
     },
@@ -257,12 +257,23 @@
     {
       "id": "home_cable_permanent_open",
       "title": {
-        "en": "Unlock cable from charging station",        
+        "en": "Unlock cable from charging station",
         "no": "Frigjør kabel fra ladestasjon"
       },
       "hint": {
         "en": "Removes the permanent lock on the cable from the charging station",
-        "no": "Fjerner permanent lås på kabel fra ladestasjonen"
+        "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+      }
+    },
+    {
+      "id": "home_reboot_charger",
+      "title": {
+        "en": "Reboot charger",
+        "no": "Restart ladeboksen"
+      },
+      "hint": {
+        "en": "Reboots the charger, turing it off and on again",
+        "no": "Restart på ladeboksen, skrur den av og på igjen"
       }
     }
   ]

@@ -263,6 +263,17 @@
         "en": "Removes the permanent lock on the cable from the charging station",
         "no": "Fjerner permanent låsing av kabel til ladestasjonen"
       }
+    },
+    {
+      "id": "go_reboot_charger",
+      "title": {
+        "en": "Reboot charger",
+        "no": "Restart ladeboksen"
+      },
+      "hint": {
+        "en": "Reboots the charger, turing it off and on again",
+        "no": "Restart på ladeboksen, skrur den av og på igjen"
+      }
     }
   ]
 }
