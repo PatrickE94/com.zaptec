@@ -1519,6 +1519,7 @@
         "measure_power",
         "charging_button",
         "cable_permanent_lock",
+        "hmi_brightness",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1771,6 +1772,24 @@
         "en": "Charging",
         "no": "Lader"
       }
+    },
+    "hmi_brightness": {
+      "type": "number",
+      "title": {
+        "en": "LED brightness",
+        "no": "Lysstyrke LED"
+      },
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "units": {
+        "en": "%"
+      },
+      "getable": true,
+      "setable": true,
+      "uiQuickAction": false,
+      "uiComponent": "slider",
+      "icon": "/assets/light.svg"
     }
   }
 }

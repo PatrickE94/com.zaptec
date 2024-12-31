@@ -1,0 +1,18 @@
+{
+  "type": "number",
+  "title": {
+    "en": "LED brightness",
+    "no": "Lysstyrke LED"
+  },
+  "min": 0,
+  "max": 1,
+  "step": 0.1,
+  "units": {
+    "en": "%"
+  },
+  "getable": true,
+  "setable": true, 
+  "uiQuickAction" : false,
+  "uiComponent": "slider",
+  "icon": "/assets/light.svg"
+}

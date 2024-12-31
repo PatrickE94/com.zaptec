@@ -105,6 +105,7 @@ export class ProCharger extends Homey.Device {
       'measure_temperature.sensor2',
       'measure_humidity',
       'cable_permanent_lock',
+      'hmi_brightness',
     ];
 
     for (const cap of add)
@@ -124,6 +125,10 @@ export class ProCharger extends Homey.Device {
       if (value) await this.lockCable(true);
       else await this.lockCable(false);
     });
+
+    this.registerCapabilityListener('hmi_brightness', async (value) => {
+      if (value) await this.setHmiBrightness(value);
+    })
   }
 
   /**
@@ -419,6 +424,13 @@ export class ProCharger extends Homey.Device {
         );
         break;
 
+      case SmartDeviceObservation.HmiBrightness:
+        await this.setCapabilityValue(
+          'hmi_brightness',
+          Number(state.ValueAsString),
+        );
+        break;
+
       default:
         break;
     }
@@ -634,6 +646,17 @@ export class ProCharger extends Homey.Device {
       .catch((e) => {
         this.logToDebug(`lockCable failure: ${e}`);
         throw new Error(`Failed to lock/unlock cable: ${e}`);
+      });
+  }
+
+  public async setHmiBrightness(brightness: number) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .setHmiBrightness(this.getData().id, brightness)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`setHmiBrightness failure: ${e}`);
+        throw new Error(`Failed to set HMI brightness: ${e}`);
       });
   }
 

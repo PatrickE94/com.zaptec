@@ -396,6 +396,23 @@ export class ZaptecApi {
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
+  public async setHmiBrightness(chargerId: string, brightness: number): Promise<void> {
+    if (brightness < 0 || brightness > 1) 
+      throw new Error(`Unexpected brightness value ${brightness}`);    
+    const { data, response } = await this.post<TokenResponse>(
+      `/api/chargers/${chargerId}/localSettings`,
+      {
+        Device: {
+          HmiBrightness: brightness,
+        },
+      },
+    );
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    
+  }
+
   // -------------------------- //
   //  Installation
   // -------------------------- //

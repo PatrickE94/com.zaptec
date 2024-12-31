@@ -12,6 +12,7 @@
     "measure_power",
     "charging_button",
     "cable_permanent_lock",
+    "hmi_brightness",
     "charge_mode",
     "alarm_generic.car_connected",
     "available_installation_current",
