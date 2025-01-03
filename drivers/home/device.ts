@@ -31,6 +31,7 @@ export class HomeCharger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
     this.registerCapabilityListeners();
@@ -54,6 +55,23 @@ export class HomeCharger extends Homey.Device {
   }
 
   /**
+   * Athom addded an EV Charger class, we'll want to use that one!
+   *
+   * This takes care of migrating already added devices to the new class.
+   */
+  private async migrateClass() {
+    if (this.getClass() !== 'evcharger') {
+      await this.setClass('evcharger')
+        .then(() => {
+          this.logToDebug(`Updated device class to EV Charger`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
+  }
+
+  /**
    * Migrate settings from the old settings format to the new one.
    * If the deviceid setting is empty, poll the charger info and store the device id.
    */
@@ -63,11 +81,11 @@ export class HomeCharger extends Homey.Device {
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
-        .then((charger) => {
+        .then((charger) =>
           this.setSettings({
             deviceid: charger.DeviceId,
-          });
-        })
+          }),
+        )
         .then(() => {
           this.logToDebug(`Got charger info - added device id`);
         })
@@ -102,10 +120,7 @@ export class HomeCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove: string[] = [
-      'measure_temperature'
-    ];
-
+    const remove: string[] = ['measure_temperature'];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
@@ -400,7 +415,7 @@ export class HomeCharger extends Homey.Device {
         );
         break;
 
-     case SmartDeviceObservation.TemperatureInternal5:
+      case SmartDeviceObservation.TemperatureInternal5:
         await this.setCapabilityValue(
           'measure_temperature.sensor1',
           Number(state.ValueAsString),
@@ -436,7 +451,7 @@ export class HomeCharger extends Homey.Device {
       case SmartDeviceObservation.PermanentCableLock:
         await this.setCapabilityValue(
           'cable_permanent_lock',
-          Number(state.ValueAsString) === 1 ? true : false,
+          Number(state.ValueAsString) === 1,
         );
         break;
 
