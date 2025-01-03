@@ -8,6 +8,7 @@ import {
   chargerOperationModeStr,
   chargerOperationModeFromStr,
 } from '../../lib/zaptec';
+import { ApiError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 
 export class HomeCharger extends Homey.Device {
@@ -91,8 +92,18 @@ export class HomeCharger extends Homey.Device {
         .catch((e) => {
           this.logToDebug(`Failed to poll charger info: ${e}`);
         });
+      }
+      
+      if (this.getSetting('showVoltage')){
+        await this.addCapability('measure_voltage.phase1');
+        await this.addCapability('measure_voltage.phase2');
+        await this.addCapability('measure_voltage.phase3');
+      }else{
+        await this.removeCapability('measure_voltage.phase1');
+        await this.removeCapability('measure_voltage.phase2');
+        await this.removeCapability('measure_voltage.phase3');    
+      }
     }
-  }
 
   /**
    * Verify all expected capabilities and apply changes to capabilities.
@@ -153,7 +164,7 @@ export class HomeCharger extends Homey.Device {
     newSettings: { [key: string]: string };
     changedKeys: string[];
   }): Promise<string | void> {
-    this.log('HomeCharger settings where changed: ', JSON.stringify(changes));
+    //this.log('HomeCharger settings where changed: ', JSON.stringify(changes));
 
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
@@ -266,6 +277,18 @@ export class HomeCharger extends Homey.Device {
   protected pollSlowValues() {
     if (this.api === undefined) return;
     const year = new Date().getFullYear();
+
+    this.api
+      .getInstallation(this.getData().installationId)
+      .then((installation) => {
+        if (installation.Id === this.getData().installationId && !this.hasCapability('available_installation_current'))
+          this.addCapability('available_installation_current');
+      })
+      .catch((e) => {
+        this.logToDebug(`Failed to poll installation: ${e}`);
+        if (this.hasCapability('available_installation_current')) 
+          this.removeCapability('available_installation_current');
+      });
 
     this.api
       .getChargeHistory({
@@ -420,10 +443,12 @@ export class HomeCharger extends Homey.Device {
    * Poll the available current for the installation.
    */
   protected async pollAvailableCurrent() {
-    if (this.api === undefined) return;
+    if (this.api === undefined || !this.hasCapability('available_installation_current')) return;
     const info = await this.api
       .getInstallation(this.getData().installationId)
-      .catch((e) => {
+      .catch((e) => {     
+        if (e instanceof ApiError && e.message.indexOf('Unknown object') >= 0 && this.hasCapability('available_installation_current'))
+          this.removeCapability('available_installation_current');
         this.logToDebug(
           `Failed to get installation info when updating available current: ${e}`,
         );
@@ -496,7 +521,7 @@ export class HomeCharger extends Homey.Device {
     const tokens = {
       charging: newMode === ChargerOperationMode.Connected_Charging,
       car_connected: newModeConnected,
-      current_limit: this.getCapabilityValue('available_installation_current'),
+      current_limit: Number(this.getCapabilityValue('available_installation_current')),
     };
 
     // Entering charging state => Charging starts

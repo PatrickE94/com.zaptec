@@ -4,13 +4,16 @@
   "getable": true,
   "setable": true,
   "title": {
-    "en": "Cable locked"
+    "en": "Cable locked",
+    "no": "Kabel låst"
   },
   "insights": true,
   "insightsTitleTrue": {
-    "en": "Cable permanently locked to charger"
+    "en": "Cable permanently locked to charger",
+    "no": "Kabel permanent låst til lader"
   },
   "insightsTitleFalse": {
-    "en": "Cable unlocked from charger"
+    "en": "Cable unlocked from charger",
+    "no": "Kabel ikke låst til lader"
   }
 }

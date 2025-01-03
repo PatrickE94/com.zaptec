@@ -1,10 +1,12 @@
 {
   "title": {
-    "en": "Installation available current"
+    "en": "Current limit",
+    "no": "Tilgjengelig strøm"
   },
   "type": "number",
   "desc": {
-    "en": "Set the amount of current available for an installation of chargers."
+    "en": "Set the amount of current available for an installation of chargers.",
+    "no": "Tilgjengelig strøm for installasjonen"
   },
   "min": 0,
   "max": 40,

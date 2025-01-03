@@ -12,7 +12,8 @@
     "en": "Zaptec"
   },
   "description": {
-    "en": "Fully charged for your next adventure"
+    "en": "Fully charged for your next adventure",
+    "no": "Fulladet og klar til neste opplevelse"
   },
   "category": [
     "energy"
@@ -56,31 +57,36 @@
       {
         "id": "car_connects",
         "title": {
-          "en": "Car connects"
+          "en": "Car connects",
+          "no": "Bil tilkobles"
         },
         "hint": {
-          "en": "When a car becomes connected to the charger"
+          "en": "When a car becomes connected to the charger",
+          "no": "Når en bil blir koblet til laderen"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
             }
           }
         ],
@@ -95,31 +101,36 @@
       {
         "id": "car_disconnects",
         "title": {
-          "en": "Car disconnects"
+          "en": "Car disconnects",
+          "no": "Bil kobles fra"
         },
         "hint": {
-          "en": "When a car disconnects it's cable from the charger."
+          "en": "When a car disconnects it's cable from the charger.",
+          "no": "Når en bil kobles fra laderen."
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
             }
           }
         ],
@@ -134,31 +145,36 @@
       {
         "id": "charging_starts",
         "title": {
-          "en": "Charging starts"
+          "en": "Charging starts",
+          "no": "Lading starter"
         },
         "hint": {
-          "en": "When a charging session is started"
+          "en": "When a charging session is started",
+          "no": "Når en lading starter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
             }
           }
         ],
@@ -176,28 +192,32 @@
           "en": "Charging stops"
         },
         "hint": {
-          "en": "When a charging session is stopped"
+          "en": "When a charging session is stopped",
+          "no": "Når en lading slutter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
             }
           }
         ],
@@ -212,31 +232,36 @@
       {
         "id": "home_car_connects",
         "title": {
-          "en": "Car connects"
+          "en": "Car connects",
+          "no": "Bil tilkobles"
         },
         "hint": {
-          "en": "When a car becomes connected to the charger"
+          "en": "When a car becomes connected to the charger",
+          "no": "Når en bil blir koblet til laderen"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -251,31 +276,36 @@
       {
         "id": "home_car_disconnects",
         "title": {
-          "en": "Car disconnects"
+          "en": "Car disconnects",
+          "no": "Bil kobles fra"
         },
         "hint": {
-          "en": "When a car disconnects it's cable from the charger."
+          "en": "When a car disconnects it's cable from the charger.",
+          "no": "Når en bil kobles fra laderen."
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -290,31 +320,36 @@
       {
         "id": "home_charging_starts",
         "title": {
-          "en": "Charging starts"
+          "en": "Charging starts",
+          "no": "Lading starter"
         },
         "hint": {
-          "en": "When a charging session is started"
+          "en": "When a charging session is started",
+          "no": "Når en lading starter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -329,31 +364,36 @@
       {
         "id": "home_charging_stops",
         "title": {
-          "en": "Charging stops"
+          "en": "Charging stops",
+          "no": "Lading slutter"
         },
         "hint": {
-          "en": "When a charging session is stopped"
+          "en": "When a charging session is stopped",
+          "no": "Når en lading slutter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -368,31 +408,36 @@
       {
         "id": "pro_car_connects",
         "title": {
-          "en": "Car connects"
+          "en": "Car connects",
+          "no": "Bil tilkobles"
         },
         "hint": {
-          "en": "When a car becomes connected to the charger"
+          "en": "When a car becomes connected to the charger",
+          "no": "Når en bil blir koblet til laderen"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -407,31 +452,36 @@
       {
         "id": "pro_car_disconnects",
         "title": {
-          "en": "Car disconnects"
+          "en": "Car disconnects",
+          "no": "Bil kobles fra"
         },
         "hint": {
-          "en": "When a car disconnects it's cable from the charger."
+          "en": "When a car disconnects it's cable from the charger.",
+          "no": "Når en bil kobles fra laderen."
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -446,31 +496,36 @@
       {
         "id": "pro_charging_starts",
         "title": {
-          "en": "Charging starts"
+          "en": "Charging starts",
+          "no": "Lading starter"
         },
         "hint": {
-          "en": "When a charging session is started"
+          "en": "When a charging session is started",
+          "no": "Når en lading starter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -485,31 +540,36 @@
       {
         "id": "pro_charging_stops",
         "title": {
-          "en": "Charging stops"
+          "en": "Charging stops",
+          "no": "Lading slutter"
         },
         "hint": {
-          "en": "When a charging session is stopped"
+          "en": "When a charging session is stopped",
+          "no": "Når en lading slutter"
         },
         "tokens": [
           {
             "name": "car_connected",
             "type": "boolean",
             "title": {
-              "en": "Car connected"
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
             }
           },
           {
             "name": "charging",
             "type": "boolean",
             "title": {
-              "en": "Car charging"
+              "en": "Car charging",
+              "no": "Bil lader"
             }
           },
           {
             "name": "current_limit",
             "type": "number",
             "title": {
-              "en": "Current phase power limit"
+              "en": "Current phase power limit",
+              "no": "Laderhastighet"
             }
           }
         ],
@@ -526,7 +586,8 @@
       {
         "id": "is_charging",
         "title": {
-          "en": "Car !{{is|is not}} charging"
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
         },
         "args": [
           {
@@ -539,7 +600,8 @@
       {
         "id": "is_connected",
         "title": {
-          "en": "Car !{{is|is not}} connected"
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
         },
         "args": [
           {
@@ -552,7 +614,8 @@
       {
         "id": "charging_is_finished",
         "title": {
-          "en": "Charging !{{is|is not}} finished"
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
         },
         "args": [
           {
@@ -565,7 +628,8 @@
       {
         "id": "home_is_charging",
         "title": {
-          "en": "Car !{{is|is not}} charging"
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
         },
         "args": [
           {
@@ -578,7 +642,8 @@
       {
         "id": "home_is_connected",
         "title": {
-          "en": "Car !{{is|is not}} connected"
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
         },
         "args": [
           {
@@ -591,7 +656,8 @@
       {
         "id": "home_charging_is_finished",
         "title": {
-          "en": "Charging !{{is|is not}} finished"
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
         },
         "args": [
           {
@@ -604,7 +670,8 @@
       {
         "id": "pro_is_charging",
         "title": {
-          "en": "Car !{{is|is not}} charging"
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
         },
         "args": [
           {
@@ -617,7 +684,8 @@
       {
         "id": "pro_is_connected",
         "title": {
-          "en": "Car !{{is|is not}} connected"
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
         },
         "args": [
           {
@@ -630,7 +698,8 @@
       {
         "id": "pro_charging_is_finished",
         "title": {
-          "en": "Charging !{{is|is not}} finished"
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
         },
         "args": [
           {
@@ -645,13 +714,16 @@
       {
         "id": "installation_current_control",
         "title": {
-          "en": "Set available current to"
+          "en": "Set available current to",
+          "no": "Sett tilgjengelig strøm til"
         },
         "titleFormatted": {
-          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
+          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]",
+          "no": "Sett tilgjengelig strøm til [[current1]]/[[current2]]/[[current3]]"
         },
         "hint": {
-          "en": "Changes the available current for all chargers within this installation."
+          "en": "Changes the available current for all chargers within this installation.",
+          "no": "Endrer tilgjengelig strøm for alle ladere i denne installasjonen."
         },
         "args": [
           {
@@ -663,7 +735,8 @@
             "name": "current1",
             "type": "range",
             "title": {
-              "en": "Current P1"
+              "en": "Current P1",
+              "no": "Strøm P1"
             },
             "min": 0,
             "max": 40,
@@ -675,7 +748,8 @@
             "name": "current2",
             "type": "range",
             "title": {
-              "en": "Current P2"
+              "en": "Current P2",
+              "no": "Strøm P2"
             },
             "min": 0,
             "max": 40,
@@ -687,7 +761,8 @@
             "name": "current3",
             "type": "range",
             "title": {
-              "en": "Current P3"
+              "en": "Current P3",
+              "no": "Strøm P3"
             },
             "min": 0,
             "max": 40,
@@ -700,7 +775,8 @@
       {
         "id": "start_charging",
         "title": {
-          "en": "Start charging"
+          "en": "Start charging",
+          "no": "Start lading"
         },
         "args": [
           {
@@ -713,7 +789,8 @@
       {
         "id": "stop_charging",
         "title": {
-          "en": "Stop charging"
+          "en": "Stop charging",
+          "no": "Stopp lading"
         },
         "args": [
           {
@@ -726,10 +803,12 @@
       {
         "id": "go_cable_permanent_lock",
         "title": {
-          "en": "Lock cable to charging station"
+          "en": "Lock cable to charging station",
+          "no": "Lås kabel til ladestasjon"
         },
         "hint": {
-          "en": "Permanently locks the cable to the charging station"
+          "en": "Permanently locks the cable to the charging station",
+          "no": "Låser kabel permanent til ladestasjonen"
         },
         "args": [
           {
@@ -742,10 +821,12 @@
       {
         "id": "go_cable_permanent_open",
         "title": {
-          "en": "Unlock cable from charging station"
+          "en": "Unlock cable from charging station",
+          "no": "Frigjør kabel fra ladestasjon"
         },
         "hint": {
-          "en": "Removes the permanent lock on the cable from the charging station"
+          "en": "Removes the permanent lock on the cable from the charging station",
+          "no": "Fjerner permanent låsing av kabel til ladestasjonen"
         },
         "args": [
           {
@@ -758,13 +839,16 @@
       {
         "id": "home_installation_current_control",
         "title": {
-          "en": "Set available current to"
+          "en": "Set available current to",
+          "no": "Sett tilgjengelig strøm til"
         },
         "titleFormatted": {
-          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
+          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]",
+          "no": "Sett tilgjengelig strøm til [[current1]]/[[current2]]/[[current3]]"
         },
         "hint": {
-          "en": "Changes the available current for all chargers within this installation."
+          "en": "Changes the available current for all chargers within this installation.",
+          "no": "Endrer tilgjengelig strøm for alle ladere i denne installasjonen."
         },
         "args": [
           {
@@ -776,7 +860,8 @@
             "name": "current1",
             "type": "range",
             "title": {
-              "en": "Current P1"
+              "en": "Current P1",
+              "no": "Strøm P1"
             },
             "min": 0,
             "max": 40,
@@ -788,7 +873,8 @@
             "name": "current2",
             "type": "range",
             "title": {
-              "en": "Current P2"
+              "en": "Current P2",
+              "no": "Strøm P2"
             },
             "min": 0,
             "max": 40,
@@ -800,7 +886,8 @@
             "name": "current3",
             "type": "range",
             "title": {
-              "en": "Current P3"
+              "en": "Current P3",
+              "no": "Strøm P3"
             },
             "min": 0,
             "max": 40,
@@ -813,7 +900,8 @@
       {
         "id": "home_start_charging",
         "title": {
-          "en": "Start charging"
+          "en": "Start charging",
+          "no": "Start lading"
         },
         "args": [
           {
@@ -826,7 +914,8 @@
       {
         "id": "home_stop_charging",
         "title": {
-          "en": "Stop charging"
+          "en": "Stop charging",
+          "no": "Stopp lading"
         },
         "args": [
           {
@@ -839,10 +928,12 @@
       {
         "id": "home_cable_permanent_lock",
         "title": {
-          "en": "Lock cable to charging station"
+          "en": "Lock cable to charging station",
+          "no": "Lås kabel til ladestasjon"
         },
         "hint": {
-          "en": "Permanently locks the cable to the charging station"
+          "en": "Permanently locks the cable to the charging station",
+          "no": "Låser kabel permanent til ladestasjonen"
         },
         "args": [
           {
@@ -855,10 +946,12 @@
       {
         "id": "home_cable_permanent_open",
         "title": {
-          "en": "Unlock cable from charging station"
+          "en": "Unlock cable from charging station",
+          "no": "Frigjør kabel fra ladestasjon"
         },
         "hint": {
-          "en": "Removes the permanent lock on the cable from the charging station"
+          "en": "Removes the permanent lock on the cable from the charging station",
+          "no": "Fjerner permanent lås på kabel fra ladestasjonen"
         },
         "args": [
           {
@@ -871,13 +964,16 @@
       {
         "id": "pro_installation_current_control",
         "title": {
-          "en": "Set available current to"
+          "en": "Set available current to",
+          "no": "Sett tilgjengelig strøm til"
         },
         "titleFormatted": {
-          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]"
+          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]",
+          "no": "Sett tilgjengelig strøm til [[current1]]/[[current2]]/[[current3]]"
         },
         "hint": {
-          "en": "Changes the available current for all chargers within this installation."
+          "en": "Changes the available current for all chargers within this installation.",
+          "no": "Endrer tilgjengelig strøm for alle ladere i denne installasjonen."
         },
         "args": [
           {
@@ -889,7 +985,8 @@
             "name": "current1",
             "type": "range",
             "title": {
-              "en": "Current P1"
+              "en": "Current P1",
+              "no": "Strøm P1"
             },
             "min": 0,
             "max": 40,
@@ -901,7 +998,8 @@
             "name": "current2",
             "type": "range",
             "title": {
-              "en": "Current P2"
+              "en": "Current P2",
+              "no": "Strøm P2"
             },
             "min": 0,
             "max": 40,
@@ -913,7 +1011,8 @@
             "name": "current3",
             "type": "range",
             "title": {
-              "en": "Current P3"
+              "en": "Current P3",
+              "no": "Strøm P3"
             },
             "min": 0,
             "max": 40,
@@ -926,7 +1025,8 @@
       {
         "id": "pro_start_charging",
         "title": {
-          "en": "Start charging"
+          "en": "Start charging",
+          "no": "Start lading"
         },
         "args": [
           {
@@ -939,7 +1039,8 @@
       {
         "id": "pro_stop_charging",
         "title": {
-          "en": "Stop charging"
+          "en": "Stop charging",
+          "no": "Stopp lading"
         },
         "args": [
           {
@@ -952,10 +1053,12 @@
       {
         "id": "pro_cable_permanent_lock",
         "title": {
-          "en": "Lock cable to charging station"
+          "en": "Lock cable to charging station",
+          "no": "Lås kabel til ladestasjon"
         },
         "hint": {
-          "en": "Permanently locks the cable to the charging station"
+          "en": "Permanently locks the cable to the charging station",
+          "no": "Låser kabel permanent til ladestasjonen"
         },
         "args": [
           {
@@ -968,10 +1071,12 @@
       {
         "id": "pro_cable_permanent_open",
         "title": {
-          "en": "Unlock cable from charging station"
+          "en": "Unlock cable from charging station",
+          "no": "Frigjør kabel fra ladestasjon"
         },
         "hint": {
-          "en": "Removes the permanent lock on the cable from the charging station"
+          "en": "Removes the permanent lock on the cable from the charging station",
+          "no": "Fjerner permanent lås fra kabel fra ladestasjonen"
         },
         "args": [
           {
@@ -1004,7 +1109,8 @@
           "template": "login_credentials",
           "options": {
             "title": {
-              "en": "Zaptec Login"
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
             }
           }
         },
@@ -1028,8 +1134,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1045,57 +1151,68 @@
       "capabilitiesOptions": {
         "meter_power.current_session": {
           "title": {
-            "en": "Energy current session"
+            "en": "Energy current session",
+            "no": "Ladeeffekt"
           }
         },
         "meter_power.this_year": {
           "title": {
-            "en": "Energy this year"
+            "en": "Energy this year",
+            "no": "Energiforbruk i år"
           }
         },
         "meter_power.last_session": {
           "title": {
-            "en": "Energy previous session"
+            "en": "Energy previous session",
+            "no": "Energibruk forrige ladeøkt"
           }
         },
         "measure_current.phase1": {
           "title": {
-            "en": "Current L1"
+            "en": "Current L1",
+            "no": "Strøm fase L1"
           }
         },
         "measure_current.phase2": {
           "title": {
-            "en": "Current L2"
+            "en": "Current L2",
+            "no": "Strøm fase L2"
           }
         },
         "measure_current.phase3": {
           "title": {
-            "en": "Current L3"
+            "en": "Current L3",
+            "no": "Strøm fase L3"
           }
         },
         "measure_voltage.phase1": {
           "title": {
-            "en": "Voltage L1"
+            "en": "Voltage L1",
+            "no": "Spenningsfase L1"
           }
         },
         "measure_voltage.phase2": {
           "title": {
-            "en": "Voltage L2"
+            "en": "Voltage L2",
+            "no": "Spenningsfase L2"
           }
         },
         "measure_voltage.phase3": {
           "title": {
-            "en": "Voltage L3"
+            "en": "Voltage L3",
+            "no": "Spenningsfase L3"
           }
         },
         "available_installation_current": {
           "title": {
-            "en": "Current limit"
+            "en": "Current limit",
+            "no": "Tilgjengelig strøm"
           }
         },
         "alarm_generic.car_connected": {
           "title": {
-            "en": "Car connected"
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
           }
         }
       },
@@ -1104,14 +1221,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Capabilities"
+            "en": "Capabilities",
+            "no": "Egenskaper"
           },
           "children": [
             {
               "id": "showVoltage",
               "type": "checkbox",
               "label": {
-                "en": "Show voltage per phase"
+                "en": "Show voltage per phase",
+                "no": "Vis spenning per fase"
               },
               "value": false
             },
@@ -1119,7 +1238,8 @@
               "id": "firmware",
               "type": "label",
               "label": {
-                "en": "Firmware version"
+                "en": "Firmware version",
+                "no": "Fastvare versjon"
               },
               "value": ""
             },
@@ -1127,7 +1247,8 @@
               "id": "deviceid",
               "type": "label",
               "label": {
-                "en": "Device ID"
+                "en": "Device ID",
+                "no": "Enhets ID"
               },
               "value": ""
             }
@@ -1136,14 +1257,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Troubleshooting"
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
           },
           "children": [
             {
               "id": "log",
               "type": "textarea",
               "label": {
-                "en": "Log"
+                "en": "Log",
+                "no": "Logg"
               },
               "value": "Empty"
             }
@@ -1171,7 +1294,8 @@
           "template": "login_credentials",
           "options": {
             "title": {
-              "en": "Zaptec Login"
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
             }
           }
         },
@@ -1195,8 +1319,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1213,57 +1337,80 @@
       "capabilitiesOptions": {
         "meter_power.current_session": {
           "title": {
-            "en": "Energy current session"
+            "en": "Energy current session",
+            "no": "Ladeeffekt"
           }
         },
         "meter_power.this_year": {
           "title": {
-            "en": "Energy this year"
+            "en": "Energy this year",
+            "no": "Energiforbruk i år"
           }
         },
         "meter_power.last_session": {
           "title": {
-            "en": "Energy previous session"
+            "en": "Energy previous session",
+            "no": "Energibruk forrige ladeøkt"
           }
         },
         "measure_current.phase1": {
           "title": {
-            "en": "Current L1"
+            "en": "Current L1",
+            "no": "Strøm fase L1"
           }
         },
         "measure_current.phase2": {
           "title": {
-            "en": "Current L2"
+            "en": "Current L2",
+            "no": "Strøm fase L2"
           }
         },
         "measure_current.phase3": {
           "title": {
-            "en": "Current L3"
+            "en": "Current L3",
+            "no": "Strøm fase L3"
           }
         },
         "measure_voltage.phase1": {
           "title": {
-            "en": "Voltage L1"
+            "en": "Voltage L1",
+            "no": "Spenningsfase L1"
           }
         },
         "measure_voltage.phase2": {
           "title": {
-            "en": "Voltage L2"
+            "en": "Voltage L2",
+            "no": "Spenningsfase L2"
           }
         },
         "measure_voltage.phase3": {
           "title": {
-            "en": "Voltage L3"
+            "en": "Voltage L3",
+            "no": "Spenningsfase L3"
           }
         },
         "available_installation_current": {
           "title": {
-            "en": "Current limit"
+            "en": "Current limit",
+            "no": "Tilgjengelig strøm"
           }
         },
         "alarm_generic.car_connected": {
           "title": {
-            "en": "Car connected"
+            "en": "Car connected",
+            "no": "Bil koblet til"
+          }
+        },
+        "measure_temperature.sensor1": {
+          "title": {
+            "en": "Temperature Sensor 1",
+            "no": "Temperatur sensor 1"
+          }
+        },
+        "measure_temperature.sensor2": {
+          "title": {
+            "en": "Temperature Sensor 2",
+            "no": "Temperatur sensor 2"
           }
         },
         "measure_temperature.sensor1": {
@@ -1282,14 +1429,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Capabilities"
+            "en": "Capabilities",
+            "no": "Egenskaper"
           },
           "children": [
             {
               "id": "showVoltage",
               "type": "checkbox",
               "label": {
-                "en": "Show voltage per phase"
+                "en": "Show voltage per phase",
+                "no": "Vis spenning per fase"
               },
               "value": false
             },
@@ -1297,7 +1446,8 @@
               "id": "firmware",
               "type": "label",
               "label": {
-                "en": "Firmware version"
+                "en": "Firmware version",
+                "no": "Fastvare versjon"
               },
               "value": ""
             },
@@ -1305,7 +1455,8 @@
               "id": "deviceid",
               "type": "label",
               "label": {
-                "en": "Device ID"
+                "en": "Device ID",
+                "no": "ID"
               },
               "value": ""
             }
@@ -1314,14 +1465,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Troubleshooting"
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
           },
           "children": [
             {
               "id": "log",
               "type": "textarea",
               "label": {
-                "en": "Log"
+                "en": "Log",
+                "no": "Logg"
               },
               "value": "Empty"
             }
@@ -1349,7 +1502,8 @@
           "template": "login_credentials",
           "options": {
             "title": {
-              "en": "Zaptec Login"
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
             }
           }
         },
@@ -1373,8 +1527,8 @@
         "meter_power.this_year",
         "meter_power.last_session",
         "measure_power",
-        "cable_permanent_lock",
         "charging_button",
+        "cable_permanent_lock",
         "charge_mode",
         "alarm_generic.car_connected",
         "available_installation_current",
@@ -1391,67 +1545,80 @@
       "capabilitiesOptions": {
         "meter_power.current_session": {
           "title": {
-            "en": "Energy current session"
+            "en": "Energy current session",
+            "no": "Ladeeffekt"
           }
         },
         "meter_power.this_year": {
           "title": {
-            "en": "Energy this year"
+            "en": "Energy this year",
+            "no": "Energiforbruk i år"
           }
         },
         "meter_power.last_session": {
           "title": {
-            "en": "Energy previous session"
+            "en": "Energy previous session",
+            "no": "Energibruk forrige ladeøkt"
           }
         },
         "measure_current.phase1": {
           "title": {
-            "en": "Current L1"
+            "en": "Current L1",
+            "no": "Strøm fase L1"
           }
         },
         "measure_current.phase2": {
           "title": {
-            "en": "Current L2"
+            "en": "Current L2",
+            "no": "Strøm fase L2"
           }
         },
         "measure_current.phase3": {
           "title": {
-            "en": "Current L3"
+            "en": "Current L3",
+            "no": "Strøm fase L3"
           }
         },
         "measure_voltage.phase1": {
           "title": {
-            "en": "Voltage L1"
+            "en": "Voltage L1",
+            "no": "Spenningsfase L1"
           }
         },
         "measure_voltage.phase2": {
           "title": {
-            "en": "Voltage L2"
+            "en": "Voltage L2",
+            "no": "Spenningsfase L2"
           }
         },
         "measure_voltage.phase3": {
           "title": {
-            "en": "Voltage L3"
+            "en": "Voltage L3",
+            "no": "Spenningsfase L3"
           }
         },
         "available_installation_current": {
           "title": {
-            "en": "Current limit"
+            "en": "Current limit",
+            "no": "Tilgjengelig strøm"
           }
         },
         "alarm_generic.car_connected": {
           "title": {
-            "en": "Car connected"
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
           }
         },
         "measure_temperature.sensor1": {
           "title": {
-            "en": "Temperature Sensor 1"
+            "en": "Temperature Sensor 1",
+            "no": "Temperatur sensor 1"
           }
         },
         "measure_temperature.sensor2": {
           "title": {
-            "en": "Temperature Sensor 2"
+            "en": "Temperature Sensor 2",
+            "no": "Temperatur sensor 2"
           }
         }
       },
@@ -1460,14 +1627,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Capabilities"
+            "en": "Capabilities",
+            "no": "Egenskaper"
           },
           "children": [
             {
               "id": "showVoltage",
               "type": "checkbox",
               "label": {
-                "en": "Show voltage per phase"
+                "en": "Show voltage per phase",
+                "no": "Vis spenning per fase"
               },
               "value": false
             },
@@ -1475,7 +1644,8 @@
               "id": "firmware",
               "type": "label",
               "label": {
-                "en": "Firmware version"
+                "en": "Firmware version",
+                "no": "Fastvare versjon"
               },
               "value": ""
             },
@@ -1483,7 +1653,8 @@
               "id": "deviceid",
               "type": "label",
               "label": {
-                "en": "Device ID"
+                "en": "Device ID",
+                "no": "Enhets ID"
               },
               "value": ""
             }
@@ -1492,14 +1663,16 @@
         {
           "type": "group",
           "label": {
-            "en": "Troubleshooting"
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
           },
           "children": [
             {
               "id": "log",
               "type": "textarea",
               "label": {
-                "en": "Log"
+                "en": "Log",
+                "no": "Logg"
               },
               "value": "Empty"
             }
@@ -1511,11 +1684,13 @@
   "capabilities": {
     "available_installation_current": {
       "title": {
-        "en": "Installation available current"
+        "en": "Current limit",
+        "no": "Tilgjengelig strøm"
       },
       "type": "number",
       "desc": {
-        "en": "Set the amount of current available for an installation of chargers."
+        "en": "Set the amount of current available for an installation of chargers.",
+        "no": "Tilgjengelig strøm for installasjonen"
       },
       "min": 0,
       "max": 40,
@@ -1537,53 +1712,62 @@
       "getable": true,
       "setable": true,
       "title": {
-        "en": "Cable locked"
+        "en": "Cable locked",
+        "no": "Kabel låst"
       },
       "insights": true,
       "insightsTitleTrue": {
-        "en": "Cable permanently locked to charger"
+        "en": "Cable permanently locked to charger",
+        "no": "Kabel permanent låst til lader"
       },
       "insightsTitleFalse": {
-        "en": "Cable unlocked from charger"
+        "en": "Cable unlocked from charger",
+        "no": "Kabel ikke låst til lader"
       }
     },
     "charge_mode": {
       "type": "enum",
       "title": {
-        "en": "Charge mode"
+        "en": "Charge mode",
+        "no": "Ladermodus"
       },
       "getable": true,
       "setable": false,
       "uiComponent": "picker",
       "values": [
         {
-          "id": "Unknown",
-          "title": {
-            "en": "Unknown"
-          }
-        },
-        {
           "id": "Disconnected",
           "title": {
-            "en": "Disconnected"
+            "en": "Disconnected",
+            "no": "Frakoblet"
           }
         },
         {
           "id": "Connecting to car",
           "title": {
-            "en": "Connecting to car"
+            "en": "Connecting to car",
+            "no": "Kommuniserer med bil"
           }
         },
         {
           "id": "Charging",
           "title": {
-            "en": "Charging"
+            "en": "Charging",
+            "no": "Lader"
           }
         },
         {
           "id": "Charging finished",
           "title": {
-            "en": "Charging finished"
+            "en": "Charging finished",
+            "no": "Lading ferdig"
+          }
+        },
+        {
+          "id": "Unknown",
+          "title": {
+            "en": "Unknown",
+            "no": "Ukjent"
           }
         }
       ]
@@ -1594,7 +1778,8 @@
       "getable": true,
       "setable": true,
       "title": {
-        "en": "Charging"
+        "en": "Charging",
+        "no": "Lader"
       }
     }
   }
