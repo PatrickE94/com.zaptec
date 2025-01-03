@@ -30,6 +30,7 @@ export class GoCharger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
     this.registerCapabilityListeners();
@@ -50,6 +51,23 @@ export class GoCharger extends Homey.Device {
     this.pollSlowValues();
 
     this.log('GoCharger has been initialized');
+  }
+
+  /**
+   * Athom addded an EV Charger class, we'll want to use that one!
+   *
+   * This takes care of migrating already added devices to the new class.
+   */
+  private async migrateClass() {
+    if (this.getClass() !== 'evcharger') {
+      await this.setClass('evcharger')
+        .then(() => {
+          this.logToDebug(`Updated device class to EV Charger`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
   }
 
   /**
