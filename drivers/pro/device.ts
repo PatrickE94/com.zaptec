@@ -36,9 +36,9 @@ export class ProCharger extends Homey.Device {
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
-      cron.schedule('0,30 * * * * *', () => this.pollValues()),
-      cron.schedule('59 * * * * *', () => this.updateDebugLog()),
-      cron.schedule('0 0 7 * * * *', () => {
+      cron.schedule('0,30 * * * * *', () => this.pollValues()), //every 30 seconds
+      cron.schedule('59 * * * * *', () => this.updateDebugLog()), //every minute
+      cron.schedule('0 0 7 * * * *', () => { // 7AM every day
         // Random delay between 0 and 120 seconds
         const jitter = Math.floor(Math.random() * 120000);
         setTimeout(() => {
@@ -655,6 +655,17 @@ export class ProCharger extends Homey.Device {
       .catch((e) => {
         this.logToDebug(`lockCable failure: ${e}`);
         throw new Error(`Failed to lock/unlock cable: ${e}`);
+      });
+  }
+
+  public async rebootCharger() {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .sendCommand(this.getData().id, Command.RestartCharger)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`rebootCharger failure: ${e}`);
+        throw new Error(`Failed to reboot charger: ${e}`);
       });
   }
 
