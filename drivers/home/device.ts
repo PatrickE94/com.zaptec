@@ -85,6 +85,15 @@ export class HomeCharger extends Homey.Device {
         await this.removeCapability('measure_voltage.phase2');
         await this.removeCapability('measure_voltage.phase3');    
       }
+      if (this.getSetting('showCurrent')){
+        await this.addCapability('measure_current.phase1');
+        await this.addCapability('measure_current.phase2');
+        await this.addCapability('measure_current.phase3');
+      }else{
+        await this.removeCapability('measure_current.phase1');
+        await this.removeCapability('measure_current.phase2');
+        await this.removeCapability('measure_current.phase3');    
+      }
     }
 
   /**
@@ -161,6 +170,18 @@ export class HomeCharger extends Homey.Device {
         await this.removeCapability('measure_voltage.phase1');
         await this.removeCapability('measure_voltage.phase2');
         await this.removeCapability('measure_voltage.phase3');
+      }
+    }
+    // Allow user to select if they want phase current as a capability or not.
+    if (changes.changedKeys.some((k) => k === 'showCurrent')) {
+      if (changes.newSettings.showCurrent) {
+        await this.addCapability('measure_current.phase1');
+        await this.addCapability('measure_current.phase2');
+        await this.addCapability('measure_current.phase3');
+      } else {
+        await this.removeCapability('measure_current.phase1');
+        await this.removeCapability('measure_current.phase2');
+        await this.removeCapability('measure_current.phase3');
       }
     }
   }
