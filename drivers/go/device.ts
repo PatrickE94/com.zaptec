@@ -80,11 +80,11 @@ export class GoCharger extends Homey.Device {
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
-        .then((charger) => {
+        .then((charger) =>
           this.setSettings({
             deviceid: charger.DeviceId,
-          });
-        })
+          }),
+        )
         .then(() => {
           this.logToDebug(`Got charger info - added device id`);
         })
@@ -411,7 +411,7 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.PermanentCableLock:
         await this.setCapabilityValue(
           'cable_permanent_lock',
-          Number(state.ValueAsString) === 1 ? true : false,
+          Number(state.ValueAsString) === 1,
         );
         break;
 

@@ -80,11 +80,11 @@ export class HomeCharger extends Homey.Device {
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
-        .then((charger) => {
+        .then((charger) =>
           this.setSettings({
             deviceid: charger.DeviceId,
-          });
-        })
+          }),
+        )
         .then(() => {
           this.logToDebug(`Got charger info - added device id`);
         })
@@ -100,10 +100,7 @@ export class HomeCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove: string[] = [
-      'measure_temperature'
-    ];
-
+    const remove: string[] = ['measure_temperature'];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
@@ -374,7 +371,7 @@ export class HomeCharger extends Homey.Device {
         );
         break;
 
-     case SmartDeviceObservation.TemperatureInternal5:
+      case SmartDeviceObservation.TemperatureInternal5:
         await this.setCapabilityValue(
           'measure_temperature.sensor1',
           Number(state.ValueAsString),
@@ -410,7 +407,7 @@ export class HomeCharger extends Homey.Device {
       case SmartDeviceObservation.PermanentCableLock:
         await this.setCapabilityValue(
           'cable_permanent_lock',
-          Number(state.ValueAsString) === 1 ? true : false,
+          Number(state.ValueAsString) === 1,
         );
         break;
 
