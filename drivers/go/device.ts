@@ -540,7 +540,7 @@ export class GoCharger extends Homey.Device {
       newModeConnected,
     );
 
-    this.logToDebug(`Charge mode update: ${previousMode} to ${newMode}`);
+    this.logToDebug(`Charger operation mode update: ${previousMode} to ${newMode}`);
 
     // TODO: Don't these just duplicate the capabilities now?
     const tokens = {

@@ -1,8 +1,8 @@
 {
   "type": "enum",
   "title": {
-    "en": "Charge mode",
-    "no": "Ladermodus"
+    "en": "Charger operation mode",
+    "no": "Laderens driftstilstand"
   },
   "getable": true,
   "setable": false,

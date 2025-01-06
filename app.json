@@ -1475,16 +1475,6 @@
             "en": "Temperature Sensor 2",
             "no": "Temperatur sensor 2"
           }
-        },
-        "measure_temperature.sensor1": {
-          "title": {
-            "en": "Temperature Sensor 1"
-          }
-        },
-        "measure_temperature.sensor2": {
-          "title": {
-            "en": "Temperature Sensor 2"
-          }
         }
       },
       "id": "home",
@@ -1809,8 +1799,8 @@
     "charge_mode": {
       "type": "enum",
       "title": {
-        "en": "Charge mode",
-        "no": "Ladermodus"
+        "en": "Charger operation mode",
+        "no": "Laderens driftstilstand"
       },
       "getable": true,
       "setable": false,
