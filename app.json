@@ -1206,7 +1206,7 @@
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
-            "no": "Ladeeffekt"
+            "no": "Energibruk ladeøkt"
           }
         },
         "meter_power.this_year": {
@@ -1401,7 +1401,7 @@
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
-            "no": "Ladeeffekt"
+            "no": "Energibruk ladeøkt"
           }
         },
         "meter_power.this_year": {
@@ -1608,7 +1608,7 @@
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
-            "no": "Ladeeffekt"
+            "no": "Energibruk ladeøkt"
           }
         },
         "meter_power.this_year": {
