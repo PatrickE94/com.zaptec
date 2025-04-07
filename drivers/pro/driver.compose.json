@@ -26,7 +26,8 @@
     "measure_temperature.sensor1",
     "measure_temperature.sensor2",
     "meter_power.signed_meter_value",
-    "measure_signal_strength"
+    "measure_signal_strength",
+    "communication_method"
   ],
   "capabilitiesOptions": {
     "meter_power.current_session": {

@@ -1205,7 +1205,8 @@
         "measure_humidity",
         "measure_temperature",
         "meter_power.signed_meter_value",
-        "measure_signal_strength"
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1428,7 +1429,8 @@
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
         "meter_power.signed_meter_value",
-        "measure_signal_strength"
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1663,7 +1665,8 @@
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
         "meter_power.signed_meter_value",
-        "measure_signal_strength"
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1936,6 +1939,22 @@
         "en": "Charging",
         "no": "Lader"
       }
+    },
+    "communication_method": {
+      "title": {
+        "en": "Communication method",
+        "no": "Kommunikasjonsmetode"
+      },
+      "type": "string",
+      "desc": {
+        "en": "Communication technology, LTE or Wifi",
+        "no": "Kommunikasjonsteknologi, LTE eller Wifi"
+      },
+      "setable": false,
+      "getable": true,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/current_limit.svg"
     }
   }
 }

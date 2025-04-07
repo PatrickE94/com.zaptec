@@ -133,7 +133,10 @@ export class ProCharger extends Homey.Device {
    */
   private async migrateCapabilities() {
     const remove: string[] = ['meter_power.this_year','measure_temperature',
-      'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity','measure_temperature.sensor1','measure_temperature.sensor2'
+      'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity',
+      'measure_temperature.sensor1','measure_temperature.sensor2',
+      'measure_signal_strength',
+      'communication_method'
     ];
 
     for (const cap of remove)
@@ -150,7 +153,8 @@ export class ProCharger extends Homey.Device {
       'measure_temperature.sensor2',
       'cable_permanent_lock',
       'meter_power.signed_meter_value',
-      'measure_signal_strength'
+      'measure_signal_strength',
+      'communication_method'
     ];
 
     for (const cap of add)
@@ -491,6 +495,13 @@ export class ProCharger extends Homey.Device {
         await this.setCapabilityValue(
           'measure_signal_strength',
           Number(state.ValueAsString),
+        );
+        break;
+
+      case SmartDeviceObservation.CommunicationMode:
+        await this.setCapabilityValue(
+          'communication_method',
+          state.ValueAsString
         );
         break;
 
