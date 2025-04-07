@@ -41,6 +41,15 @@
                     "no": "Enhets ID"
                 },
                 "value": ""
+            },
+            {
+                "id": "signedMeterValue",
+                "type": "label",
+                "label": {
+                    "en": "Signed Meter Value",
+                    "no": "Målerstand"
+                },
+                "value": ""
             }
         ]
     },

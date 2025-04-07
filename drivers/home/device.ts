@@ -148,7 +148,8 @@ export class HomeCharger extends Homey.Device {
       'measure_humidity',
       'measure_temperature.sensor1',
       'measure_temperature.sensor2',
-      'cable_permanent_lock',
+      'cable_permanent_lock', 
+      'meter_power.signed_meter_value'
     ];
 
     for (const cap of add)
@@ -480,6 +481,10 @@ export class HomeCharger extends Homey.Device {
         );
         break;
 
+      case SmartDeviceObservation.SignedMeterValue:
+          if (state.ValueAsString) await this.onSignedMeterValue(state.ValueAsString);
+          break;
+  
       default:
         break;
     }
@@ -623,6 +628,39 @@ export class HomeCharger extends Homey.Device {
       );
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
+    }
+  }
+
+  protected async onSignedMeterValue(data: string) {
+    try {
+      const jsonStr = data.replace('OCMF|', '');
+      const ocmf: {
+        FV: string;
+        GI: string;
+        GS: string;
+        GV: string;
+        PG: string;
+        MF: string;
+        RD: {
+          RV: string;
+        }[];
+      } = JSON.parse(jsonStr);
+      
+      const rv = ocmf.RD?.[0]?.RV;
+      if (rv !== undefined) {
+        const num = Number(rv);
+        const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
+        this.setSettings({
+          signedMeterValue: formatted,
+        }).then(() => {
+          this.setCapabilityValue('meter_power.signed_meter_value', rv);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
+        });
+      }
+    } catch (e) {
+      this.logToDebug(`onSignedMeterValue fail: ${e}`);
     }
   }
 
