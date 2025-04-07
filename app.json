@@ -1157,6 +1157,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",
@@ -1351,6 +1354,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",
@@ -1558,6 +1564,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",

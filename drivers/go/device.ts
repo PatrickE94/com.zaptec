@@ -34,6 +34,7 @@ export class GoCharger extends Homey.Device {
     await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
+    await this.migrateEnergy();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -67,6 +68,17 @@ export class GoCharger extends Homey.Device {
         })
         .catch((e) => {
           this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
+  }
+
+  private async migrateEnergy() {
+    const energyConfig = this.getEnergy();
+      if (energyConfig.cumulative !== true) {
+        this.setEnergy({
+          cumulative: true
+        }).catch((e) => {
+          this.logToDebug(`Failed to migrate energy: ${e}`);
         });
     }
   }
