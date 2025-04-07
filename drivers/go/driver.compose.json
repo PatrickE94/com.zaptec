@@ -23,7 +23,8 @@
     "measure_voltage.phase2",
     "measure_voltage.phase3",
     "measure_humidity",
-    "measure_temperature"
+    "measure_temperature",
+    "meter_power.signed_meter_value"
   ],
   "capabilitiesOptions": {
     "meter_power.current_session": {
@@ -91,6 +92,13 @@
         "en": "Car connected",
         "no": "Bil tilkoblet"
       }
+    },
+    "meter_power.signed_meter_value": {
+      "title": {
+        "en": "Signed meter value",
+        "no": "Målerstand"
+      },
+      "uiComponent": "none"
     }
   }
 }

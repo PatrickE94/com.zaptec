@@ -1203,7 +1203,8 @@
         "measure_voltage.phase2",
         "measure_voltage.phase3",
         "measure_humidity",
-        "measure_temperature"
+        "measure_temperature",
+        "meter_power.signed_meter_value"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1271,6 +1272,13 @@
             "en": "Car connected",
             "no": "Bil tilkoblet"
           }
+        },
+        "meter_power.signed_meter_value": {
+          "title": {
+            "en": "Signed meter value",
+            "no": "Målerstand"
+          },
+          "uiComponent": "none"
         }
       },
       "id": "go",
@@ -1410,7 +1418,8 @@
         "measure_voltage.phase3",
         "measure_humidity",
         "measure_temperature.sensor1",
-        "measure_temperature.sensor2"
+        "measure_temperature.sensor2",
+        "meter_power.signed_meter_value"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1490,6 +1499,13 @@
             "en": "Temperature Sensor 2",
             "no": "Temperatur sensor 2"
           }
+        },
+        "meter_power.signed_meter_value": {
+          "title": {
+            "en": "Signed meter value",
+            "no": "Målerstand"
+          },
+          "uiComponent": "none"
         }
       },
       "id": "home",
@@ -1629,7 +1645,8 @@
         "measure_voltage.phase3",
         "measure_humidity",
         "measure_temperature.sensor1",
-        "measure_temperature.sensor2"
+        "measure_temperature.sensor2",
+        "meter_power.signed_meter_value"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1709,6 +1726,13 @@
             "en": "Temperature Sensor 2",
             "no": "Temperatur sensor 2"
           }
+        },
+        "meter_power.signed_meter_value": {
+          "title": {
+            "en": "Signed meter value",
+            "no": "Målerstand"
+          },
+          "uiComponent": "none"
         }
       },
       "id": "pro",

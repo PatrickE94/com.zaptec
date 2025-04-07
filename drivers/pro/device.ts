@@ -149,6 +149,7 @@ export class ProCharger extends Homey.Device {
       'measure_temperature.sensor1',
       'measure_temperature.sensor2',
       'cable_permanent_lock',
+      'meter_power.signed_meter_value'
     ];
 
     for (const cap of add)
@@ -652,6 +653,8 @@ export class ProCharger extends Homey.Device {
         const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
         this.setSettings({
           signedMeterValue: formatted,
+        }).then(() => {
+          this.setCapabilityValue('meter_power.signed_meter_value', rv);
         })
         .catch((e) => {
           this.logToDebug(`Failed to get OCMF-signed value: ${e}`);

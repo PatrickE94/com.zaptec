@@ -150,6 +150,7 @@ export class GoCharger extends Homey.Device {
       'measure_temperature',
       'cable_permanent_lock',
       'available_installation_current',
+      'meter_power.signed_meter_value'
     ];
 
     for (const cap of add)
@@ -645,6 +646,8 @@ export class GoCharger extends Homey.Device {
         const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
         this.setSettings({
           signedMeterValue: formatted,
+        }).then(() => {
+          this.setCapabilityValue('meter_power.signed_meter_value', rv);
         })
         .catch((e) => {
           this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
