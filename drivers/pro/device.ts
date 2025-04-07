@@ -34,6 +34,7 @@ export class ProCharger extends Homey.Device {
     await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
+    await this.migrateEnergy();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -67,6 +68,17 @@ export class ProCharger extends Homey.Device {
         })
         .catch((e) => {
           this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
+  }
+
+  private async migrateEnergy() {
+    const energyConfig = this.getEnergy();
+      if (energyConfig.cumulative !== true) {
+        this.setEnergy({
+          cumulative: true
+        }).catch((e) => {
+          this.logToDebug(`Failed to migrate energy: ${e}`);
         });
     }
   }
@@ -120,15 +132,22 @@ export class ProCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove: string[] = ['measure_temperature'];
+    const remove: string[] = ['meter_power.this_year','measure_temperature',
+      'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity','measure_temperature.sensor1','measure_temperature.sensor2'
+    ];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
 
-    const add = [
+    const add = [   
+      'measure_power',
+      'meter_power.current_session',
+      'meter_power',
+      'meter_power.last_session',
+      'alarm_generic.car_connected',
+      'measure_humidity',
       'measure_temperature.sensor1',
       'measure_temperature.sensor2',
-      'measure_humidity',
       'cable_permanent_lock',
     ];
 
@@ -322,7 +341,7 @@ export class ProCharger extends Homey.Device {
       .then((charges) => {
         const yearlyEnergy =
           charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
-        return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
+        return this.setCapabilityValue('meter_power', yearlyEnergy);
       })
       .then(() => {
         this.logToDebug(`Got yearly power history`);
@@ -355,24 +374,30 @@ export class ProCharger extends Homey.Device {
         break;
 
       case SmartDeviceObservation.CurrentPhase1:
-        await this.setCapabilityValue(
-          'measure_current.phase1',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase1')) {
+          await this.setCapabilityValue(
+            'measure_current.phase1',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case SmartDeviceObservation.CurrentPhase2:
-        await this.setCapabilityValue(
-          'measure_current.phase2',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase2')) {
+          await this.setCapabilityValue(
+            'measure_current.phase2',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case SmartDeviceObservation.CurrentPhase3:
-        await this.setCapabilityValue(
-          'measure_current.phase3',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase3')) {
+          await this.setCapabilityValue(
+            'measure_current.phase3',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case SmartDeviceObservation.VoltagePhase1:

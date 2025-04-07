@@ -1157,6 +1157,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",
@@ -1185,7 +1188,7 @@
       },
       "capabilities": [
         "meter_power.current_session",
-        "meter_power.this_year",
+        "meter_power",
         "meter_power.last_session",
         "measure_power",
         "charging_button",
@@ -1209,7 +1212,7 @@
             "no": "Energibruk ladeøkt"
           }
         },
-        "meter_power.this_year": {
+        "meter_power": {
           "title": {
             "en": "Energy this year",
             "no": "Energiforbruk i år"
@@ -1351,6 +1354,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",
@@ -1379,7 +1385,7 @@
       },
       "capabilities": [
         "meter_power.current_session",
-        "meter_power.this_year",
+        "meter_power",
         "meter_power.last_session",
         "measure_power",
         "charging_button",
@@ -1404,7 +1410,7 @@
             "no": "Energibruk ladeøkt"
           }
         },
-        "meter_power.this_year": {
+        "meter_power": {
           "title": {
             "en": "Energy this year",
             "no": "Energiforbruk i år"
@@ -1558,6 +1564,9 @@
         "cloud"
       ],
       "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
       "pair": [
         {
           "id": "login_credentials",
@@ -1586,7 +1595,7 @@
       },
       "capabilities": [
         "meter_power.current_session",
-        "meter_power.this_year",
+        "meter_power",
         "meter_power.last_session",
         "measure_power",
         "charging_button",
@@ -1611,7 +1620,7 @@
             "no": "Energibruk ladeøkt"
           }
         },
-        "meter_power.this_year": {
+        "meter_power": {
           "title": {
             "en": "Energy this year",
             "no": "Energiforbruk i år"

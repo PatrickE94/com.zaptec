@@ -34,6 +34,7 @@ export class GoCharger extends Homey.Device {
     await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
+    await this.migrateEnergy();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -67,6 +68,17 @@ export class GoCharger extends Homey.Device {
         })
         .catch((e) => {
           this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
+  }
+
+  private async migrateEnergy() {
+    const energyConfig = this.getEnergy();
+      if (energyConfig.cumulative !== true) {
+        this.setEnergy({
+          cumulative: true
+        }).catch((e) => {
+          this.logToDebug(`Failed to migrate energy: ${e}`);
         });
     }
   }
@@ -120,27 +132,24 @@ export class GoCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove = [
-      'available_installation_current.phase1',
-      'available_installation_current.phase2',
-      'available_installation_current.phase3',
-      'meter_power',
-      'onoff',
+    const remove = ['available_installation_current.phase1','available_installation_current.phase2','available_installation_current.phase3','meter_power.this_year','onoff',
+      'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity','measure_temperature'
     ];
 
     for (const cap of remove)
       if (this.hasCapability(cap)) await this.removeCapability(cap);
 
     const add = [
-      'available_installation_current',
-      'meter_power.last_session',
-      'meter_power.this_year',
+      'measure_power',
       'meter_power.current_session',
+      'meter_power',
+      'meter_power.last_session',
       'alarm_generic.car_connected',
+      'measure_humidity',
       'charging_button', // replaces onoff
       'measure_temperature',
-      'measure_humidity',
       'cable_permanent_lock',
+      'available_installation_current',
     ];
 
     for (const cap of add)
@@ -332,7 +341,7 @@ export class GoCharger extends Homey.Device {
       .then((charges) => {
         const yearlyEnergy =
           charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
-        return this.setCapabilityValue('meter_power.this_year', yearlyEnergy);
+        return this.setCapabilityValue('meter_power', yearlyEnergy);
       })
       .then(() => {
         this.logToDebug(`Got yearly power history`);
@@ -365,24 +374,30 @@ export class GoCharger extends Homey.Device {
         break;
 
       case ApolloDeviceObservation.CurrentPhase1:
-        await this.setCapabilityValue(
-          'measure_current.phase1',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase1')) {
+          await this.setCapabilityValue(
+            'measure_current.phase1',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.CurrentPhase2:
-        await this.setCapabilityValue(
-          'measure_current.phase2',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase2')) {
+          await this.setCapabilityValue(
+            'measure_current.phase2',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.CurrentPhase3:
-        await this.setCapabilityValue(
-          'measure_current.phase3',
-          Number(state.ValueAsString),
-        );
+        if (this.hasCapability('measure_current.phase3')) {
+          await this.setCapabilityValue(
+            'measure_current.phase3',
+            Number(state.ValueAsString),
+          );
+        }
         break;
 
       case ApolloDeviceObservation.VoltagePhase1:

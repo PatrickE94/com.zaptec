@@ -11,7 +11,10 @@
   "connectivity": [
     "cloud"
   ],
-  "class": "other",
+  "class": "evcharger",
+  "energy": {
+    "cumulative": true
+  },
   "pair": [
     {
       "id": "login_credentials",
