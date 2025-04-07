@@ -1317,6 +1317,15 @@
                 "no": "Enhets ID"
               },
               "value": ""
+            },
+            {
+              "id": "signedMeterValue",
+              "type": "label",
+              "label": {
+                "en": "Signed Meter Value",
+                "no": "Målerstand"
+              },
+              "value": ""
             }
           ]
         },
@@ -1524,7 +1533,16 @@
               "type": "label",
               "label": {
                 "en": "Device ID",
-                "no": "ID"
+                "no": "Enhets ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "signedMeterValue",
+              "type": "label",
+              "label": {
+                "en": "Signed Meter Value",
+                "no": "Målerstand"
               },
               "value": ""
             }
@@ -1735,6 +1753,15 @@
               "label": {
                 "en": "Device ID",
                 "no": "Enhets ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "signedMeterValue",
+              "type": "label",
+              "label": {
+                "en": "Signed Meter Value",
+                "no": "Målerstand"
               },
               "value": ""
             }
