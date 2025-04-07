@@ -150,7 +150,8 @@ export class GoCharger extends Homey.Device {
       'measure_temperature',
       'cable_permanent_lock',
       'available_installation_current',
-      'meter_power.signed_meter_value'
+      'meter_power.signed_meter_value',
+      'measure_signal_strength'
     ];
 
     for (const cap of add)
@@ -479,6 +480,12 @@ export class GoCharger extends Homey.Device {
         if (state.ValueAsString) await this.onSignedMeterValue(state.ValueAsString);
         break;
 
+      case ApolloDeviceObservation.CommunicationSignalStrength:
+        await this.setCapabilityValue(
+          'measure_signal_strength',
+          Number(state.ValueAsString),
+        );
+        break;
       default:
         break;
     }

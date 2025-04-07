@@ -1204,7 +1204,8 @@
         "measure_voltage.phase3",
         "measure_humidity",
         "measure_temperature",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1279,6 +1280,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "go",
@@ -1419,7 +1427,8 @@
         "measure_humidity",
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1506,6 +1515,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "home",
@@ -1646,7 +1662,8 @@
         "measure_humidity",
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1733,6 +1750,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "pro",

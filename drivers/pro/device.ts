@@ -149,7 +149,8 @@ export class ProCharger extends Homey.Device {
       'measure_temperature.sensor1',
       'measure_temperature.sensor2',
       'cable_permanent_lock',
-      'meter_power.signed_meter_value'
+      'meter_power.signed_meter_value',
+      'measure_signal_strength'
     ];
 
     for (const cap of add)
@@ -484,6 +485,13 @@ export class ProCharger extends Homey.Device {
 
       case SmartDeviceObservation.SignedMeterValue:
         if (state.ValueAsString) await this.onSignedMeterValue(state.ValueAsString);
+        break;
+
+      case SmartDeviceObservation.CommunicationSignalStrength:
+        await this.setCapabilityValue(
+          'measure_signal_strength',
+          Number(state.ValueAsString),
+        );
         break;
 
       default:
