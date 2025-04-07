@@ -70,5 +70,8 @@
   },
   "1.6.0": {
     "en": "Added chargers to Energy tab. New setting to hide values per phase."
+  },
+  "1.6.1": {
+    "en": "Fix for energy tab"
   }
 }
