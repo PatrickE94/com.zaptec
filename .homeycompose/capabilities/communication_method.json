@@ -1,0 +1,16 @@
+{
+  "title": {
+    "en": "Communication method",
+    "no": "Kommunikasjonsmetode"
+  },
+  "type": "string",
+  "desc": {
+    "en": "Communication technology, LTE or Wifi",
+    "no": "Kommunikasjonsteknologi, LTE eller Wifi"
+  },
+  "setable": false,
+  "getable": true,
+  "insights": false,
+  "uiComponent": "sensor",
+  "icon": "/assets/current_limit.svg"
+}

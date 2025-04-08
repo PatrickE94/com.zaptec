@@ -2,7 +2,7 @@
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.zaptec",
   "version": "1.6.1",
-  "compatibility": ">=12.0.0",
+  "compatibility": ">=12.2.0",
   "sdk": 3,
   "brandColor": "#19312F",
   "platforms": [
@@ -1204,7 +1204,9 @@
         "measure_voltage.phase3",
         "measure_humidity",
         "measure_temperature",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1279,6 +1281,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "go",
@@ -1419,7 +1428,9 @@
         "measure_humidity",
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1506,6 +1517,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "home",
@@ -1646,7 +1664,9 @@
         "measure_humidity",
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
-        "meter_power.signed_meter_value"
+        "meter_power.signed_meter_value",
+        "measure_signal_strength",
+        "communication_method"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -1733,6 +1753,13 @@
             "no": "Målerstand"
           },
           "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
         }
       },
       "id": "pro",
@@ -1912,6 +1939,22 @@
         "en": "Charging",
         "no": "Lader"
       }
+    },
+    "communication_method": {
+      "title": {
+        "en": "Communication method",
+        "no": "Kommunikasjonsmetode"
+      },
+      "type": "string",
+      "desc": {
+        "en": "Communication technology, LTE or Wifi",
+        "no": "Kommunikasjonsteknologi, LTE eller Wifi"
+      },
+      "setable": false,
+      "getable": true,
+      "insights": false,
+      "uiComponent": "sensor",
+      "icon": "/assets/current_limit.svg"
     }
   }
 }
