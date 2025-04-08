@@ -563,9 +563,6 @@ export class HomeCharger extends Homey.Device {
       this.getCapabilityValue('charge_mode'),
     );
 
-    // If no mode change occurs, don't run the triggers
-    if (previousMode === newMode) return;
-
     const previouslyDisconnected =
       previousMode === ChargerOperationMode.Unknown ||
       previousMode === ChargerOperationMode.Disconnected;
@@ -583,6 +580,9 @@ export class HomeCharger extends Homey.Device {
       'alarm_generic.car_connected',
       newModeConnected,
     );
+
+    // If no mode change occurs, don't run the triggers
+    if (previousMode === newMode) return;    
 
     this.logToDebug(`Charger operation mode update: ${previousMode} to ${newMode}`);
 
