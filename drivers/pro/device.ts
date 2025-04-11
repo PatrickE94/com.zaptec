@@ -653,16 +653,20 @@ export class ProCharger extends Homey.Device {
 
   protected async onSignedMeterValue(data: string) {
     try {
-      const jsonStr = data.replace('OCMF|', '');
+      const jsonStr = data.replace('OCMF|', '').replace(/\\"/g, '"');
       const ocmf: {
         FV: string;
         GI: string;
-        GS: string;
+        GS?: string;
         GV: string;
         PG: string;
         MF: string;
         RD: {
-          RV: string;
+          RV: number;
+          TM?: string;
+          RI?: string;
+          RU?: string;
+          ST?: string;
         }[];
       } = JSON.parse(jsonStr);
       
@@ -673,7 +677,7 @@ export class ProCharger extends Homey.Device {
         this.setSettings({
           signedMeterValue: formatted,
         }).then(() => {
-          this.setCapabilityValue('meter_power.signed_meter_value', rv);
+          this.setCapabilityValue('meter_power.signed_meter_value', num);
         })
         .catch((e) => {
           this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
