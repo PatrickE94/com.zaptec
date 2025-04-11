@@ -74,7 +74,7 @@ export class HomeCharger extends Homey.Device {
 
   private async migrateEnergy() {
     const energyConfig = this.getEnergy();
-      if (energyConfig.cumulative !== true) {
+      if (energyConfig?.cumulative !== true) {
         this.setEnergy({
           cumulative: true
         }).catch((e) => {
