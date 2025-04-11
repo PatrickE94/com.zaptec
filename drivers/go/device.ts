@@ -644,11 +644,12 @@ export class GoCharger extends Homey.Device {
 
   protected async onSignedMeterValue(data: string) {
     try {
-      const jsonStr = data.replace('OCMF|', '').replace(/\\"/g, '"');
+      const parts = data.split('|');
+      const jsonStr = parts[1].replace(/\\"/g, '"');
       const ocmf: {
         FV: string;
         GI: string;
-        GS?: string;
+        GS: string;
         GV: string;
         PG: string;
         MF: string;
