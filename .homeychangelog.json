@@ -76,5 +76,8 @@
   },
   "1.7.0": {
     "en": "Added signal strength and connection type. Added signed meter value."
+  },
+  "1.7.1": {
+    "en": "Fixed issue on Homey versions < 12.3.3"
   }
 }
