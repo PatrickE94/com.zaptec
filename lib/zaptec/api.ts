@@ -2,7 +2,7 @@ import http from 'http';
 import https from 'https';
 import querystring from 'querystring';
 import { ApiError } from './error';
-import { Command, DeviceType, InstallationType, UserRole } from './enums';
+import { Command, DeviceType, InstallationType, UserRole, MODEL_PREFIX_MAP } from './enums';
 import {
   ChargePriority,
   ChargerExternalUpdateModel,
@@ -334,6 +334,52 @@ export class ZaptecApi {
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
+  }
+
+  /**
+   * Get chargers filtered by model name based on deviceId prefix
+   * @param modelName Model name to filter by (e.g., 'Pro', 'Go')
+   * @param params Standard charger search parameters
+   * @returns Filtered list of chargers matching the model
+   */
+  public async getChargersByModel(
+    modelName: string,
+    params: {
+      Roles?: UserRole;
+      DeviceType?: DeviceType;
+      InstallationType?: InstallationType;
+      NameFilter?: string;
+      ReturnIdNameOnly?: boolean;
+      SortProperty?: string;
+      SortDescending?: boolean;
+      PageSize?: number;
+      PageIndex?: number;
+      IncludeDisabled?: boolean;
+      Exclude?: string[];
+    } = {}
+  ) {
+    // Define the mapping of model names to deviceId prefixes
+    const prefixes = MODEL_PREFIX_MAP[modelName];
+    if (!prefixes) {
+      throw new Error(`Unknown model name: ${modelName}`);
+    }
+
+    // Get all chargers first
+    const result = await this.getChargers(params);
+    
+    // Filter by deviceId prefix
+    if (result.Data) {
+      result.Data = result.Data.filter(charger => {
+        if (!charger.DeviceId || charger.DeviceId.length < 3) return false;
+        const prefix = charger.DeviceId.substring(0, 3);
+        return prefixes.includes(prefix);
+      });
+      
+      // Note: We don't update the Pages count as it's not part of our concern here
+      // and this is client-side filtering only
+    }
+
+    return result;
   }
 
   public async getCharger(id: string) {
