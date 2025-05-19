@@ -4,6 +4,9 @@
 
 Adds support for Zaptec charging products.
 
+## Documentation
+Integration guide is found [here](https://zaptec.readme.io/)
+
 ## Github actions
 Homey validate the code automatically when pushing to the main branch.
 
