@@ -169,6 +169,13 @@
         "en": "Charging !{{is|is not}} finished",
         "no": "Lading !{{er|er ikke}} fullført"
       }
+    },
+    {
+      "id": "go2_authentication_required",
+      "title": {
+        "en": "Authentication !{{is|is not}} required",
+        "no": "Autentisering !{{er|er ikke}} påkrevd"
+      }
     }
   ],
   "actions": [
@@ -274,6 +281,47 @@
         "en": "Reboots the charger, turing it off and on again",
         "no": "Restart på ladeboksen, skrur den av og på igjen"
       }
+    },
+    {
+      "id": "go2_set_authentication_requirement",
+      "title": {
+        "en": "Set authentication requirement",
+        "no": "Sett autentiseringskrav"
+      },
+      "titleFormatted": {
+        "en": "Set authentication [[require]]",
+        "no": "Sett autentisering [[require]]"
+      },
+      "hint": {
+        "en": "Enable or disable authentication requirement for the installation.",
+        "no": "Aktiver eller deaktiver autentiseringskrav for installasjonen."
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "require",
+          "title": {
+            "en": "Authentication requirement",
+            "no": "Autentiseringskrav"
+          },
+          "values": [
+            {
+              "id": "true",
+              "title": {
+                "en": "Required",
+                "no": "Påkrevd"
+              }
+            },
+            {
+              "id": "false",
+              "title": {
+                "en": "Not required",
+                "no": "Ikke påkrevd"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

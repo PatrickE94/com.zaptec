@@ -127,9 +127,11 @@ async function requestWithBackoff(
 export class ZaptecApi {
   private version: string;
   protected bearerToken?: string;
+  private homey: any;
 
-  constructor(version: string) {
+  constructor(version: string, homey: any) {
     this.version = version;
+    this.homey = homey;
   }
 
   protected async get<T>(
@@ -191,6 +193,53 @@ export class ZaptecApi {
       path,
       {
         method: 'POST',
+        headers,
+        ...options,
+      },
+      typeof data === 'object' ? JSON.stringify(data) : data,
+    );
+
+    let responseData;
+    try {
+      responseData =
+        response.data.length > 0 ? JSON.parse(response.data) : response.data;
+    } catch (e) {
+      throw new Error(`Failed to parse response: ${response.data}`);
+    }
+
+    if (response.response.statusCode === 500) {
+      // Service returned error, decode the error code
+      if ('Code' in responseData)
+        throw new ApiError(responseData.Code, responseData.Details);
+    }
+
+    return {
+      data: responseData,
+      response: response.response,
+    };
+  }
+
+  protected async put<T>(
+    path: string,
+    data?: string | object,
+    options?: http.RequestOptions,
+  ): Promise<Response<T>> {
+    const headers: Record<string, string> = {
+      'Content-Type':
+        typeof data === 'object'
+          ? 'application/json'
+          : 'application/x-www-form-urlencoded',
+      Accept: 'application/json',
+      'User-Agent': this.getUserAgent(),
+    };
+
+    if (this.bearerToken !== undefined)
+      headers.Authorization = `Bearer ${this.bearerToken}`;
+
+    const response = await requestWithBackoff(
+      path,
+      {
+        method: 'PUT',
         headers,
         ...options,
       },
@@ -502,6 +551,38 @@ export class ZaptecApi {
       `/api/installation/${id}/update`,
       properties,
     );
+
+    if (response.statusCode === 403) {
+      throw new Error(this.homey.__('errors.missing_auth_permissions'));
+    }
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+  }
+
+  /**
+   * Update authentication requirements for an installation
+   * 
+   * @param id Installation ID
+   * @param requireAuthentication Whether authentication is required
+   * @returns Promise resolving when successful
+   */
+  public async updateInstallationAuthenticationRequirement(
+    id: string,
+    requireAuthentication: boolean,
+  ): Promise<void> {
+    // This endpoint requires a direct PUT to the installation with both Id and IsRequiredAuthentication
+    const { response } = await this.put(
+      `/api/installation/${id}`,
+      {
+        Id: id,
+        IsRequiredAuthentication: requireAuthentication
+      }
+    );
+
+    if (response.statusCode === 403) {
+      throw new Error(this.homey.__('errors.missing_auth_permissions'));
+    }
 
     if (response.statusCode !== 200)
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);

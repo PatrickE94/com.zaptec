@@ -189,11 +189,12 @@
       {
         "id": "charging_stops",
         "title": {
-          "en": "Charging stops"
+          "en": "Car stops charging",
+          "no": "Bil stopper lading"
         },
         "hint": {
-          "en": "When a charging session is stopped",
-          "no": "Når en lading slutter"
+          "en": "When the charger stops charging the car.",
+          "no": "Når laderen stopper å lade."
         },
         "tokens": [
           {
@@ -761,8 +762,12 @@
       {
         "id": "is_charging",
         "title": {
-          "en": "Car !{{is|is not}} charging",
-          "no": "Bil lader !{{|ikke}}"
+          "en": "Charger !{{is|is not}} charging",
+          "no": "Lader !{{lader|lader ikke}}"
+        },
+        "hint": {
+          "en": "Checks if the charger is currently charging a car.",
+          "no": "Sjekker om laderen for tiden lader en bil."
         },
         "args": [
           {
@@ -778,6 +783,10 @@
           "en": "Car !{{is|is not}} connected",
           "no": "Bil !{{er|er ikke}} tilkoblet"
         },
+        "hint": {
+          "en": "Checks if a car is connected to the charger",
+          "no": "Sjekker om en bil er koblet til laderen"
+        },
         "args": [
           {
             "type": "device",
@@ -791,6 +800,20 @@
         "title": {
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "authentication_required",
+        "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
         },
         "args": [
           {
@@ -843,6 +866,20 @@
         ]
       },
       {
+        "id": "go2_authentication_required",
+        "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
         "id": "home_is_charging",
         "title": {
           "en": "Car !{{is|is not}} charging",
@@ -885,6 +922,20 @@
         ]
       },
       {
+        "id": "home_authentication_required",
+        "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
         "id": "pro_is_charging",
         "title": {
           "en": "Car !{{is|is not}} charging",
@@ -917,6 +968,20 @@
         "title": {
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_authentication_required",
+        "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
         },
         "args": [
           {
@@ -995,6 +1060,10 @@
           "en": "Start charging",
           "no": "Start lading"
         },
+        "hint": {
+          "en": "Will start / resume charging.",
+          "no": "Starter eller fortsetter lading."
+        },
         "args": [
           {
             "type": "device",
@@ -1008,6 +1077,10 @@
         "title": {
           "en": "Stop charging",
           "no": "Stopp lading"
+        },
+        "hint": {
+          "en": "This will stop charging until told to charge again.",
+          "no": "Dette stopper lading til laderen får beskjed om å starte igjen."
         },
         "args": [
           {
@@ -1024,8 +1097,8 @@
           "no": "Lås kabel til ladestasjon"
         },
         "hint": {
-          "en": "Permanently locks the cable to the charging station",
-          "no": "Låser kabel permanent til ladestasjonen"
+          "en": "This locks the cable to the charger, not the car",
+          "no": "Dette låser kabelen til laderen, ikke til bilen"
         },
         "args": [
           {
@@ -1042,8 +1115,8 @@
           "no": "Frigjør kabel fra ladestasjon"
         },
         "hint": {
-          "en": "Removes the permanent lock on the cable from the charging station",
-          "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+          "en": "This unlocks the cable from the charger, not the car",
+          "no": "Dette låser opp kabelen fra laderen, ikke fra bilen"
         },
         "args": [
           {
@@ -1068,6 +1141,52 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "set_authentication_requirement",
+        "title": {
+          "en": "Set authentication requirement",
+          "no": "Sett autentiseringskrav"
+        },
+        "titleFormatted": {
+          "en": "Set authentication [[require]]",
+          "no": "Sett autentisering [[require]]"
+        },
+        "hint": {
+          "en": "Enable or disable authentication requirement for the installation.",
+          "no": "Aktiver eller deaktiver autentiseringskrav for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          },
+          {
+            "type": "dropdown",
+            "name": "require",
+            "title": {
+              "en": "Authentication requirement",
+              "no": "Autentiseringskrav"
+            },
+            "values": [
+              {
+                "id": "true",
+                "title": {
+                  "en": "Required",
+                  "no": "Påkrevd"
+                }
+              },
+              {
+                "id": "false",
+                "title": {
+                  "en": "Not required",
+                  "no": "Ikke påkrevd"
+                }
+              }
+            ]
           }
         ]
       },
@@ -1215,6 +1334,52 @@
         ]
       },
       {
+        "id": "go2_set_authentication_requirement",
+        "title": {
+          "en": "Set authentication requirement",
+          "no": "Sett autentiseringskrav"
+        },
+        "titleFormatted": {
+          "en": "Set authentication [[require]]",
+          "no": "Sett autentisering [[require]]"
+        },
+        "hint": {
+          "en": "Enable or disable authentication requirement for the installation.",
+          "no": "Aktiver eller deaktiver autentiseringskrav for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          },
+          {
+            "type": "dropdown",
+            "name": "require",
+            "title": {
+              "en": "Authentication requirement",
+              "no": "Autentiseringskrav"
+            },
+            "values": [
+              {
+                "id": "true",
+                "title": {
+                  "en": "Required",
+                  "no": "Påkrevd"
+                }
+              },
+              {
+                "id": "false",
+                "title": {
+                  "en": "Not required",
+                  "no": "Ikke påkrevd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "home_installation_current_control",
         "title": {
           "en": "Set available current to",
@@ -1358,6 +1523,52 @@
         ]
       },
       {
+        "id": "home_set_authentication_requirement",
+        "title": {
+          "en": "Set authentication requirement",
+          "no": "Sett autentiseringskrav"
+        },
+        "titleFormatted": {
+          "en": "Set authentication [[require]]",
+          "no": "Sett autentisering [[require]]"
+        },
+        "hint": {
+          "en": "Enable or disable authentication requirement for the installation.",
+          "no": "Aktiver eller deaktiver autentiseringskrav for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          },
+          {
+            "type": "dropdown",
+            "name": "require",
+            "title": {
+              "en": "Authentication requirement",
+              "no": "Autentiseringskrav"
+            },
+            "values": [
+              {
+                "id": "true",
+                "title": {
+                  "en": "Required",
+                  "no": "Påkrevd"
+                }
+              },
+              {
+                "id": "false",
+                "title": {
+                  "en": "Not required",
+                  "no": "Ikke påkrevd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "pro_installation_current_control",
         "title": {
           "en": "Set available current to",
@@ -1497,6 +1708,52 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_set_authentication_requirement",
+        "title": {
+          "en": "Set authentication requirement",
+          "no": "Sett autentiseringskrav"
+        },
+        "titleFormatted": {
+          "en": "Set authentication [[require]]",
+          "no": "Sett autentisering [[require]]"
+        },
+        "hint": {
+          "en": "Enable or disable authentication requirement for the installation.",
+          "no": "Aktiver eller deaktiver autentiseringskrav for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          },
+          {
+            "type": "dropdown",
+            "name": "require",
+            "title": {
+              "en": "Authentication requirement",
+              "no": "Autentiseringskrav"
+            },
+            "values": [
+              {
+                "id": "true",
+                "title": {
+                  "en": "Required",
+                  "no": "Påkrevd"
+                }
+              },
+              {
+                "id": "false",
+                "title": {
+                  "en": "Not required",
+                  "no": "Ikke påkrevd"
+                }
+              }
+            ]
           }
         ]
       }
@@ -1682,6 +1939,15 @@
               "label": {
                 "en": "Show current per phase",
                 "no": "Vis strøm per fase"
+              },
+              "value": true
+            },
+            {
+              "id": "requireAuthentication",
+              "type": "checkbox",
+              "label": {
+                "en": "Require authentication for charging",
+                "no": "Krev autentisering for lading"
               },
               "value": true
             },
@@ -1913,6 +2179,15 @@
               "label": {
                 "en": "Show current per phase",
                 "no": "Vis strøm per fase"
+              },
+              "value": true
+            },
+            {
+              "id": "requireAuthentication",
+              "type": "checkbox",
+              "label": {
+                "en": "Require authentication for charging",
+                "no": "Krev autentisering for lading"
               },
               "value": true
             },
@@ -2161,6 +2436,15 @@
               "value": true
             },
             {
+              "id": "requireAuthentication",
+              "type": "checkbox",
+              "label": {
+                "en": "Require authentication for charging",
+                "no": "Krev autentisering for lading"
+              },
+              "value": true
+            },
+            {
               "id": "firmware",
               "type": "label",
               "label": {
@@ -2401,6 +2685,15 @@
               "label": {
                 "en": "Show current per phase",
                 "no": "Vis strøm per fase"
+              },
+              "value": true
+            },
+            {
+              "id": "requireAuthentication",
+              "type": "checkbox",
+              "label": {
+                "en": "Require authentication for charging",
+                "no": "Krev autentisering for lading"
               },
               "value": true
             },

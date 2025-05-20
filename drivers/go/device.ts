@@ -23,7 +23,7 @@ export class GoCharger extends Homey.Device {
   async onInit() {
     this.log('GoCharger is initializing');
     const appVersion = this.homey.app.manifest.version;
-    this.api = new ZaptecApi(appVersion);
+    this.api = new ZaptecApi(appVersion, this.homey);
     this.renewToken();
 
     await this.api.authenticate(
@@ -105,7 +105,7 @@ export class GoCharger extends Homey.Device {
           this.logToDebug(`Failed to poll charger info: ${e}`);
         });
     }
-     
+
     if (this.getSetting('showVoltage')){
       await this.addCapability('measure_voltage.phase1');
       await this.addCapability('measure_voltage.phase2');
@@ -243,6 +243,26 @@ export class GoCharger extends Homey.Device {
         await this.removeCapability('measure_current.phase3');
       }
     }
+    
+    // Handle changes to authentication requirement
+    if (changes.changedKeys.some((k) => k === 'requireAuthentication')) {
+      try {
+        if (!this.hasCapability('available_installation_current')) {
+          throw new Error(this.homey.__('errors.missing_installation_access'));
+        }
+        
+        const requireAuthValue = changes.newSettings.requireAuthentication;
+        const requireAuth = typeof requireAuthValue === 'string' 
+          ? requireAuthValue === 'true' 
+          : Boolean(requireAuthValue);
+        
+        await this.setInstallationAuthenticationRequirement(requireAuth);
+        this.logToDebug(`Updated authentication requirement to ${requireAuth} via settings`);
+      } catch (e) {
+        this.logToDebug(`Failed to update authentication requirement via settings: ${e}`);
+        throw e;
+      }
+    }
   }
 
   /**
@@ -305,6 +325,15 @@ export class GoCharger extends Homey.Device {
    */
   protected pollValues() {
     if (this.api === undefined) return;
+
+    // Poll charger info
+    this.api
+      .getCharger(this.getData().id)
+      .then((charger) => {
+        this.setSettings({
+          requireAuthentication: charger.IsAuthorizationRequired,
+        });
+      });
 
     // Poll state variables from the API.
     this.api
@@ -537,6 +566,15 @@ export class GoCharger extends Homey.Device {
         throw e;
       });
 
+    // Update the authentication requirement setting to match the actual value from the installation
+    if (info.IsRequiredAuthentication !== undefined) {
+      const currentSetting = this.getSetting('requireAuthentication');
+      if (currentSetting !== info.IsRequiredAuthentication) {
+        this.setSettings({ requireAuthentication: info.IsRequiredAuthentication })
+          .catch(e => this.logToDebug(`Failed to update requireAuthentication setting: ${e}`));
+      }
+    }
+
     const isNumber = (n: number | undefined | null): n is number =>
       n !== undefined && n !== null;
     const maxCurrent = isNumber(info.MaxCurrent) ? info.MaxCurrent : 40;
@@ -727,8 +765,9 @@ export class GoCharger extends Homey.Device {
       })
       .catch((e) => {
         this.logToDebug(`adjustCurrent failure: ${e}`);
-        throw new Error(`Failed to adjust current: ${e}`);
+        throw new Error(`${this.homey.__('errors.failed_installation_current_update')}: ${e}`);
       });
+
   }
 
   /**
@@ -769,6 +808,26 @@ export class GoCharger extends Homey.Device {
       .catch((e) => {
         this.logToDebug(`lockCable failure: ${e}`);
         throw new Error(`Failed to lock/unlock cable: ${e}`);
+      });
+  }
+
+  /**
+   * Sets whether the installation requires authentication for charging
+   * 
+   * @param {boolean} requireAuthentication - true if authentication is required, false otherwise
+   * @returns {Promise<boolean>} - true if the operation succeeded
+   */
+  public async setInstallationAuthenticationRequirement(requireAuthentication: boolean) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .updateInstallationAuthenticationRequirement(this.getData().installationId, requireAuthentication)
+      .then(() => {
+        this.logToDebug(`Updated authentication requirement to ${requireAuthentication}`);
+        return true;
+      })
+      .catch((e) => {
+        this.logToDebug(`setInstallationAuthenticationRequirement failure: ${e}`);
+        throw new Error(`${this.homey.__('errors.failed_auth_update')}: ${e}`);
       });
   }
 
