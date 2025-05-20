@@ -41,7 +41,7 @@ class ProDriver extends Homey.Driver {
             `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
           );
           if( !device.hasCapability('available_installation_current'))
-            throw new Error('Device does not support setting available current, because of missing access to the installation');
+            throw new Error(this.homey.__('errors.missing_installation_access'));
 
           return device.setInstallationAvailableCurrent(
             current1,
@@ -73,6 +73,12 @@ class ProDriver extends Homey.Driver {
       );
 
     this.homey.flow
+      .getConditionCard('pro_authentication_required')
+      .registerRunListener(async ({ device }) =>
+        device.getSetting('requireAuthentication'),
+      );
+
+    this.homey.flow
       .getActionCard('pro_start_charging')
       .registerRunListener(async ({ device }) => device.startCharging());
 
@@ -99,29 +105,42 @@ class ProDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('pro_reboot_charger')
       .registerRunListener(async ({ device }) => device.rebootCharger());
-      
+
+    this.homey.flow
+      .getActionCard('pro_set_authentication_requirement')
+      .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
   }
 
-  async onPair(session: Homey.Driver.PairSession) {
-    const appVersion = this.homey.app.manifest.version;
-    const api = new ZaptecApi(appVersion);
+  /**
+   * Handle setting authentication requirement
+   */
+  private async onSetAuthenticationRequirement(
+    { device, require }: { device: ProCharger; require: string },
+  ) {
+    const requireAuth = require === 'true';
+    if( !device.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
+    return device.setInstallationAuthenticationRequirement(requireAuth);
+  }
+
+  async onPair(session: any) {
     let username = '';
     let password = '';
+    let appVersion = this.homey.app.manifest.version;
+    let api: ZaptecApi;
 
-    session.setHandler(
-      'login',
-      async (data: { username: string; password: string }) => {
-        username = data.username;
-        password = data.password;
+    session.setHandler('login', async (data: { username: string; password: string }) => {
+      username = data.username;
+      password = data.password;
 
-        try {
-          await api.authenticate(username, password);
-          return true;
-        } catch (_error) {
-          return false;
-        }
-      },
-    );
+      try {
+        api = new ZaptecApi(appVersion, this.homey);
+        await api.authenticate(username, password);
+        return true;
+      } catch (_error) {
+        return false;
+      }
+    });
 
     session.setHandler('list_devices', async () => {
       const chargers = await api.getChargersByModel('Pro');

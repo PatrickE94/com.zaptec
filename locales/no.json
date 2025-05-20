@@ -1,0 +1,8 @@
+{
+  "errors": {
+    "missing_auth_permissions": "Mangler tillatelser til å endre autentiseringskrav for installasjonen",
+    "failed_auth_update": "Kunne ikke oppdatere autentiseringskrav",
+    "missing_installation_access": "Brukeren mangler tilgang til installasjonen",
+    "failed_installation_current_update": "Kunne ikke oppdatere installasjonens strøm"
+  }
+} 

@@ -25,6 +25,15 @@
                 "value": true
             },
             {
+                "id": "requireAuthentication",
+                "type": "checkbox",
+                "label": {
+                    "en": "Require authentication for charging",
+                    "no": "Krev autentisering for lading"
+                },
+                "value": true
+            },
+            {
                 "id": "firmware",
                 "type": "label",
                 "label": { 
@@ -52,7 +61,7 @@
             }
         ]
     },
-     {
+    {
         "type": "group",
         "label": {
             "en": "Troubleshooting",
