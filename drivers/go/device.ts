@@ -132,32 +132,52 @@ export class GoCharger extends Homey.Device {
    * This avoids having to re-add the device when modifying capabilities.
    */
   private async migrateCapabilities() {
-    const remove = ['available_installation_current.phase1','available_installation_current.phase2','available_installation_current.phase3','meter_power.this_year','onoff',
-      'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity','measure_temperature',
-      'measure_signal_strength','communication_method'
-    ];
+    
+    //get lastInstalledVersion from settings
+    const lastInstalledVersion = this.getSetting('lastInstalledVersion') || '0.0.0';
+    
+    // Log version information for debugging
+    this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
+    
+    if (lastInstalledVersion < '1.7.2') {
+    
+      // Remove old capabilities and ensure correct ordering
+      const remove = ['available_installation_current.phase1','available_installation_current.phase2','available_installation_current.phase3','meter_power.this_year','onoff',
+        'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity','measure_temperature',
+        'measure_signal_strength','communication_method'
+      ];
 
-    for (const cap of remove)
-      if (this.hasCapability(cap)) await this.removeCapability(cap);
+      for (const cap of remove)
+        if (this.hasCapability(cap)) await this.removeCapability(cap);
 
-    const add = [
-      'measure_power',
-      'meter_power.current_session',
-      'meter_power',
-      'meter_power.last_session',
-      'alarm_generic.car_connected',
-      'measure_humidity',
-      'charging_button', // replaces onoff
-      'measure_temperature',
-      'cable_permanent_lock',
-      'available_installation_current',
-      'meter_power.signed_meter_value',
-      'measure_signal_strength',
-      'communication_method'
-    ];
+      const add = [
+        'measure_power', // renamed from meter_power.this_year
+        'meter_power.current_session',
+        'meter_power',
+        'meter_power.last_session',
+        'alarm_generic.car_connected',
+        'measure_humidity',
+        'charging_button', // replaces onoff
+        'measure_temperature',
+        'cable_permanent_lock',
+        'available_installation_current',
+        'meter_power.signed_meter_value',
+        'measure_signal_strength',
+        'communication_method'
+      ];
 
-    for (const cap of add)
-      if (!this.hasCapability(cap)) await this.addCapability(cap);
+      for (const cap of add)
+        if (!this.hasCapability(cap)) await this.addCapability(cap);
+
+    }
+
+    // Store current version as "last installed" after migration
+    await this.setSettings({
+      lastInstalledVersion: this.homey.app.manifest.version
+    }).catch(e => {
+      this.logToDebug(`Error storing version information: ${e}`);
+    });
+
   }
 
   /**
