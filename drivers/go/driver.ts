@@ -126,10 +126,7 @@ class GoDriver extends Homey.Driver {
     );
 
     session.setHandler('list_devices', async () => {
-      const chargers = await api.getChargers({
-        DeviceType: 4,
-        InstallationType: 1,
-      });
+      const chargers = await api.getChargersByModel('Go');
 
       return (
         chargers.Data?.map((charger) => ({

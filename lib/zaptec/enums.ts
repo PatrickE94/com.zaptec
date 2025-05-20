@@ -1066,3 +1066,13 @@ export enum SensorType {
   Energy = 1,
   EnergyWithRipple = 3,
 }
+
+/**
+ * Mapping mellom modellnavn og deviceId-prefiks
+ */
+export const MODEL_PREFIX_MAP: Record<string, string[]> = {
+  'Pro': ['ZCS', 'ZPR', 'ZCH', 'ZPG'],
+  'Go': ['ZAP', 'ZGB', 'ZAG'],
+  'Go2': ['GPN', 'GPG'],
+  'Sense': ['APH', 'APG', 'APM'],
+};
