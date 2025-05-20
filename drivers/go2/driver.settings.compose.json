@@ -1,0 +1,74 @@
+[
+    {
+        "type": "group",
+        "label": {
+            "en": "Capabilities",
+            "no": "Egenskaper"
+        },
+        "children": [
+            {
+                "id": "showVoltage",
+                "type": "checkbox",
+                "label": {
+                    "en": "Show voltage per phase",
+                    "no": "Vis spenning per fase"
+                },
+                "value": false
+            },
+            {
+                "id": "showCurrent",
+                "type": "checkbox",
+                "label": {
+                    "en": "Show current per phase",
+                    "no": "Vis strøm per fase"
+                },
+                "value": true
+            },
+            {
+                "id": "firmware",
+                "type": "label",
+                "label": { 
+                    "en": "Firmware version",
+                    "no": "Fastvare versjon"
+                },
+                "value": ""
+            },
+            {
+                "id": "deviceid",
+                "type": "label",
+                "label": { 
+                    "en": "Device ID",
+                    "no": "Enhets ID"
+                },
+                "value": ""
+            },
+            {
+                "id": "signedMeterValue",
+                "type": "label",
+                "label": {
+                    "en": "Signed Meter Value",
+                    "no": "Målerstand"
+                },
+                "value": ""
+            }
+        ]
+    },
+     {
+        "type": "group",
+        "label": {
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
+        },
+        "children": [
+            {
+                "id": "log",
+                "type": "textarea",
+                "label": {
+                    "en": "Log",
+                    "no": "Logg"
+                },
+                "value": "Empty"
+            }
+        ]
+    }
+]
