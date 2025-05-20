@@ -1633,6 +1633,14 @@
           "title": {
             "en": "Car connected",
             "no": "Bil tilkoblet"
+          },
+          "insightsTitleTrue": {
+            "en": "Car connected",
+            "no": "Bil koblet til lader"
+          },
+          "insightsTitleFalse": {
+            "en": "Car disconnected",
+            "no": "Bil koblet fra lader"
           }
         },
         "meter_power.signed_meter_value": {
@@ -1856,6 +1864,14 @@
           "title": {
             "en": "Car connected",
             "no": "Bil tilkoblet"
+          },
+          "insightsTitleTrue": {
+            "en": "Car connected",
+            "no": "Bil koblet til lader"
+          },
+          "insightsTitleFalse": {
+            "en": "Car disconnected",
+            "no": "Bil koblet fra lader"
           }
         },
         "meter_power.signed_meter_value": {
@@ -2080,6 +2096,14 @@
           "title": {
             "en": "Car connected",
             "no": "Bil koblet til"
+          },
+          "insightsTitleTrue": {
+            "en": "Car connected",
+            "no": "Bil koblet til lader"
+          },
+          "insightsTitleFalse": {
+            "en": "Car disconnected",
+            "no": "Bil koblet fra lader"
           }
         },
         "measure_temperature.sensor1": {
@@ -2316,6 +2340,14 @@
           "title": {
             "en": "Car connected",
             "no": "Bil tilkoblet"
+          },
+          "insightsTitleTrue": {
+            "en": "Car connected",
+            "no": "Bil koblet til lader"
+          },
+          "insightsTitleFalse": {
+            "en": "Car disconnected",
+            "no": "Bil koblet fra lader"
           }
         },
         "measure_temperature.sensor1": {

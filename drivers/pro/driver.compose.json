@@ -94,6 +94,14 @@
       "title": {
         "en": "Car connected",
         "no": "Bil tilkoblet"
+      },
+      "insightsTitleTrue": {
+        "en": "Car connected",
+        "no": "Bil koblet til lader"
+      },
+      "insightsTitleFalse": {
+        "en": "Car disconnected",
+        "no": "Bil koblet fra lader"
       }
     },
     "measure_temperature.sensor1": {
