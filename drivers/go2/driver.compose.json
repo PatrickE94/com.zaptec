@@ -1,0 +1,113 @@
+{
+  "name": {
+    "en": "Zaptec Go 2"
+  },
+  "$extends": [
+    "defaults"
+  ],
+  "class": "evcharger",
+  "capabilities": [
+    "meter_power.current_session",
+    "meter_power",
+    "meter_power.last_session",
+    "measure_power",
+    "charging_button",
+    "cable_permanent_lock",
+    "charge_mode",
+    "alarm_generic.car_connected",
+    "available_installation_current",
+    "measure_current.phase1",
+    "measure_current.phase2",
+    "measure_current.phase3",
+    "measure_voltage.phase1",
+    "measure_voltage.phase2",
+    "measure_voltage.phase3",
+    "measure_humidity",
+    "measure_temperature",
+    "meter_power.signed_meter_value",
+    "measure_signal_strength",
+    "communication_method"
+  ],
+  "capabilitiesOptions": {
+    "meter_power.current_session": {
+      "title": {
+        "en": "Energy current session",
+        "no": "Energibruk ladeøkt"
+      }
+    },
+    "meter_power": {
+      "title": {
+        "en": "Energy this year",
+        "no": "Energiforbruk i år"
+      }
+    },
+    "meter_power.last_session": {
+      "title": {
+        "en": "Energy previous session",
+        "no": "Energibruk forrige ladeøkt"
+      }
+    },
+    "measure_current.phase1": {
+      "title": {
+        "en": "Current L1",
+        "no": "Strøm fase L1"
+      }
+    },
+    "measure_current.phase2": {
+      "title": {
+        "en": "Current L2",
+        "no": "Strøm fase L2"
+      }
+    },
+    "measure_current.phase3": {
+      "title": {
+        "en": "Current L3",
+        "no": "Strøm fase L3"
+      }
+    },
+    "measure_voltage.phase1": {
+      "title": {
+        "en": "Voltage L1",
+        "no": "Spenningsfase L1"
+      }
+    },
+    "measure_voltage.phase2": {
+      "title": {
+        "en": "Voltage L2",
+        "no": "Spenningsfase L2"
+      }
+    },
+    "measure_voltage.phase3": {
+      "title": {
+        "en": "Voltage L3",
+        "no": "Spenningsfase L3"
+      }
+    },
+    "available_installation_current": {
+      "title": {
+        "en": "Current limit",
+        "no": "Tilgjengelig strøm"
+      }
+    },
+    "alarm_generic.car_connected": {
+      "title": {
+        "en": "Car connected",
+        "no": "Bil tilkoblet"
+      }
+    },
+    "meter_power.signed_meter_value": {
+      "title": {
+        "en": "Signed meter value",
+        "no": "Målerstand"
+      },
+      "uiComponent": "none"
+    },
+    "measure_signal_strength": {
+      "title": {
+        "en": "Signal strength",
+        "no": "Signalstyrke"
+      },
+      "units" : "%"
+    }
+  }
+}

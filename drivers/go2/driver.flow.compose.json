@@ -1,0 +1,279 @@
+{
+  "triggers": [
+    {
+      "id": "go2_car_connects",
+      "title": {
+        "en": "Car connects",
+        "no": "Bil tilkobles"
+      },
+      "hint": {
+        "en": "When a car becomes connected to the charger",
+        "no": "Når en bil blir koblet til laderen"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging",
+            "no": "Bil lader"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit",
+            "no": "Tilgjengelig strøm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "go2_car_disconnects",
+      "title": {
+        "en": "Car disconnects",
+        "no": "Bil kobles fra"
+      },
+      "hint": {
+        "en": "When a car disconnects it's cable from the charger.",
+        "no": "Når en bil kobles fra laderen."
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging",
+            "no": "Bil lader"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit",
+            "no": "Tilgjengelig strøm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "go2_charging_starts",
+      "title": {
+        "en": "Charging starts",
+        "no": "Lading starter"
+      },
+      "hint": {
+        "en": "When a charging session is started",
+        "no": "Når en lading starter"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging",
+            "no": "Bil lader"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit",
+            "no": "Tilgjengelig strøm"
+          }
+        }
+      ]
+    },
+    {
+      "id": "go2_charging_stops",
+      "title": {
+        "en": "Charging stops"
+      },
+      "hint": {
+        "en": "When a charging session is stopped",
+        "no": "Når en lading slutter"
+      },
+      "tokens": [
+        {
+          "name": "car_connected",
+          "type": "boolean",
+          "title": {
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
+          }
+        },
+        {
+          "name": "charging",
+          "type": "boolean",
+          "title": {
+            "en": "Car charging",
+            "no": "Bil lader"
+          }
+        },
+        {
+          "name": "current_limit",
+          "type": "number",
+          "title": {
+            "en": "Current phase power limit",
+            "no": "Tilgjengelig strøm"
+          }
+        }
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "id": "go2_is_charging",
+      "title": {
+        "en": "Car !{{is|is not}} charging",
+        "no": "Bil lader !{{|ikke}}"
+      }
+    },
+    {
+      "id": "go2_is_connected",
+      "title": {
+        "en": "Car !{{is|is not}} connected",
+        "no": "Bil !{{er|er ikke}} tilkoblet"
+      }
+    },
+    {
+      "id": "go2_charging_is_finished",
+      "title": {
+        "en": "Charging !{{is|is not}} finished",
+        "no": "Lading !{{er|er ikke}} fullført"
+      }
+    }
+  ],
+  "actions": [
+    {
+      "id": "go2_installation_current_control",
+      "title": {
+        "en": "Set available current to",
+        "no": "Sett tilgjengelig strøm til"
+      },
+      "titleFormatted": {
+        "en": "Set available current to [[current1]]/[[current2]]/[[current3]]",
+        "no": "Sett tilgjengelig strøm til [[current1]]/[[current2]]/[[current3]]"
+      },
+      "hint": {
+        "en": "Changes the available current for all chargers within this installation.",
+        "no": "Endrer tilgjengelig strøm for alle ladere i denne installasjonen."
+      },
+      "args": [
+        {
+          "name": "current1",
+          "type": "range",
+          "title": {
+            "en": "Current P1",
+            "no": "Strøm P1"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current2",
+          "type": "range",
+          "title": {
+            "en": "Current P2",
+            "no": "Strøm P2"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        },
+        {
+          "name": "current3",
+          "type": "range",
+          "title": {
+            "en": "Current P3",
+            "no": "Strøm P3"
+          },
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        }
+      ]
+    },
+    {
+      "id": "go2_start_charging",
+      "title": {
+        "en": "Start charging",
+        "no": "Start lading"
+      }
+    },
+    {
+      "id": "go2_stop_charging",
+      "title": {
+        "en": "Stop charging",
+        "no": "Stopp lading"
+      }
+    },
+    {
+      "id": "go2_cable_permanent_lock",
+      "title": {
+        "en": "Lock cable to charging station",
+        "no": "Lås kabel til ladestasjon"
+      },
+      "hint": {
+        "en": "Permanently locks the cable to the charging station",
+        "no": "Låser kabel permanent til ladestasjonen"
+      }
+    },
+    {
+      "id": "go2_cable_permanent_open",
+      "title": {
+        "en": "Unlock cable from charging station",
+        "no": "Frigjør kabel fra ladestasjon"
+      },
+      "hint": {
+        "en": "Removes the permanent lock on the cable from the charging station",
+        "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+      }
+    },
+    {
+      "id": "go2_reboot_charger",
+      "title": {
+        "en": "Reboot charger",
+        "no": "Restart ladeboksen"
+      },
+      "hint": {
+        "en": "Reboots the charger, turing it off and on again",
+        "no": "Restart på ladeboksen, skrur den av og på igjen"
+      }
+    }
+  ]
+}

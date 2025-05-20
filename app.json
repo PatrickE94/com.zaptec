@@ -230,6 +230,181 @@
         ]
       },
       {
+        "id": "go2_car_connects",
+        "title": {
+          "en": "Car connects",
+          "no": "Bil tilkobles"
+        },
+        "hint": {
+          "en": "When a car becomes connected to the charger",
+          "no": "Når en bil blir koblet til laderen"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging",
+              "no": "Bil lader"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_car_disconnects",
+        "title": {
+          "en": "Car disconnects",
+          "no": "Bil kobles fra"
+        },
+        "hint": {
+          "en": "When a car disconnects it's cable from the charger.",
+          "no": "Når en bil kobles fra laderen."
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging",
+              "no": "Bil lader"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_charging_starts",
+        "title": {
+          "en": "Charging starts",
+          "no": "Lading starter"
+        },
+        "hint": {
+          "en": "When a charging session is started",
+          "no": "Når en lading starter"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging",
+              "no": "Bil lader"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_charging_stops",
+        "title": {
+          "en": "Charging stops"
+        },
+        "hint": {
+          "en": "When a charging session is stopped",
+          "no": "Når en lading slutter"
+        },
+        "tokens": [
+          {
+            "name": "car_connected",
+            "type": "boolean",
+            "title": {
+              "en": "Car connected",
+              "no": "Bil tilkoblet"
+            }
+          },
+          {
+            "name": "charging",
+            "type": "boolean",
+            "title": {
+              "en": "Car charging",
+              "no": "Bil lader"
+            }
+          },
+          {
+            "name": "current_limit",
+            "type": "number",
+            "title": {
+              "en": "Current phase power limit",
+              "no": "Tilgjengelig strøm"
+            }
+          }
+        ],
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
         "id": "home_car_connects",
         "title": {
           "en": "Car connects",
@@ -626,6 +801,48 @@
         ]
       },
       {
+        "id": "go2_is_charging",
+        "title": {
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_is_connected",
+        "title": {
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_charging_is_finished",
+        "title": {
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
         "id": "home_is_charging",
         "title": {
           "en": "Car !{{is|is not}} charging",
@@ -851,6 +1068,149 @@
             "type": "device",
             "name": "device",
             "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
+        "id": "go2_installation_current_control",
+        "title": {
+          "en": "Set available current to",
+          "no": "Sett tilgjengelig strøm til"
+        },
+        "titleFormatted": {
+          "en": "Set available current to [[current1]]/[[current2]]/[[current3]]",
+          "no": "Sett tilgjengelig strøm til [[current1]]/[[current2]]/[[current3]]"
+        },
+        "hint": {
+          "en": "Changes the available current for all chargers within this installation.",
+          "no": "Endrer tilgjengelig strøm for alle ladere i denne installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          },
+          {
+            "name": "current1",
+            "type": "range",
+            "title": {
+              "en": "Current P1",
+              "no": "Strøm P1"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current2",
+            "type": "range",
+            "title": {
+              "en": "Current P2",
+              "no": "Strøm P2"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          },
+          {
+            "name": "current3",
+            "type": "range",
+            "title": {
+              "en": "Current P3",
+              "no": "Strøm P3"
+            },
+            "min": 0,
+            "max": 40,
+            "step": 1,
+            "label": " A",
+            "labelDecimals": 0
+          }
+        ]
+      },
+      {
+        "id": "go2_start_charging",
+        "title": {
+          "en": "Start charging",
+          "no": "Start lading"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_stop_charging",
+        "title": {
+          "en": "Stop charging",
+          "no": "Stopp lading"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_cable_permanent_lock",
+        "title": {
+          "en": "Lock cable to charging station",
+          "no": "Lås kabel til ladestasjon"
+        },
+        "hint": {
+          "en": "Permanently locks the cable to the charging station",
+          "no": "Låser kabel permanent til ladestasjonen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_cable_permanent_open",
+        "title": {
+          "en": "Unlock cable from charging station",
+          "no": "Frigjør kabel fra ladestasjon"
+        },
+        "hint": {
+          "en": "Removes the permanent lock on the cable from the charging station",
+          "no": "Fjerner permanent låsing av kabel til ladestasjonen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_reboot_charger",
+        "title": {
+          "en": "Reboot charger",
+          "no": "Restart ladeboksen"
+        },
+        "hint": {
+          "en": "Reboots the charger, turing it off and on again",
+          "no": "Restart på ladeboksen, skrur den av og på igjen"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
           }
         ]
       },
@@ -1291,6 +1651,229 @@
         }
       },
       "id": "go",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Capabilities",
+            "no": "Egenskaper"
+          },
+          "children": [
+            {
+              "id": "showVoltage",
+              "type": "checkbox",
+              "label": {
+                "en": "Show voltage per phase",
+                "no": "Vis spenning per fase"
+              },
+              "value": false
+            },
+            {
+              "id": "showCurrent",
+              "type": "checkbox",
+              "label": {
+                "en": "Show current per phase",
+                "no": "Vis strøm per fase"
+              },
+              "value": true
+            },
+            {
+              "id": "firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware version",
+                "no": "Fastvare versjon"
+              },
+              "value": ""
+            },
+            {
+              "id": "deviceid",
+              "type": "label",
+              "label": {
+                "en": "Device ID",
+                "no": "Enhets ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "signedMeterValue",
+              "type": "label",
+              "label": {
+                "en": "Signed Meter Value",
+                "no": "Målerstand"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
+          },
+          "children": [
+            {
+              "id": "log",
+              "type": "textarea",
+              "label": {
+                "en": "Log",
+                "no": "Logg"
+              },
+              "value": "Empty"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "icon": "/drivers/go2/assets/icon.svg",
+      "images": {
+        "small": "/drivers/go2/assets/images/driver_small.png",
+        "large": "/drivers/go2/assets/images/driver_large.png",
+        "xlarge": "/drivers/go2/assets/images/driver_xlarge.png"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "class": "evcharger",
+      "energy": {
+        "cumulative": true
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "name": {
+        "en": "Zaptec Go 2"
+      },
+      "capabilities": [
+        "meter_power.current_session",
+        "meter_power",
+        "meter_power.last_session",
+        "measure_power",
+        "charging_button",
+        "cable_permanent_lock",
+        "charge_mode",
+        "alarm_generic.car_connected",
+        "available_installation_current",
+        "measure_current.phase1",
+        "measure_current.phase2",
+        "measure_current.phase3",
+        "measure_voltage.phase1",
+        "measure_voltage.phase2",
+        "measure_voltage.phase3",
+        "measure_humidity",
+        "measure_temperature",
+        "meter_power.signed_meter_value",
+        "measure_signal_strength",
+        "communication_method"
+      ],
+      "capabilitiesOptions": {
+        "meter_power.current_session": {
+          "title": {
+            "en": "Energy current session",
+            "no": "Energibruk ladeøkt"
+          }
+        },
+        "meter_power": {
+          "title": {
+            "en": "Energy this year",
+            "no": "Energiforbruk i år"
+          }
+        },
+        "meter_power.last_session": {
+          "title": {
+            "en": "Energy previous session",
+            "no": "Energibruk forrige ladeøkt"
+          }
+        },
+        "measure_current.phase1": {
+          "title": {
+            "en": "Current L1",
+            "no": "Strøm fase L1"
+          }
+        },
+        "measure_current.phase2": {
+          "title": {
+            "en": "Current L2",
+            "no": "Strøm fase L2"
+          }
+        },
+        "measure_current.phase3": {
+          "title": {
+            "en": "Current L3",
+            "no": "Strøm fase L3"
+          }
+        },
+        "measure_voltage.phase1": {
+          "title": {
+            "en": "Voltage L1",
+            "no": "Spenningsfase L1"
+          }
+        },
+        "measure_voltage.phase2": {
+          "title": {
+            "en": "Voltage L2",
+            "no": "Spenningsfase L2"
+          }
+        },
+        "measure_voltage.phase3": {
+          "title": {
+            "en": "Voltage L3",
+            "no": "Spenningsfase L3"
+          }
+        },
+        "available_installation_current": {
+          "title": {
+            "en": "Current limit",
+            "no": "Tilgjengelig strøm"
+          }
+        },
+        "alarm_generic.car_connected": {
+          "title": {
+            "en": "Car connected",
+            "no": "Bil tilkoblet"
+          }
+        },
+        "meter_power.signed_meter_value": {
+          "title": {
+            "en": "Signed meter value",
+            "no": "Målerstand"
+          },
+          "uiComponent": "none"
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
+        }
+      },
+      "id": "go2",
       "settings": [
         {
           "type": "group",
