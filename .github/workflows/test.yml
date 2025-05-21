@@ -2,7 +2,7 @@ name: Zaptec App Tests
 
 on:
   push:
-    branches: [ main, master, develop ]
+    branches: [ automated-tests ]
   pull_request:
     branches: [ main, master, develop ]
   workflow_dispatch:
