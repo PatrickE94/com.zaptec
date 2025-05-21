@@ -1,0 +1,40 @@
+name: Zaptec App Tests
+
+on:
+  push:
+    branches: [ automated-tests ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Bruk Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      
+      - name: Installer avhengigheter
+        run: npm ci
+        
+      # - name: Lint koden
+      #   run: npm run lint
+        
+      - name: Kjør typescript typesjekking
+        run: npm run check
+        
+      - name: Kjør tester
+        run: npm test
+        
+      - name: Valider Homey-app
+        run: npm run validate 
