@@ -85,5 +85,8 @@
   },
   "1.8.0": {
     "en": "Added Zaptec Go 2"
+  },
+  "1.8.1": {
+    "en": "Fix indicator selection being reset. Fixed issue with some devices not being discovered. Added switch for authentication being required to settings, and added flowcards."
   }
 }
