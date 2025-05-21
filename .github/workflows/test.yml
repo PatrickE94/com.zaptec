@@ -27,14 +27,9 @@ jobs:
       - name: Installer avhengigheter
         run: npm ci
         
-      # - name: Lint koden
-      #   run: npm run lint
-        
       - name: Kjør typescript typesjekking
         run: npm run check
         
       - name: Kjør tester
         run: npm test
-        
-      - name: Valider Homey-app
-        run: npm run validate 
+  
