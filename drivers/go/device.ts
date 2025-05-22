@@ -139,6 +139,10 @@ export class GoCharger extends Homey.Device {
     // Log version information for debugging
     this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
     
+    if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
+      await this.addCapability('charging_mode');
+    }
+
     if (lastInstalledVersion < '1.7.2') {
     
       // Remove old capabilities and ensure correct ordering

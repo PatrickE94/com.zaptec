@@ -31,6 +31,7 @@ export class Go2Charger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateCapabilities();
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -51,6 +52,22 @@ export class Go2Charger extends Homey.Device {
     this.log('Go2Charger has been initialized');
   }
 
+    /**
+   * Verify all expected capabilities and apply changes to capabilities.
+   *
+   * This avoids having to re-add the device when modifying capabilities.
+   */
+    private async migrateCapabilities() {
+      //get lastInstalledVersion from settings
+      const lastInstalledVersion = this.getSetting('lastInstalledVersion') || '0.0.0';
+          
+      // Log version information for debugging
+      this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
+      
+      if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
+        await this.addCapability('charging_mode');
+      }
+    }
 
   /**
    * Assign reactions to capability changes triggered by others.

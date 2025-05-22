@@ -134,7 +134,11 @@ export class HomeCharger extends Homey.Device {
   private async migrateCapabilities() {
     //get lastInstalledVersion from settings
     const lastInstalledVersion = this.getSetting('lastInstalledVersion') || '0.0.0';
-    
+
+    if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
+      await this.addCapability('charging_mode');
+    }
+
     // Log version information for debugging
     this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
     
