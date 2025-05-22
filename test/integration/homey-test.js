@@ -1,70 +1,70 @@
 /**
- * Homey-integrasjonstest
+ * Homey Integration Test
  * 
- * Denne testen må kjøres manuelt mot en Homey hvor appen er installert
- * Kjør med: node test/integration/homey-test.js
+ * This test needs to be run manually against a Homey with the app installed
+ * Run with: node test/integration/homey-test.js
  */
 
 const HomeyAPI = require('homey-api').default;
 const readline = require('readline');
 
-// Opprett readline-grensesnitt for input
+// Create readline interface for input
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 });
 
 async function testHomeyIntegration() {
-  console.log('Homey Integrasjonstest for Zaptec-appen');
-  console.log('=======================================');
+  console.log('Homey Integration Test for Zaptec App');
+  console.log('=====================================');
   
-  // Spør om Homey-informasjon
-  const homeyIp = await askQuestion('Skriv inn IP-adresse til Homey (f.eks. 192.168.0.123): ');
-  const homeyId = await askQuestion('Skriv inn Homey ID (valgfritt): ');
-  const homeyToken = await askQuestion('Skriv inn Bearer token for Homey: ');
+  // Ask for Homey information
+  const homeyIp = await askQuestion('Enter Homey IP address (e.g. 192.168.0.123): ');
+  const homeyId = await askQuestion('Enter Homey ID (optional): ');
+  const homeyToken = await askQuestion('Enter Bearer token for Homey: ');
   
   try {
-    console.log('Kobler til Homey...');
+    console.log('Connecting to Homey...');
     
-    // Koble til Homey
+    // Connect to Homey
     const homeyApi = new HomeyAPI({
       host: homeyIp,
       token: homeyToken
     });
     
-    // Hent alle enheter
-    console.log('Henter enhetsdetaljer...');
+    // Get all devices
+    console.log('Retrieving device details...');
     const devices = await homeyApi.devices.getDevices();
     
-    // Filtrer ut Zaptec-enheter
+    // Filter out Zaptec devices
     const zaptecDevices = Object.values(devices).filter(device => 
       device.driverId && 
       ['pro', 'go', 'go2', 'home'].includes(device.driverId)
     );
     
     if (zaptecDevices.length === 0) {
-      console.log('Ingen Zaptec-enheter funnet. Har du lagt til en lader i appen?');
+      console.log('No Zaptec devices found. Have you added a charger in the app?');
       process.exit(1);
     }
     
-    console.log(`Fant ${zaptecDevices.length} Zaptec-enheter:`);
+    console.log(`Found ${zaptecDevices.length} Zaptec devices:`);
     
-    // Vis detaljer for hver enhet
+    // Show details for each device
     for (const device of zaptecDevices) {
       console.log(`\n[${device.name}] (${device.driverId})`);
       console.log('Capabilities:');
       
-      // Vis alle capabilities med verdier
+      // Show all capabilities with values
       for (const [capabilityId, value] of Object.entries(device.capabilitiesObj)) {
         console.log(`  - ${capabilityId}: ${value.value}`);
       }
       
-      // Test en handling hvis enheten støtter det
+      // Test an action if the device supports it
       if (device.capabilitiesObj['charging_button'] !== undefined) {
         const currentValue = device.capabilitiesObj['charging_button'].value;
-        console.log(`\nTester toggling av lading (nåværende verdi: ${currentValue})`);
+        console.log(`\nTesting toggling of charging (current value: ${currentValue})`);
         
-        if (await askYesNo('Vil du teste å endre ladestatus?')) {
+        if (await askYesNo('Do you want to test changing the charging status?')) {
           // Toggle charging_button
           try {
             await homeyApi.devices.setCapabilityValue({
@@ -72,33 +72,33 @@ async function testHomeyIntegration() {
               capabilityId: 'charging_button',
               value: !currentValue
             });
-            console.log(`Endret charging_button til ${!currentValue}`);
+            console.log(`Changed charging_button to ${!currentValue}`);
             
-            // Vent litt og les verdien igjen
-            console.log('Venter 3 sekunder...');
+            // Wait a bit and read the value again
+            console.log('Waiting 3 seconds...');
             await new Promise(resolve => setTimeout(resolve, 3000));
             
-            // Oppdater enhetsinfo
+            // Update device info
             const updatedDevice = await homeyApi.devices.getDevice({ id: device.id });
-            console.log(`Ny verdi: ${updatedDevice.capabilitiesObj['charging_button'].value}`);
+            console.log(`New value: ${updatedDevice.capabilitiesObj['charging_button'].value}`);
           } catch (error) {
-            console.error('Feil ved endring av capability:', error.message);
+            console.error('Error changing capability:', error.message);
           }
         }
       }
     }
     
-    console.log('\nTest fullført!');
+    console.log('\nTest completed!');
     
   } catch (error) {
-    console.error('Feil i integrasjonstest:', error.message);
+    console.error('Error in integration test:', error.message);
     process.exit(1);
   }
   
   rl.close();
 }
 
-// Hjelpefunksjon for å stille spørsmål
+// Helper function to ask questions
 function askQuestion(question) {
   return new Promise(resolve => {
     rl.question(question, answer => {
@@ -107,14 +107,14 @@ function askQuestion(question) {
   });
 }
 
-// Hjelpefunksjon for ja/nei-spørsmål
+// Helper function for yes/no questions
 async function askYesNo(question) {
-  const answer = await askQuestion(`${question} (j/n): `);
-  return answer.toLowerCase().startsWith('j');
+  const answer = await askQuestion(`${question} (y/n): `);
+  return answer.toLowerCase().startsWith('y');
 }
 
-// Kjør testen
+// Run the test
 testHomeyIntegration().catch(error => {
-  console.error('Uventet feil:', error);
+  console.error('Unexpected error:', error);
   process.exit(1);
 }); 

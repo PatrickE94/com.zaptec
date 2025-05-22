@@ -1,42 +1,65 @@
-# Testplan for Zaptec Homey-app
+# Test Plan for Zaptec Homey App
 
-Dette dokumentet beskriver hvordan du kan teste Zaptec-appen for Homey på forskjellige nivåer.
+This document describes how to test the Zaptec app for Homey at different levels.
 
-## Automatiserte tester
+## Automated Tests
 
-Appen bruker Mocha som rammeverk for automatiserte tester. Testene kjøres ved å kjøre:
+The app uses Jest as a testing framework. Run the tests with:
 
 ```bash
 npm test
 ```
 
-### Testdekning
+You can also run specific tests:
 
-Vi har følgende typer tester:
+```bash
+# Run only API tests
+npm test -- lib/zaptec/api.spec.ts
 
-1. **API-tester** (`lib/zaptec/api.spec.ts`) - Tester for Zaptec API-integrasjon
-2. **Driver-tester** (`drivers/*/driver.spec.ts`) - Tester for driverfunksjonalitet for hver modell
+# Run only Pro driver tests
+npm test -- drivers/pro/driver.spec.ts
 
-## Hvordan legge til tester
+# Run tests in watch mode
+npm run test:watch
+```
 
-### Legge til API-tester
+### Integration Test
 
-Legg til nye tester i `lib/zaptec/api.spec.ts`. Bruk `nock` for å mocke API-responser:
+There is also a manual integration test that can be run against a real Homey device with the app installed:
+
+```bash
+npm run test:integration
+```
+
+This script will ask for your Homey IP address and authentication token, and then test the communication with any Zaptec chargers you have added to your Homey.
+
+### Test Coverage
+
+We have the following types of tests:
+
+1. **API Tests** (`lib/zaptec/api.spec.ts`) - Tests for Zaptec API integration
+2. **Driver Tests** (`drivers/*/driver.spec.ts`) - Tests for driver functionality for each model
+
+## How to Add Tests
+
+### Adding API Tests
+
+Add new tests in `lib/zaptec/api.spec.ts`. Use `nock` to mock API responses:
 
 ```typescript
 it('should test something new', async () => {
-  // Mock autentisering
+  // Mock authentication
   nock('https://api.zaptec.com')
     .post('/oauth/token')
     .reply(200, { access_token: 'TEST_TOKEN', token_type: 'Bearer', expires_in: 9000 });
     
-  // Mock API-respons
+  // Mock API response
   nock('https://api.zaptec.com')
     .matchHeader('Authorization', 'Bearer TEST_TOKEN')
     .get('/api/some-endpoint')
     .reply(200, { data: 'test' });
     
-  // Test funksjonaliteten
+  // Test functionality
   await api.authenticate('test', 'test');
   const result = await api.someFunction();
   
@@ -45,82 +68,111 @@ it('should test something new', async () => {
 });
 ```
 
-### Legge til driver-tester
+### Adding Driver Tests
 
-For å teste nye flow-funksjoner, legg til testcases i relevant `driver.spec.ts` fil:
+To test new flow functions, add test cases to the relevant `driver.spec.ts` file:
 
 ```typescript
 it('should test a new flow action', async () => {
-  // Setup test device med custom funksjonalitet
+  // Setup test device with custom functionality
   const mockDevice = {
     ...mockProDevice,
     customFunction: async () => {
-      // test-spesifikk implementasjon
+      // test-specific implementation
       return true;
     }
   };
   
-  // Hent flow listener som ble registrert
-  const listener = mockFlowListeners['action_id'];
+  // Register flow listener
+  mockFlowListeners['action_id'] = ({ device, parameter }) => device.customFunction(parameter);
   
-  // Kjør listener med mockede data
+  // Run listener with mocked data
+  const listener = mockFlowListeners['action_id'];
   const result = await listener({ device: mockDevice, parameter: 'value' });
   
-  // Verifiser resultat
+  // Verify result
   assert.strictEqual(result, true);
 });
 ```
 
-## Manuell testing
+### Mocking Homey and Zaptec API
 
-### Forutsetninger
+We use Jest to mock both the Homey module and Zaptec API:
 
-For å teste manuelt trenger du:
+```typescript
+// Mock Homey module
+jest.mock('homey', () => ({
+  Driver: class {
+    log(message: string) {}
+    async onInit() {}
+  },
+  __: (key: string) => key,
+  // Add more necessary properties here...
+}), { virtual: true });
 
-1. En Homey-enhet (fysisk eller utviklingsmiljø)
-2. En Zaptec-konto med minst én lader konfigurert
-3. Node.js og npm installert
+// Mock ZaptecApi
+const mockZaptecApi = {
+  authenticate: async () => true,
+  getChargers: async () => ({ Data: [] }),
+  // Add more methods as needed...
+};
 
-### Oppsett for testing
+jest.mock('../../lib/zaptec', () => ({
+  ZaptecApi: jest.fn().mockImplementation(() => mockZaptecApi),
+  // Other exported values from the module...
+}));
+```
 
-1. Klon repoet:
+## Manual Testing
+
+### Prerequisites
+
+For manual testing, you need:
+
+1. A Homey device (physical or development environment)
+2. A Zaptec account with at least one charger configured
+3. Node.js and npm installed
+
+### Testing Setup
+
+1. Clone the repository:
    ```
    git clone https://github.com/username/com.zaptec.git
    cd com.zaptec
    ```
 
-2. Installer avhengigheter:
+2. Install dependencies:
    ```
    npm install
    ```
 
-3. Kjør appen i utviklingsmodus:
+3. Run the app in development mode:
    ```
    npm run start
    ```
 
-4. Følg instruksjonene i Homey Developer-appen for å legge til en testlader
+4. Follow the instructions in the Homey Developer app to add a test charger
 
-### Test-sjekkliste
+### Test Checklist
 
-#### Grunnleggende tester
-- [ ] Autentisering med brukernavn/passord
-- [ ] Oppdage ladere
-- [ ] Vise korrekt status på ladere
+#### Basic Tests
+- [ ] Authentication with username/password
+- [ ] Discover chargers
+- [ ] Display correct charger status
 
-#### Funksjonalitetstester
-- [ ] Start lading
-- [ ] Stopp lading
-- [ ] Sett maksimal ladestrøm
-- [ ] Låse/låse opp kabel
-- [ ] Omstarte lader
+#### Functionality Tests
+- [ ] Start charging
+- [ ] Stop charging
+- [ ] Set maximum charging current
+- [ ] Lock/unlock cable
+- [ ] Reboot charger
 
-#### Flow-tester
-- [ ] Test alle betingelseskort
-- [ ] Test alle handlingskort
+#### Flow Tests
+- [ ] Test all condition cards
+- [ ] Test all action cards
 
-## Kontinuerlig integrasjon
+## Continuous Integration
 
-Vi bruker GitHub Actions for kontinuerlig integrasjon. Testene kjøres automatisk ved push og pull requests.
+We use GitHub Actions for continuous integration. Tests are run automatically on push and pull requests.
 
-Workflow-konfigurasjonen finnes i `.github/workflows/test.yml`. 
+The workflow configuration can be found in `.github/workflows/test.yml`. 
