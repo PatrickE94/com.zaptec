@@ -2,7 +2,7 @@
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.zaptec",
   "version": "1.8.1",
-  "compatibility": ">=12.2.0",
+  "compatibility": ">=12.4.5",
   "sdk": 3,
   "brandColor": "#19312F",
   "platforms": [
@@ -1775,7 +1775,9 @@
       ],
       "class": "evcharger",
       "energy": {
-        "cumulative": true
+        "cumulative": true,
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
       },
       "pair": [
         {
@@ -2015,7 +2017,9 @@
       ],
       "class": "evcharger",
       "energy": {
-        "cumulative": true
+        "cumulative": true,
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
       },
       "pair": [
         {
@@ -2255,7 +2259,9 @@
       ],
       "class": "evcharger",
       "energy": {
-        "cumulative": true
+        "cumulative": true,
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
       },
       "pair": [
         {
@@ -2508,7 +2514,9 @@
       ],
       "class": "evcharger",
       "energy": {
-        "cumulative": true
+        "cumulative": true,
+        "evCharger": true,
+        "meterPowerImportedCapability": "meter_power"
       },
       "pair": [
         {

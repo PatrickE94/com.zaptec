@@ -13,7 +13,9 @@
   ],
   "class": "evcharger",
   "energy": {
-    "cumulative": true
+    "cumulative": true,
+    "evCharger": true,
+    "meterPowerImportedCapability": "meter_power"
   },
   "pair": [
     {
