@@ -5,6 +5,7 @@ import {
   ZaptecApi,
 } from '../../lib/zaptec';
 import type { ProCharger } from './device';
+import { Feature } from '../../lib/zaptec/enums';
 
 interface InstallationCurrentControlArgs {
   current1: number;
@@ -109,6 +110,10 @@ class ProDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('pro_set_authentication_requirement')
       .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
+
+    this.homey.flow
+      .getActionCard('pro_set_charging_mode')
+      .registerRunListener(this.onSetChargingMode.bind(this));
   }
 
   /**
@@ -121,6 +126,17 @@ class ProDriver extends Homey.Driver {
     if( !device.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return device.setInstallationAuthenticationRequirement(requireAuth);
+  }
+
+  /**
+   * Handle setting charging mode
+   */
+  private async onSetChargingMode(
+    { device, mode }: { device: ProCharger; mode: string },
+  ) {
+    if( !device.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
+    return device.setInstallationChargingMode(Number(mode) as Feature);
   }
 
   async onPair(session: any) {

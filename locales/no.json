@@ -3,6 +3,7 @@
     "missing_auth_permissions": "Mangler tillatelser til å endre autentiseringskrav for installasjonen",
     "failed_auth_update": "Kunne ikke oppdatere autentiseringskrav",
     "missing_installation_access": "Brukeren mangler tilgang til installasjonen",
-    "failed_installation_current_update": "Kunne ikke oppdatere installasjonens strøm"
+    "failed_installation_current_update": "Kunne ikke oppdatere installasjonens strøm",
+    "failed_charging_mode_update": "Kunne ikke oppdatere installasjonens lademodus"
   }
 } 
