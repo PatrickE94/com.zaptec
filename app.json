@@ -1823,7 +1823,8 @@
         "measure_temperature",
         "meter_power.signed_meter_value",
         "measure_signal_strength",
-        "communication_method"
+        "communication_method",
+        "charging_mode"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -2063,7 +2064,8 @@
         "measure_temperature",
         "meter_power.signed_meter_value",
         "measure_signal_strength",
-        "communication_method"
+        "communication_method",
+        "charging_mode"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {
@@ -2304,7 +2306,8 @@
         "measure_temperature.sensor2",
         "meter_power.signed_meter_value",
         "measure_signal_strength",
-        "communication_method"
+        "communication_method",
+        "charging_mode"
       ],
       "capabilitiesOptions": {
         "meter_power.current_session": {

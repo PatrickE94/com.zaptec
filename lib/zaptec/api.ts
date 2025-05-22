@@ -569,7 +569,7 @@ export class ZaptecApi {
    */
   public async updateInstallationProperties(
     id: string,
-    properties: { feature?: Feature, requireAuthentication?: boolean },
+    properties: { EnabledFeatures?: Feature, IsRequiredAuthentication?: boolean },
   ): Promise<void> {
     const { response } = await this.put(
       `/api/installation/${id}`,
