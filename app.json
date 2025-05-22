@@ -1191,6 +1191,59 @@
         ]
       },
       {
+        "id": "set_charging_mode",
+        "title": {
+          "en": "Set charging mode",
+          "no": "Sett lademodus"
+        },
+        "titleFormatted": {
+          "en": "Set charging mode to [[mode]]",
+          "no": "Sett lademodus til [[mode]]"
+        },
+        "hint": {
+          "en": "Set the charging mode for the installation.",
+          "no": "Sett lademodus for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Charging mode",
+              "no": "Lademodus"
+            },
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Default charging",
+                  "no": "Standardlading"
+                }
+              },
+              {
+                "id": "16",
+                "title": {
+                  "en": "Scheduled charging",
+                  "no": "Planlagt lading"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Automatic charging",
+                  "no": "Automatisk lading"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "go2_installation_current_control",
         "title": {
           "en": "Set available current to",
@@ -1373,6 +1426,59 @@
                 "title": {
                   "en": "Not required",
                   "no": "Ikke påkrevd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "go2_set_charging_mode",
+        "title": {
+          "en": "Set charging mode",
+          "no": "Sett lademodus"
+        },
+        "titleFormatted": {
+          "en": "Set charging mode to [[mode]]",
+          "no": "Sett lademodus til [[mode]]"
+        },
+        "hint": {
+          "en": "Set the charging mode for the installation.",
+          "no": "Sett lademodus for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Charging mode",
+              "no": "Lademodus"
+            },
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Default charging",
+                  "no": "Standardlading"
+                }
+              },
+              {
+                "id": "16",
+                "title": {
+                  "en": "Scheduled charging",
+                  "no": "Planlagt lading"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Automatic charging",
+                  "no": "Automatisk lading"
                 }
               }
             ]
@@ -1569,6 +1675,59 @@
         ]
       },
       {
+        "id": "home_set_charging_mode",
+        "title": {
+          "en": "Set charging mode",
+          "no": "Sett lademodus"
+        },
+        "titleFormatted": {
+          "en": "Set charging mode to [[mode]]",
+          "no": "Sett lademodus til [[mode]]"
+        },
+        "hint": {
+          "en": "Set the charging mode for the installation.",
+          "no": "Sett lademodus for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Charging mode",
+              "no": "Lademodus"
+            },
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Default charging",
+                  "no": "Standardlading"
+                }
+              },
+              {
+                "id": "16",
+                "title": {
+                  "en": "Scheduled charging",
+                  "no": "Planlagt lading"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Automatic charging",
+                  "no": "Automatisk lading"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "pro_installation_current_control",
         "title": {
           "en": "Set available current to",
@@ -1751,6 +1910,59 @@
                 "title": {
                   "en": "Not required",
                   "no": "Ikke påkrevd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pro_set_charging_mode",
+        "title": {
+          "en": "Set charging mode",
+          "no": "Sett lademodus"
+        },
+        "titleFormatted": {
+          "en": "Set charging mode to [[mode]]",
+          "no": "Sett lademodus til [[mode]]"
+        },
+        "hint": {
+          "en": "Set the charging mode for the installation.",
+          "no": "Sett lademodus for installasjonen."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          },
+          {
+            "type": "dropdown",
+            "name": "mode",
+            "title": {
+              "en": "Charging mode",
+              "no": "Lademodus"
+            },
+            "values": [
+              {
+                "id": "0",
+                "title": {
+                  "en": "Default charging",
+                  "no": "Standardlading"
+                }
+              },
+              {
+                "id": "16",
+                "title": {
+                  "en": "Scheduled charging",
+                  "no": "Planlagt lading"
+                }
+              },
+              {
+                "id": "4",
+                "title": {
+                  "en": "Automatic charging",
+                  "no": "Automatisk lading"
                 }
               }
             ]
