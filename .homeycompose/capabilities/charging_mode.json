@@ -1,0 +1,38 @@
+{
+  "type": "enum",
+  "title": {
+    "en": "Charging mode",
+    "no": "Lademodus"
+  },
+  "desc": {
+    "en": "Set the charging mode of the charger. Available modes are: Default charging, Scheduled charging, and Automatic charging.",
+    "no": "Sett lademodus for laderen. Tilgjengelige moduser er: Standardlading, Planlagt lading, og Automatisk lading."
+  },
+  "getable": true,
+  "setable": true,
+  "insights": false,
+  "uiComponent": "picker",
+  "values": [
+    {
+      "id": "0",
+      "title": {
+        "en": "Default charging",
+        "no": "Standardlading"
+      }
+    },
+    {
+      "id": "16",
+      "title": {
+        "en": "Scheduled charging",
+        "no": "Planlagt lading"
+      }
+    },
+    {
+      "id": "4",
+      "title": {
+        "en": "Automatic charging",
+        "no": "Automatisk lading"
+      }
+    }
+  ]
+}
