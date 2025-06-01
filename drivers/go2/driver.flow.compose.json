@@ -114,7 +114,8 @@
     {
       "id": "go2_charging_stops",
       "title": {
-        "en": "Charging stops"
+        "en": "Charging stops",
+        "no": "Lading slutter"
       },
       "hint": {
         "en": "When a charging session is stopped",
