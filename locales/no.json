@@ -4,6 +4,9 @@
     "failed_auth_update": "Kunne ikke oppdatere autentiseringskrav",
     "missing_installation_access": "Brukeren mangler tilgang til installasjonen",
     "failed_installation_current_update": "Kunne ikke oppdatere installasjonens strøm",
-    "failed_charging_mode_update": "Kunne ikke oppdatere installasjonens lademodus"
+    "failed_charging_mode_update": "Kunne ikke oppdatere installasjonens lademodus",
+    "username_missing": "Vennligst skriv inn en e-post adresse",
+    "password_missing": "Vennligst skriv inn ditt passord",
+    "authentication_failed": "Kunne ikke autentisere med nye innloggingsopplysninger"
   }
 } 

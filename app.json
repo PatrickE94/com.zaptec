@@ -365,7 +365,8 @@
       {
         "id": "go2_charging_stops",
         "title": {
-          "en": "Charging stops"
+          "en": "Charging stops",
+          "no": "Lading slutter"
         },
         "hint": {
           "en": "When a charging session is stopped",
@@ -1994,6 +1995,7 @@
           "id": "login_credentials",
           "template": "login_credentials",
           "options": {
+            "logo": "../../../assets/icon.svg",
             "title": {
               "en": "Zaptec Login",
               "no": "Zaptec innlogging"
@@ -2010,6 +2012,27 @@
         {
           "id": "add_devices",
           "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            },
+            "usernameLabel": {
+              "en": "E-mail address",
+              "no": "E-post adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com",
+              "no": "ola@normann.com"
+            }
+          }
         }
       ],
       "name": {
@@ -2235,6 +2258,7 @@
           "id": "login_credentials",
           "template": "login_credentials",
           "options": {
+            "logo": "../../../assets/icon.svg",
             "title": {
               "en": "Zaptec Login",
               "no": "Zaptec innlogging"
@@ -2251,6 +2275,27 @@
         {
           "id": "add_devices",
           "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            },
+            "usernameLabel": {
+              "en": "E-mail address",
+              "no": "E-post adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com",
+              "no": "ola@normann.com"
+            }
+          }
         }
       ],
       "name": {
@@ -2476,6 +2521,7 @@
           "id": "login_credentials",
           "template": "login_credentials",
           "options": {
+            "logo": "../../../assets/icon.svg",
             "title": {
               "en": "Zaptec Login",
               "no": "Zaptec innlogging"
@@ -2492,6 +2538,27 @@
         {
           "id": "add_devices",
           "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            },
+            "usernameLabel": {
+              "en": "E-mail address",
+              "no": "E-post adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com",
+              "no": "ola@normann.com"
+            }
+          }
         }
       ],
       "name": {
@@ -2730,6 +2797,7 @@
           "id": "login_credentials",
           "template": "login_credentials",
           "options": {
+            "logo": "../../../assets/icon.svg",
             "title": {
               "en": "Zaptec Login",
               "no": "Zaptec innlogging"
@@ -2746,6 +2814,27 @@
         {
           "id": "add_devices",
           "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            },
+            "usernameLabel": {
+              "en": "E-mail address",
+              "no": "E-post adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com",
+              "no": "ola@normann.com"
+            }
+          }
         }
       ],
       "name": {

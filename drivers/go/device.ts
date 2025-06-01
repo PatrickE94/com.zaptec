@@ -342,6 +342,12 @@ export class GoCharger extends Homey.Device {
         this.setSettings({
           requireAuthentication: charger.IsAuthorizationRequired,
         });
+      })
+      .catch((e) => {
+        this.logToDebug(`Failed to poll charger info: ${e}`);
+        this.setUnavailable(
+          this.homey.__('errors.authentication_failed')
+        );
       });
 
     // Poll state variables from the API.
@@ -915,6 +921,17 @@ export class GoCharger extends Homey.Device {
     this.setSettings({ log: this.debugLog.join('\n') }).catch((e) =>
       this.error('Failed to update debug log', e),
     );
+  }
+
+  /**
+   * Re-authenticate the device with new credentials
+   * Used during repair process when credentials are updated
+   */
+  public async reAuthenticate(username: string, password: string) {
+    if (this.api) {
+      await this.api.authenticate(username, password);
+      this.log('Device re-authenticated with new credentials');
+    }
   }
 }
 
