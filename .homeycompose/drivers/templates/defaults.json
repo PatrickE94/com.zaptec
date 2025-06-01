@@ -36,5 +36,26 @@
       "id": "add_devices",
       "template": "add_devices"
     }
+  ],
+  "repair": [
+    {
+      "id": "login_credentials",
+      "template": "login_credentials",
+      "options": {
+        "logo": "../../../assets/icon.svg",
+        "title": {
+          "en": "Zaptec Login",
+          "no": "Zaptec innlogging"
+        },
+        "usernameLabel": {
+          "en": "E-mail address",
+          "no": "E-post adresse"
+        },
+        "usernamePlaceholder": {
+          "en": "john@doe.com",
+          "no": "ola@normann.com"
+        }
+      }
+    }
   ]
 }

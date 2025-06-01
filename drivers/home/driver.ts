@@ -6,6 +6,7 @@ import {
 } from '../../lib/zaptec';
 import type { HomeCharger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
+import PairSession = require('homey/lib/PairSession');
 
 interface InstallationCurrentControlArgs {
   current1: number;
@@ -146,8 +147,14 @@ class HomeDriver extends Homey.Driver {
     let api: ZaptecApi;
 
     session.setHandler('login', async (data: { username: string; password: string }) => {
-      username = data.username;
-      password = data.password;
+      username = data.username.trim();
+      password = data.password.trim();
+      if (!username || username.length === 0) {
+          throw new Error(this.homey.__('errors.username_missing'));
+      }
+      if (!password || password.length === 0) {
+          throw new Error(this.homey.__('errors.password_missing'));
+      }
 
       try {
         api = new ZaptecApi(appVersion, this.homey);
@@ -178,6 +185,47 @@ class HomeDriver extends Homey.Driver {
           },
         })) || []
       );
+    });
+  }
+
+  async onRepair(session: PairSession, device: HomeCharger) {
+    this.log('HomeDriver is repairing');
+    let username = '';
+    let password = '';
+    let appVersion = this.homey.app.manifest.version;
+
+    session.setHandler('login', async (data: { username: string; password: string }) => {
+      username = data.username.trim();
+      password = data.password.trim();
+      if (!username || username.length === 0) {
+          throw new Error(this.homey.__('errors.username_missing'));
+      }
+      if (!password || password.length === 0) {
+          throw new Error(this.homey.__('errors.password_missing'));
+      }
+
+      try {
+        // Validate credentials by attempting authentication
+        const validationApi = new ZaptecApi(appVersion, this.homey);
+        await validationApi.authenticate(username, password);
+        
+        // Credentials are valid, update device settings
+        await device.setSettings({
+          username,
+          password,
+        });
+        
+        // Re-authenticate the device's API instance with new credentials
+        // since onSettings won't be called (username/password not in driver.settings.compose.json)
+        if (device) {
+          await device.reAuthenticate(username, password);
+        }
+        
+        return true;
+      } catch (_error) {
+        this.log("Failed to authenticate with Zaptec's API. Error:", _error);
+        return false;
+      }
     });
   }
 }
