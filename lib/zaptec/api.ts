@@ -2,7 +2,7 @@ import http from 'http';
 import https from 'https';
 import querystring from 'querystring';
 import { ApiError } from './error';
-import { Command, DeviceType, InstallationType, UserRole, MODEL_PREFIX_MAP } from './enums';
+import { Command, DeviceType, InstallationType, UserRole, Feature, MODEL_PREFIX_MAP } from './enums';
 import {
   ChargePriority,
   ChargerExternalUpdateModel,
@@ -549,6 +549,30 @@ export class ZaptecApi {
   ): Promise<void> {
     const { response } = await this.post(
       `/api/installation/${id}/update`,
+      properties,
+    );
+
+    if (response.statusCode === 403) {
+      throw new Error(this.homey.__('errors.missing_auth_permissions'));
+    }
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+  }
+
+  /**
+   * Update installation properties
+   * 
+   * @param id Installation ID
+   * @param properties Properties to update
+   * @returns Promise resolving when successful
+   */
+  public async updateInstallationProperties(
+    id: string,
+    properties: { EnabledFeatures?: Feature, IsRequiredAuthentication?: boolean },
+  ): Promise<void> {
+    const { response } = await this.put(
+      `/api/installation/${id}`,
       properties,
     );
 

@@ -5,6 +5,8 @@ import {
   ZaptecApi,
 } from '../../lib/zaptec';
 import type { GoCharger } from './device';
+import { Feature } from '../../lib/zaptec/enums';
+import PairSession = require('homey/lib/PairSession');
 
 interface InstallationCurrentControlArgs {
   current1: number;
@@ -109,6 +111,10 @@ class GoDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('set_authentication_requirement')
       .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
+
+    this.homey.flow
+      .getActionCard('set_charging_mode')
+      .registerRunListener(this.onSetChargingMode.bind(this));
   }
 
   async onPair(session: any) {
@@ -118,8 +124,14 @@ class GoDriver extends Homey.Driver {
     let api: ZaptecApi;
 
     session.setHandler('login', async (data: { username: string; password: string }) => {
-      username = data.username;
-      password = data.password;
+      username = data.username.trim();;
+      password = data.password.trim();
+      if (!username || username.length === 0) {
+          throw new Error(this.homey.__('errors.username_missing'));
+      }
+      if (!password || password.length === 0) {
+          throw new Error(this.homey.__('errors.password_missing'));
+      }
 
       try {
         api = new ZaptecApi(appVersion, this.homey);
@@ -152,13 +164,40 @@ class GoDriver extends Homey.Driver {
     });
   }
 
-  /**
-   * Handle stop/resume charging action card activation
-   */
-  private async onToggleCharging(
-    { device, operation }: { device: GoCharger; operation: string },
-  ) {
-    // ... existing code ...
+
+  async onRepair(session: PairSession, device: GoCharger) {
+    this.log('GoDriver is repairing');
+    let username = '';
+    let password = '';
+    let appVersion = this.homey.app.manifest.version;
+
+    session.setHandler('login', async (data: { username: string; password: string }) => {
+      username = data.username;
+      password = data.password;
+
+      try {
+        // Validate credentials by attempting authentication
+        const validationApi = new ZaptecApi(appVersion, this.homey);
+        await validationApi.authenticate(username, password);
+        
+        // Credentials are valid, update device settings
+        await device.setSettings({
+          username,
+          password,
+        });
+        
+        // Re-authenticate the device's API instance with new credentials
+        // since onSettings won't be called (username/password not in driver.settings.compose.json)
+        if (device) {
+          await device.reAuthenticate(username, password);
+        }
+        
+        return true;
+      } catch (_error) {
+        this.log("Failed to authenticate with Zaptec's API. Error:", _error);
+        return false;
+      }
+    });
   }
 
   /**
@@ -171,6 +210,17 @@ class GoDriver extends Homey.Driver {
     if( !device.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return device.setInstallationAuthenticationRequirement(requireAuth);
+  }
+
+  /**
+   * Handle setting charging mode
+   */
+  private async onSetChargingMode(
+    { device, mode }: { device: GoCharger; mode: string },
+  ) {
+    if( !device.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
+    return device.setInstallationChargingMode(Number(mode) as Feature);
   }
 }
 

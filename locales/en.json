@@ -3,6 +3,10 @@
     "missing_auth_permissions": "Missing permissions to change authentication requirements for the installation",
     "failed_auth_update": "Failed to update authentication requirement",
     "missing_installation_access": "User does not have access to the installation",
-    "failed_installation_current_update": "Failed to update installation current"
+    "failed_installation_current_update": "Failed to update installation current",
+    "failed_charging_mode_update": "Failed to update installation charging mode",
+    "username_missing": "Please enter an e-mail address",
+    "password_missing": "Please enter your password",
+    "authentication_failed": "Failed to authenticate with new credentials"
   }
 }

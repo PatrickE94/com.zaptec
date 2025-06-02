@@ -114,7 +114,8 @@
     {
       "id": "go2_charging_stops",
       "title": {
-        "en": "Charging stops"
+        "en": "Charging stops",
+        "no": "Lading slutter"
       },
       "hint": {
         "en": "When a charging session is stopped",
@@ -317,6 +318,54 @@
               "title": {
                 "en": "Not required",
                 "no": "Ikke påkrevd"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "go2_set_charging_mode",
+      "title": {
+        "en": "Set charging mode",
+        "no": "Sett lademodus"
+      },
+      "titleFormatted": {
+        "en": "Set charging mode to [[mode]]",
+        "no": "Sett lademodus til [[mode]]"
+      },
+      "hint": {
+        "en": "Set the charging mode for the installation.",
+        "no": "Sett lademodus for installasjonen."
+      },
+      "args": [
+        {
+          "type": "dropdown",
+          "name": "mode",
+          "title": {
+            "en": "Charging mode",
+            "no": "Lademodus"
+          },
+          "values": [
+            {
+              "id": "0",
+              "title": {
+                "en": "Default charging",
+                "no": "Standardlading"
+              }
+            },
+            {
+              "id": "16",
+              "title": {
+                "en": "Scheduled charging",
+                "no": "Planlagt lading"
+              }
+            },
+            {
+              "id": "4",
+              "title": {
+                "en": "Automatic charging",
+                "no": "Automatisk lading"
               }
             }
           ]

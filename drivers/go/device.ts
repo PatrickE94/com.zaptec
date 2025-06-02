@@ -10,6 +10,7 @@ import {
 } from '../../lib/zaptec';
 import { ApiError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
+import { Feature } from '../../lib/zaptec/enums';
 
 export class GoCharger extends Homey.Device {
   private debugLog: string[] = [];
@@ -144,6 +145,10 @@ export class GoCharger extends Homey.Device {
     // Log version information for debugging
     this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
     
+    if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
+      await this.addCapability('charging_mode');
+    }
+
     if (lastInstalledVersion < '1.7.2') {
     
       // Remove old capabilities and ensure correct ordering
@@ -196,6 +201,10 @@ export class GoCharger extends Homey.Device {
     this.registerCapabilityListener('cable_permanent_lock', async (value) => {
       if (value) await this.lockCable(true);
       else await this.lockCable(false);
+    });
+    this.registerCapabilityListener('charging_mode', async (value) => {
+      if (this.api === undefined) return;
+      await this.setInstallationChargingMode(Number(value) as Feature);
     });
   }
 
@@ -338,6 +347,12 @@ export class GoCharger extends Homey.Device {
         this.setSettings({
           requireAuthentication: charger.IsAuthorizationRequired,
         });
+      })
+      .catch((e) => {
+        this.logToDebug(`Failed to poll charger info: ${e}`);
+        this.setUnavailable(
+          this.homey.__('errors.authentication_failed')
+        );
       });
 
     // Poll state variables from the API.
@@ -363,7 +378,7 @@ export class GoCharger extends Homey.Device {
     // Poll the available current for the installation.
     // TODO: Is this really necessary? Is it interesting to watch live?
     // It's more likely to be changed by us?
-    this.pollAvailableCurrent().catch((e) => {
+    this.pollInstallationValues().catch((e) => {
       this.logToDebug(`Failed to poll available current: ${e}`);
     });
   }
@@ -380,13 +395,18 @@ export class GoCharger extends Homey.Device {
     this.api
       .getInstallation(this.getData().installationId)
       .then((installation) => {
-        if (installation.Id === this.getData().installationId && !this.hasCapability('available_installation_current'))
-          this.addCapability('available_installation_current');
+        if (installation.Id === this.getData().installationId)
+          if (!this.hasCapability('available_installation_current'))
+            this.addCapability('available_installation_current');
+          if (!this.hasCapability('charging_mode'))
+            this.addCapability('charging_mode');
       })
       .catch((e) => {
         this.logToDebug(`Failed to poll installation: ${e}`);
         if (this.hasCapability('available_installation_current')) 
           this.removeCapability('available_installation_current');
+        if (this.hasCapability('charging_mode'))
+          this.removeCapability('charging_mode');
       });
 
     this.api
@@ -558,7 +578,7 @@ export class GoCharger extends Homey.Device {
   /**
    * Poll the available current for the installation.
    */
-  protected async pollAvailableCurrent() {
+  protected async pollInstallationValues() {
     if (this.api === undefined || !this.hasCapability('available_installation_current')) return;
     const info = await this.api
       .getInstallation(this.getData().installationId)
@@ -578,6 +598,16 @@ export class GoCharger extends Homey.Device {
         this.setSettings({ requireAuthentication: info.IsRequiredAuthentication })
           .catch(e => this.logToDebug(`Failed to update requireAuthentication setting: ${e}`));
       }
+    }
+
+    // Update the charging mode capability to match the actual value from the installation
+    if (info.EnabledFeatures !== undefined) {
+      if (info.EnabledFeatures === Feature.None)
+        await this.setCapabilityValue('charging_mode', '0');
+      else if (info.EnabledFeatures === Feature.PowerManagement_Schedule)
+        await this.setCapabilityValue('charging_mode', '16');
+      else if (info.EnabledFeatures === Feature.PowerManagement_Apm)
+        await this.setCapabilityValue('charging_mode', '4');
     }
 
     const isNumber = (n: number | undefined | null): n is number =>
@@ -764,7 +794,7 @@ export class GoCharger extends Homey.Device {
       })
       .then(async () => {
         // Poll new value to see what was actually set
-        await this.pollAvailableCurrent();
+        await this.pollInstallationValues();
         this.logToDebug(`Updated available current`);
         return true;
       })
@@ -837,6 +867,44 @@ export class GoCharger extends Homey.Device {
   }
 
   /**
+   * Sends a command to reboot the charger
+   * 
+   * @returns {Promise<boolean>} - true if the operation succeeded
+   */
+  public async rebootCharger() {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .sendCommand(this.getData().id, Command.RestartCharger)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`rebootCharger failure: ${e}`);
+        throw new Error(`Failed to reboot charger: ${e}`);
+      });
+  }
+
+  /**
+   * Sets the charging mode for the installation
+   * 
+   * @param {Feature} chargingMode - the charging mode to set
+   * @returns {Promise<boolean>} - true if the operation succeeded
+   */
+  public async setInstallationChargingMode(chargingMode: Feature) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .updateInstallationProperties(this.getData().installationId, {
+        EnabledFeatures: chargingMode,
+      })
+      .then(() => {
+        this.logToDebug(`Updated charging mode to ${chargingMode}`);
+        return true;
+      })
+      .catch((e) => {
+        this.logToDebug(`setInstallationChargingMode failure: ${e}`);
+        throw new Error(`${this.homey.__('errors.failed_charging_mode_update')}: ${e}`);
+      });
+  }
+
+  /**
    * Push a logline onto the debug log visible to user
    *
    * @param {string} line - Line to log
@@ -858,6 +926,17 @@ export class GoCharger extends Homey.Device {
     this.setSettings({ log: this.debugLog.join('\n') }).catch((e) =>
       this.error('Failed to update debug log', e),
     );
+  }
+
+  /**
+   * Re-authenticate the device with new credentials
+   * Used during repair process when credentials are updated
+   */
+  public async reAuthenticate(username: string, password: string) {
+    if (this.api) {
+      await this.api.authenticate(username, password);
+      this.log('Device re-authenticated with new credentials');
+    }
   }
 }
 

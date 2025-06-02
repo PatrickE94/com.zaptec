@@ -5,6 +5,8 @@ import {
   ZaptecApi,
 } from '../../lib/zaptec';
 import type { ProCharger } from './device';
+import { Feature } from '../../lib/zaptec/enums';
+import PairSession = require('homey/lib/PairSession');
 
 interface InstallationCurrentControlArgs {
   current1: number;
@@ -109,6 +111,10 @@ class ProDriver extends Homey.Driver {
     this.homey.flow
       .getActionCard('pro_set_authentication_requirement')
       .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
+
+    this.homey.flow
+      .getActionCard('pro_set_charging_mode')
+      .registerRunListener(this.onSetChargingMode.bind(this));
   }
 
   /**
@@ -123,6 +129,17 @@ class ProDriver extends Homey.Driver {
     return device.setInstallationAuthenticationRequirement(requireAuth);
   }
 
+  /**
+   * Handle setting charging mode
+   */
+  private async onSetChargingMode(
+    { device, mode }: { device: ProCharger; mode: string },
+  ) {
+    if( !device.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
+    return device.setInstallationChargingMode(Number(mode) as Feature);
+  }
+
   async onPair(session: any) {
     let username = '';
     let password = '';
@@ -130,8 +147,14 @@ class ProDriver extends Homey.Driver {
     let api: ZaptecApi;
 
     session.setHandler('login', async (data: { username: string; password: string }) => {
-      username = data.username;
-      password = data.password;
+      username = data.username.trim();;
+      password = data.password.trim();
+      if (!username || username.length === 0) {
+          throw new Error(this.homey.__('errors.username_missing'));
+      }
+      if (!password || password.length === 0) {
+          throw new Error(this.homey.__('errors.password_missing'));
+      }
 
       try {
         api = new ZaptecApi(appVersion, this.homey);
@@ -161,6 +184,42 @@ class ProDriver extends Homey.Driver {
       );
     });
   }
+
+  async onRepair(session: PairSession, device: ProCharger) {
+    this.log('ProDriver is repairing');
+    let username = '';
+    let password = '';
+    let appVersion = this.homey.app.manifest.version;
+
+    session.setHandler('login', async (data: { username: string; password: string }) => {
+      username = data.username;
+      password = data.password;
+
+      try {
+        // Validate credentials by attempting authentication
+        const validationApi = new ZaptecApi(appVersion, this.homey);
+        await validationApi.authenticate(username, password);
+        
+        // Credentials are valid, update device settings
+        await device.setSettings({
+          username,
+          password,
+        });
+        
+        // Re-authenticate the device's API instance with new credentials
+        // since onSettings won't be called (username/password not in driver.settings.compose.json)
+        if (device) {
+          await device.reAuthenticate(username, password);
+        }
+        
+        return true;
+      } catch (_error) {
+        this.log("Failed to authenticate with Zaptec's API. Error:", _error);
+        return false;
+      }
+    });
+  }
+
 }
 
 module.exports = ProDriver;
