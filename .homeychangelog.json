@@ -88,5 +88,8 @@
   },
   "1.8.1": {
     "en": "Fix indicator selection being reset. Fixed issue with some devices not being discovered. Added switch for authentication being required to settings, and added flowcards."
+  },
+  "1.9.0": {
+    "en": "Possible to change user credentials with repair. Better support for Energy tab with new device class and continously updated values."
   }
 }
