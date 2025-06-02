@@ -1412,18 +1412,6 @@
             "en": "Temperature Sensor 2",
             "no": "Temperatur sensor 2"
           }
-        },
-        "measure_temperature.sensor1": {
-          "title": {
-            "en": "Temperature Sensor 1",
-            "no": "Temperatur sensor 1"
-          }
-        },
-        "measure_temperature.sensor2": {
-          "title": {
-            "en": "Temperature Sensor 2",
-            "no": "Temperatur sensor 2"
-          }
         }
       },
       "id": "home",

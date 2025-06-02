@@ -31,6 +31,7 @@ export class GoCharger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateClass();
     await this.migrateCapabilities();
     await this.migrateSettings();
     if (this.getClass() !== 'evcharger') await this.setClass('evcharger').catch(this.error) //migrate from class other
@@ -56,6 +57,23 @@ export class GoCharger extends Homey.Device {
   }
 
   /**
+   * Athom addded an EV Charger class, we'll want to use that one!
+   *
+   * This takes care of migrating already added devices to the new class.
+   */
+  private async migrateClass() {
+    if (this.getClass() !== 'evcharger') {
+      await this.setClass('evcharger')
+        .then(() => {
+          this.logToDebug(`Updated device class to EV Charger`);
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to set device class: ${e}`);
+        });
+    }
+  }
+
+  /**
    * Migrate settings from the old settings format to the new one.
    * If the deviceid setting is empty, poll the charger info and store the device id.
    */
@@ -65,11 +83,11 @@ export class GoCharger extends Homey.Device {
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
-        .then((charger) => {
+        .then((charger) =>
           this.setSettings({
             deviceid: charger.DeviceId,
-          });
-        })
+          }),
+        )
         .then(() => {
           this.logToDebug(`Got charger info - added device id`);
         })
@@ -418,7 +436,7 @@ export class GoCharger extends Homey.Device {
       case ApolloDeviceObservation.PermanentCableLock:
         await this.setCapabilityValue(
           'cable_permanent_lock',
-          Number(state.ValueAsString) === 1 ? true : false,
+          Number(state.ValueAsString) === 1,
         );
         break;
 
