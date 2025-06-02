@@ -15,7 +15,7 @@
   "energy": {
     "cumulative": true,
     "evCharger": true,
-    "meterPowerImportedCapability": "meter_power"
+    "meterPowerImportedCapability": "meter_power.signed_meter_value"
   },
   "pair": [
     {

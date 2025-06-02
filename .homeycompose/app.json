@@ -1,7 +1,7 @@
 {
   "id": "com.zaptec",
   "version": "1.8.1",
-  "compatibility": ">=12.4.5",
+  "compatibility": ">=12.4.7",
   "sdk": 3,
   "brandColor": "#19312F",
   "platforms": [

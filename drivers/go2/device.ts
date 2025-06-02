@@ -58,11 +58,11 @@ export class Go2Charger extends Homey.Device {
    */
   private async migrateEnergy() {
     const energyConfig = this.getEnergy();
-      if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power") {
+      if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power.signed_meter_value") {
         this.setEnergy({
           cumulative: true,
           evCharger: true,
-          meterPowerImportedCapability: "meter_power"
+          meterPowerImportedCapability: "meter_power.signed_meter_value"
         }).catch((e) => {
           this.logToDebug(`Failed to migrate energy: ${e}`);
         });
