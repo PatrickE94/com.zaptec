@@ -32,7 +32,9 @@ export class Go2Charger extends Homey.Device {
       this.getSetting('password'),
     );
 
+    await this.migrateEnergy();
     await this.migrateCapabilities();
+    
     this.registerCapabilityListeners();
 
     this.cronTasks.push(
@@ -69,6 +71,22 @@ export class Go2Charger extends Homey.Device {
         await this.addCapability('charging_mode');
       }
     }
+  /**
+   * Migrate energy settings from the old settings format to the new one.
+   */
+  private async migrateEnergy() {
+    const energyConfig = this.getEnergy();
+      if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power.signed_meter_value") {
+        this.setEnergy({
+          cumulative: true,
+          evCharger: true,
+          meterPowerImportedCapability: "meter_power.signed_meter_value"
+        }).catch((e) => {
+          this.logToDebug(`Failed to migrate energy: ${e}`);
+        });
+    }
+  }
+
 
   /**
    * Assign reactions to capability changes triggered by others.

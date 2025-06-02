@@ -73,11 +73,16 @@ export class GoCharger extends Homey.Device {
     }
   }
 
+   /**
+   * Migrate energy settings from the old settings format to the new one.
+   */
   private async migrateEnergy() {
     const energyConfig = this.getEnergy();
-      if (energyConfig?.cumulative !== true) {
+      if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power.signed_meter_value") {
         this.setEnergy({
-          cumulative: true
+          cumulative: true,
+          evCharger: true,
+          meterPowerImportedCapability: "meter_power.signed_meter_value"
         }).catch((e) => {
           this.logToDebug(`Failed to migrate energy: ${e}`);
         });
