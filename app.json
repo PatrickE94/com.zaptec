@@ -3060,6 +3060,27 @@
       ]
     }
   ],
+  "widgets": {
+    "control-charger": {
+      "name": {
+        "en": "Charger",
+        "no": "Lader"
+      },
+      "height": 140,
+      "settings": [],
+      "devices": {
+        "type": "app",
+        "singular": true
+      },
+      "api": {
+        "getChargerState": {
+          "method": "GET",
+          "path": "/"
+        }
+      },
+      "id": "control-charger"
+    }
+  },
   "capabilities": {
     "available_installation_current": {
       "title": {

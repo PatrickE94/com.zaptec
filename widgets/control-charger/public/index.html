@@ -1,0 +1,152 @@
+<html>
+  <head>
+    <link href="./style.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <script type="module" src="./index.js"></script>
+    <script src="./bundle.js"></script>
+  </head>
+
+  <body class="homey-widget-full">
+    <div class="main-container">
+      <div class="left-section">
+        <img id="chargerImage" src="" alt="Charger status"/>
+      </div>
+      <div class="right-section">
+        <div class="locks-container" id="locksContainer">
+          <md-filled-icon-button>
+            <md-icon>lock</md-icon>
+          </md-filled-icon-button>
+          <p class="homey-text-small">Cabel</p>
+          <p class="homey-text-small-light">Closed</p>
+        </div>
+        <div class="locks-container" id="chargeModeContainer">
+          <md-filled-icon-button>
+            <md-icon>bolt</md-icon>
+          </md-filled-icon-button>
+          <p class="homey-text-small">Charemode</p>
+          <p class="homey-text-small-light">Standard</p>
+        </div>
+        <div class="locks-container" id="accessContainer">
+          <md-filled-icon-button>
+            <md-icon>key</md-icon>
+          </md-filled-icon-button>
+          <p class="homey-text-small">Access</p>
+          <p class="homey-text-small-light">Open</p>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        Homey.ready({ height: 140 });
+
+        const $chargeMode = document.getElementById('chargeMode');
+        const $chargerImage = document.getElementById('chargerImage');
+        const $locksContainer = document.getElementById('locksContainer');
+        const $accessContainer = document.getElementById('accessContainer');
+        const $chargeModeContainer = document.getElementById('chargeModeContainer');
+        const $cableIcon = $locksContainer.querySelector('md-icon');
+        const $cableStatusText = $locksContainer.querySelector('.homey-text-small-light');
+        const $accessIcon = $accessContainer.querySelector('md-icon');
+        const $accessStatusText = $accessContainer.querySelector('.homey-text-small-light');
+        const $chargeModeStatusText = $chargeModeContainer.querySelector('.homey-text-small-light');
+        let $item = null;
+
+        const $selectedDeviceId = Homey.getDeviceIds()[0];
+       
+        // Mapping for charging mode verdier
+        function getChargingModeText(value) {
+          switch(value) {
+            case '0':
+            case 0:
+              return 'Standard';
+            case '4':
+            case 4:
+              return 'Smart';
+            case '16':
+            case 16:
+              return 'Schedule';
+            default:
+              return 'Standard';
+          }
+        }
+       
+        function updateChargeMode() {
+          Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
+            .then(data => {
+              if (!$item) {
+                $item = document.createElement('div');
+                $item.classList.add('item');
+                $chargeMode.appendChild($item);
+              }
+
+              $item.textContent = data.chargerOperationMode;
+              
+              // Sett bakgrunnsfarge basert på alarm-status
+              if (data.chargerOperationMode === 'Disconnected') {
+                $item.style.backgroundColor = '#808080';
+              } else if (data.chargerOperationMode === 'Charging') {
+                $item.style.backgroundColor = '#19312f';
+              } else {
+                $item.style.backgroundColor = '';
+              }
+
+              // Oppdater cable lock basert på capability
+              if (data.cablePermanentLock === true) {
+                // Locked state
+                $locksContainer.classList.remove('unlocked');
+                $locksContainer.classList.add('locked');
+                $cableIcon.textContent = 'lock';
+                $cableStatusText.textContent = 'Locked';
+              } else {
+                // Unlocked state
+                $locksContainer.classList.remove('locked');
+                $locksContainer.classList.add('unlocked');
+                $cableIcon.textContent = 'lock_open';
+                $cableStatusText.textContent = 'Unlocked';
+              }
+
+              // Oppdater access basert på requireAuthentication setting
+              if (data.requireAuthentication === true) {
+                // Begrenset tilgang - grønn bakgrunn
+                $accessContainer.classList.remove('unlocked');
+                $accessContainer.classList.add('locked');
+                $accessStatusText.textContent = 'Restricted';
+              } else {
+                // Åpen tilgang - grå bakgrunn
+                $accessContainer.classList.remove('locked');
+                $accessContainer.classList.add('unlocked');
+                $accessStatusText.textContent = 'Open';
+              }
+
+              // Oppdater charge mode basert på charging_mode capability
+              $chargeModeStatusText.textContent = getChargingModeText(data.chargingMode);
+
+              // Oppdater bildet basert på alarm-status
+              $chargerImage.src = data.driverType + '.png';
+              $chargerImage.alt = data.driverType;
+              
+            })
+            .catch(error => {
+              console.error('Error fetching data:', error);
+              if (!$item) {
+                $item = document.createElement('div');
+                $item.classList.add('item');
+                $items.appendChild($item);
+              }
+              $item.textContent = 'Error loading data';
+            });
+        }
+
+        // Oppdater umiddelbart
+        updateChargeMode();
+
+        // Oppdater hvert sekund
+        setInterval(updateChargeMode, 2000);
+
+      }
+       
+    </script>
+  </body>
+</html>

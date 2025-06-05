@@ -1,0 +1,130 @@
+/* Material Icons font fallback */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Ensure md-icon uses Material Icons font */
+md-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Check icon button styling */
+md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: white;
+  --md-filled-icon-button-container-size: 56px;
+  --md-filled-icon-button-icon-size: 28px;
+  margin: 5px;
+}
+
+/* Cable lock states */
+#locksContainer.locked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: white;
+}
+
+#locksContainer.unlocked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #c0c0c0;
+  --md-filled-icon-button-icon-color: #19312f;
+}
+
+/* Access states */
+#accessContainer.locked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #c0c0c0;
+}
+
+#accessContainer.unlocked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #c0c0c0;
+  --md-filled-icon-button-icon-color: #19312f;
+}
+
+/* Charge mode container - special styling */
+#chargeModeContainer md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #c0c0c0;
+}
+
+/* Example of a custom CSS class. */
+.custom-image-class {
+  margin: var(--homey-su-3) auto var(--homey-su-1);
+}
+
+body {
+  overflow: hidden;
+  padding: var(--homey-su-4);
+}
+
+.main-container {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  height: 100%;
+}
+
+.left-section {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+}
+
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-around;
+  padding-right: 15px;
+}
+
+.item {
+  padding: var(--homey-su-4);
+  margin: var(--homey-su-4) auto;
+  background-color: var(--homey-color-background);
+  border-radius: 5px;
+  text-align: center;
+  width: 80%;
+}
+
+.lock-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #19312f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 5px 10px;
+  font-size: 18px;
+  color: white;
+}
+
+.open {
+  background-color: #FFF;
+}
+
+.locks-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+#chargerImage {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+}
