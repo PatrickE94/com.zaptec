@@ -7,7 +7,10 @@
   <body class="homey-widget-full">
     <div class="main-container">
       <div class="left-section">
-        
+        <!-- Charging indicator overlay -->
+        <div class="charging-indicator" id="chargingIndicator" style="display: none;">
+          <md-icon>bolt</md-icon>
+        </div>
       </div>
       <div class="right-section">
         <div class="locks-container" id="locksContainer">
@@ -70,6 +73,7 @@
         const $mainChargeFab = document.getElementById('mainChargeFab');
         const $fabMenuHorizontal = document.getElementById('fabMenuHorizontal');
         const $miniFabs = document.querySelectorAll('.mini-fab');
+        const $chargingIndicator = document.getElementById('chargingIndicator');
 
         // Add click event listener to cable button
         $cableButton.addEventListener('click', () => {
@@ -165,7 +169,7 @@
         function updateChargeMode() {
           Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
             .then(data => {
-       
+      
               if (data.driverType === 'pro' || data.driverType === 'home') {
                 $mainContainer.classList.add('pro-background');
                 $mainContainer.classList.remove('go-background');
@@ -215,6 +219,13 @@
 
               // Oppdater charge mode basert på charging_mode capability
               $chargeModeStatusText.textContent = getChargingModeText(data.chargingMode);
+
+              // Oppdater charging indicator basert på charging_button capability
+              if (data.chargingButton === true) {
+                $chargingIndicator.style.display = 'flex';
+              } else {
+                $chargingIndicator.style.display = 'none';
+              }
               
             })
             .catch(error => {

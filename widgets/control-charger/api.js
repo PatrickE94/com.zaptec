@@ -33,6 +33,7 @@ module.exports = {
       const chargerOperationMode = selectedDevice.getCapabilityValue('charge_mode');
       const cablePermanentLock = selectedDevice.getCapabilityValue('cable_permanent_lock');
       const chargingMode = selectedDevice.getCapabilityValue('charging_mode');
+      const chargingButton = selectedDevice.getCapabilityValue('charging_button');
       const requireAuthentication = selectedDevice.getSetting('requireAuthentication');
 
       return {
@@ -41,6 +42,7 @@ module.exports = {
         driverType: selectedDriverId,
         cablePermanentLock: cablePermanentLock,
         chargingMode: chargingMode,
+        chargingButton: chargingButton,
         requireAuthentication: requireAuthentication
       };
     } else {

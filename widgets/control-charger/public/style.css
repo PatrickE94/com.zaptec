@@ -70,6 +70,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  position: relative; /* For positioning the charging indicator */
 }
 
 .right-section {
@@ -179,6 +180,43 @@ body {
   to {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Charging indicator styling */
+.charging-indicator {
+  position: absolute;
+  top: 37%;
+  left: 56%;
+  transform: translate(-50%, -50%);
+  background: rgba(25, 49, 47, 0.8);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  animation: chargingPulse 2s infinite;
+}
+
+.charging-indicator md-icon {
+  color: #4CAF50;
+  font-size: 24px;
+}
+
+@keyframes chargingPulse {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 
