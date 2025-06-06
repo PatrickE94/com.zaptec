@@ -17,6 +17,10 @@
     "lockCharger": {
       "method": "POST",
       "path": "/"
+    },
+    "setAuthenticationRequirement": {
+      "method": "PUT",
+      "path": "/"
     }
   }
 }

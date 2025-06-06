@@ -99,5 +99,54 @@ module.exports = {
         message: 'Device not found'
       };
     }
+  },
+
+  async setAuthenticationRequirement({ homey, query, body }) {
+    const selectedDeviceId = query.deviceId;
+    const requireAuthentication = body.requireAuthentication;
+    
+    console.log('setAuthenticationRequirement called:', { deviceId: selectedDeviceId, requireAuthentication: requireAuthentication });
+    
+    // Liste over alle driver typer
+    const driverTypes = ['pro', 'go', 'go2', 'home'];
+    let selectedDevice = null;
+
+    // Søk gjennom alle driver typer
+    for (const driverType of driverTypes) {
+      try {
+        const driver = await homey.drivers.getDriver(driverType);
+        const devices = driver.getDevices();
+        selectedDevice = devices.find(device => device.getId() === selectedDeviceId);
+        if (selectedDevice) {
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (selectedDevice) {
+      try {
+        // Call the device's setInstallationAuthenticationRequirement method
+        await selectedDevice.setInstallationAuthenticationRequirement(requireAuthentication);
+        
+        return {
+          status: 'ok',
+          message: 'Authentication requirement updated successfully',
+          requireAuthentication: requireAuthentication
+        };
+      } catch (error) {
+        console.error('Error setting authentication requirement:', error);
+        return {
+          status: 'error',
+          message: 'Failed to set authentication requirement: ' + error.message
+        };
+      }
+    } else {
+      return {
+        status: 'error',
+        message: 'Device not found'
+      };
+    }
   }
 };
