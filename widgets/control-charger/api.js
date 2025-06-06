@@ -130,6 +130,9 @@ module.exports = {
         // Call the device's setInstallationAuthenticationRequirement method
         await selectedDevice.setInstallationAuthenticationRequirement(requireAuthentication);
         
+        // Update setting to reflect the change
+        // await selectedDevice.setSettings({ requireAuthentication: requireAuthentication });
+        
         return {
           status: 'ok',
           message: 'Authentication requirement updated successfully',
@@ -140,6 +143,58 @@ module.exports = {
         return {
           status: 'error',
           message: 'Failed to set authentication requirement: ' + error.message
+        };
+      }
+    } else {
+      return {
+        status: 'error',
+        message: 'Device not found'
+      };
+    }
+  },
+
+  async setChargingMode({ homey, query, body }) {
+    const selectedDeviceId = query.deviceId;
+    const chargingMode = body.chargingMode;
+    
+    console.log('setChargingMode called:', { deviceId: selectedDeviceId, chargingMode: chargingMode });
+    
+    // Liste over alle driver typer
+    const driverTypes = ['pro', 'go', 'go2', 'home'];
+    let selectedDevice = null;
+
+    // Søk gjennom alle driver typer
+    for (const driverType of driverTypes) {
+      try {
+        const driver = await homey.drivers.getDriver(driverType);
+        const devices = driver.getDevices();
+        selectedDevice = devices.find(device => device.getId() === selectedDeviceId);
+        if (selectedDevice) {
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (selectedDevice) {
+      try {
+        // Set charging_mode capability
+        await selectedDevice.setCapabilityValue('charging_mode', chargingMode);
+        
+        // Trigger capability update to ensure UI reflects the change
+        await selectedDevice.triggerCapabilityListener('charging_mode', chargingMode);
+        
+        return {
+          status: 'ok',
+          message: 'Charging mode updated successfully',
+          chargingMode: chargingMode
+        };
+      } catch (error) {
+        console.error('Error setting charging mode:', error);
+        return {
+          status: 'error',
+          message: 'Failed to set charging mode: ' + error.message
         };
       }
     } else {

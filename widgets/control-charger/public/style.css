@@ -135,3 +135,50 @@ body {
   border-radius: 4px;
 }
 
+/* FAB Container styling */
+.fab-container {
+  position: relative;
+}
+
+/* Main round button styling (same as other icon buttons) */
+#mainChargeFab {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+  --md-filled-icon-button-container-size: 56px;
+  --md-filled-icon-button-icon-size: 28px;
+  margin: 5px;
+}
+
+/* Horizontal FAB Menu */
+.fab-menu-horizontal {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  z-index: 1000;
+  animation: fabMenuSlideIn 0.3s ease-out;
+}
+
+/* Mini FABs styling */
+.mini-fab {
+  --md-fab-container-color: #19312f;
+  --md-fab-icon-color: #d0d0d0;
+  --md-fab-container-width: 40px;
+  --md-fab-container-height: 40px;
+  transition: all 0.3s ease;
+}
+
+@keyframes fabMenuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+

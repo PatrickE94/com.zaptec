@@ -20,7 +20,11 @@
     },
     "setAuthenticationRequirement": {
       "method": "PUT",
-      "path": "/"
+      "path": "/auth"
+    },
+    "setChargingMode": {
+      "method": "PUT",
+      "path": "/charging-mode"
     }
   }
 }

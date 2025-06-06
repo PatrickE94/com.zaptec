@@ -17,10 +17,25 @@
           <p class="homey-text-small" data-i18n="widget.cable">Cable</p>
           <p class="homey-text-small-light">loading...</p>
         </div>
-        <div class="locks-container" id="chargeModeContainer">
-          <md-filled-icon-button>
+        <div class="locks-container fab-container" id="chargeModeContainer">
+          <!-- Main round button -->
+          <md-filled-icon-button id="mainChargeFab">
             <md-icon>bolt</md-icon>
           </md-filled-icon-button>
+          
+          <!-- Mini FABs for options (initially hidden) - horizontal layout -->
+          <div class="fab-menu-horizontal" id="fabMenuHorizontal" style="display: none;">
+            <md-fab id="standardFab" class="mini-fab" size="small" data-mode="0">
+              <md-icon slot="icon">flash_on</md-icon>
+            </md-fab>
+            <md-fab id="smartFab" class="mini-fab" size="small" data-mode="4">
+              <md-icon slot="icon">psychology</md-icon>
+            </md-fab>
+            <md-fab id="scheduleFab" class="mini-fab" size="small" data-mode="16">
+              <md-icon slot="icon">schedule</md-icon>
+            </md-fab>
+          </div>
+          
           <p class="homey-text-small" data-i18n="widget.chargemode">Chargemode</p>
           <p class="homey-text-small-light">loading...</p>
         </div>
@@ -52,6 +67,9 @@
         const $selectedDeviceId = Homey.getDeviceIds()[0];
         const $cableButton = $locksContainer.querySelector('md-filled-icon-button');
         const $accessButton = $accessContainer.querySelector('md-filled-icon-button');
+        const $mainChargeFab = document.getElementById('mainChargeFab');
+        const $fabMenuHorizontal = document.getElementById('fabMenuHorizontal');
+        const $miniFabs = document.querySelectorAll('.mini-fab');
 
         // Add click event listener to cable button
         $cableButton.addEventListener('click', () => {
@@ -74,7 +92,7 @@
           const isCurrentlyRestricted = $accessContainer.classList.contains('locked');
           const newAuthState = !isCurrentlyRestricted; 
           
-          Homey.api('PUT', `/?deviceId=${$selectedDeviceId}`, {
+          Homey.api('PUT', `/auth?deviceId=${$selectedDeviceId}`, {
             requireAuthentication: newAuthState
           })
           .then(() => {
@@ -83,6 +101,48 @@
           .catch(error => {
             console.error('Error setting authentication requirement:', error);
           });
+        });
+
+        // Add click event listener to main FAB
+        let fabMenuOpen = false;
+        $mainChargeFab.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fabMenuOpen = !fabMenuOpen;
+          
+          if (fabMenuOpen) {
+            $fabMenuHorizontal.style.display = 'flex';
+          } else {
+            $fabMenuHorizontal.style.display = 'none';
+          }
+        });
+
+        // Handle mini FAB clicks
+        $miniFabs.forEach(fab => {
+          fab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const selectedMode = fab.getAttribute('data-mode');
+            
+            Homey.api('PUT', `/charging-mode?deviceId=${$selectedDeviceId}`, {
+              chargingMode: selectedMode
+            })
+            .then(() => {
+              // console.log('Charging mode updated successfully');
+              // Hide FABs after selection
+              fabMenuOpen = false;
+              $fabMenuHorizontal.style.display = 'none';
+            })
+            .catch(error => {
+              console.error('Error setting charging mode:', error);
+            });
+          });
+        });
+
+        // Hide FAB menu when clicking outside
+        document.addEventListener('click', () => {
+          if (fabMenuOpen) {
+            fabMenuOpen = false;
+            $fabMenuHorizontal.style.display = 'none';
+          }
         });
 
         // Mapping for charging mode verdier
