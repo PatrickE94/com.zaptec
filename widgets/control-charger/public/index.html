@@ -14,22 +14,22 @@
           <md-filled-icon-button>
             <md-icon>lock</md-icon>
           </md-filled-icon-button>
-          <p class="homey-text-small">Cable</p>
-          <p class="homey-text-small-light">Closed</p>
+          <p class="homey-text-small" data-i18n="widget.cable">Cable</p>
+          <p class="homey-text-small-light">loading...</p>
         </div>
         <div class="locks-container" id="chargeModeContainer">
           <md-filled-icon-button>
             <md-icon>bolt</md-icon>
           </md-filled-icon-button>
-          <p class="homey-text-small">Chargemode</p>
-          <p class="homey-text-small-light">Standard</p>
+          <p class="homey-text-small" data-i18n="widget.chargemode">Chargemode</p>
+          <p class="homey-text-small-light">loading...</p>
         </div>
         <div class="locks-container" id="accessContainer">
           <md-filled-icon-button>
             <md-icon>key</md-icon>
           </md-filled-icon-button>
-          <p class="homey-text-small">Access</p>
-          <p class="homey-text-small-light">Open</p>
+          <p class="homey-text-small" data-i18n="widget.access">Access</p>
+          <p class="homey-text-small-light">loading...</p>
         </div>
       </div>
     </div>
@@ -56,15 +56,15 @@
           switch(value) {
             case '0':
             case 0:
-              return 'Standard';
+              return Homey.__("widget.chargingmode.standard");
             case '4':
             case 4:
-              return 'Smart';
+              return Homey.__("widget.chargingmode.smart");
             case '16':
             case 16:
-              return 'Schedule';
+              return Homey.__("widget.chargingmode.schedule");
             default:
-              return 'Standard';
+              return Homey.__("widget.chargingmode.standard");
           }
         }
        
@@ -99,13 +99,13 @@
                 $locksContainer.classList.remove('unlocked');
                 $locksContainer.classList.add('locked');
                 $cableIcon.textContent = 'lock';
-                $cableStatusText.textContent = 'Locked';
+                $cableStatusText.textContent = Homey.__("widget.locked");
               } else {
                 // Unlocked state
                 $locksContainer.classList.remove('locked');
                 $locksContainer.classList.add('unlocked');
                 $cableIcon.textContent = 'lock_open';
-                $cableStatusText.textContent = 'Unlocked';
+                $cableStatusText.textContent = Homey.__("widget.unlocked");
               }
 
               // Oppdater access basert på requireAuthentication setting
@@ -113,12 +113,12 @@
                 // Begrenset tilgang - grønn bakgrunn
                 $accessContainer.classList.remove('unlocked');
                 $accessContainer.classList.add('locked');
-                $accessStatusText.textContent = 'Restricted';
+                $accessStatusText.textContent = Homey.__("widget.restricted");
               } else {
                 // Åpen tilgang - grå bakgrunn
                 $accessContainer.classList.remove('locked');
                 $accessContainer.classList.add('unlocked');
-                $accessStatusText.textContent = 'Open';
+                $accessStatusText.textContent = Homey.__("widget.open");
               }
 
               // Oppdater charge mode basert på charging_mode capability

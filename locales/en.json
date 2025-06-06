@@ -8,5 +8,19 @@
     "username_missing": "Please enter an e-mail address",
     "password_missing": "Please enter your password",
     "authentication_failed": "Failed to authenticate with new credentials"
-  }
+  },
+  "widget": {
+    "cable": "Cable",
+    "chargemode": "Chargemode",
+    "access": "Access",
+    "chargingmode": {
+      "standard": "Standard",
+      "smart": "Smart",
+      "schedule": "Schedule"
+    },
+    "locked": "Locked",
+    "unlocked": "Unlocked",
+    "restricted": "Restricted",
+    "open": "Open"
+    }
 }
