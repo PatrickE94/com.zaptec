@@ -1,30 +1,27 @@
 <html>
   <head>
     <link href="./style.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-    <script type="module" src="./index.js"></script>
     <script src="./bundle.js"></script>
   </head>
 
   <body class="homey-widget-full">
     <div class="main-container">
       <div class="left-section">
-        <img id="chargerImage" src="" alt="Charger status"/>
+        
       </div>
       <div class="right-section">
         <div class="locks-container" id="locksContainer">
           <md-filled-icon-button>
             <md-icon>lock</md-icon>
           </md-filled-icon-button>
-          <p class="homey-text-small">Cabel</p>
+          <p class="homey-text-small">Cable</p>
           <p class="homey-text-small-light">Closed</p>
         </div>
         <div class="locks-container" id="chargeModeContainer">
           <md-filled-icon-button>
             <md-icon>bolt</md-icon>
           </md-filled-icon-button>
-          <p class="homey-text-small">Charemode</p>
+          <p class="homey-text-small">Chargemode</p>
           <p class="homey-text-small-light">Standard</p>
         </div>
         <div class="locks-container" id="accessContainer">
@@ -39,10 +36,8 @@
 
     <script type="text/javascript">
       function onHomeyReady(Homey) {
-        Homey.ready({ height: 140 });
+        Homey.ready({ height: 150 });
 
-        const $chargeMode = document.getElementById('chargeMode');
-        const $chargerImage = document.getElementById('chargerImage');
         const $locksContainer = document.getElementById('locksContainer');
         const $accessContainer = document.getElementById('accessContainer');
         const $chargeModeContainer = document.getElementById('chargeModeContainer');
@@ -51,10 +46,11 @@
         const $accessIcon = $accessContainer.querySelector('md-icon');
         const $accessStatusText = $accessContainer.querySelector('.homey-text-small-light');
         const $chargeModeStatusText = $chargeModeContainer.querySelector('.homey-text-small-light');
-        let $item = null;
+        const $mainContainer = document.querySelector('.main-container');
+        const $homeyTextSmallElements = document.querySelectorAll('.homey-text-small');
 
         const $selectedDeviceId = Homey.getDeviceIds()[0];
-       
+
         // Mapping for charging mode verdier
         function getChargingModeText(value) {
           switch(value) {
@@ -75,22 +71,27 @@
         function updateChargeMode() {
           Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
             .then(data => {
-              if (!$item) {
-                $item = document.createElement('div');
-                $item.classList.add('item');
-                $chargeMode.appendChild($item);
+       
+
+              // Sett bakgrunnsbilde hvis driverType er pro eller go
+              if (data.driverType === 'pro' || data.driverType === 'home') {
+                $mainContainer.classList.add('pro-background');
+                $mainContainer.classList.remove('go-background');
+              } else if (data.driverType === 'go' || data.driverType === 'go2') {
+                $mainContainer.classList.add('go-background');
+                $mainContainer.classList.remove('pro-background');
+              } else {
+                $mainContainer.classList.remove('pro-background', 'go-background');
               }
 
-              $item.textContent = data.chargerOperationMode;
-              
-              // Sett bakgrunnsfarge basert på alarm-status
-              if (data.chargerOperationMode === 'Disconnected') {
-                $item.style.backgroundColor = '#808080';
-              } else if (data.chargerOperationMode === 'Charging') {
-                $item.style.backgroundColor = '#19312f';
-              } else {
-                $item.style.backgroundColor = '';
-              }
+              // Legg til/fjern .go klasse på alle homey-text-small elementer
+              $homeyTextSmallElements.forEach(element => {
+                if (data.driverType === 'go' || data.driverType === 'go2') {
+                  element.classList.add('go');
+                } else {
+                  element.classList.remove('go');
+                }
+              });
 
               // Oppdater cable lock basert på capability
               if (data.cablePermanentLock === true) {
@@ -122,20 +123,10 @@
 
               // Oppdater charge mode basert på charging_mode capability
               $chargeModeStatusText.textContent = getChargingModeText(data.chargingMode);
-
-              // Oppdater bildet basert på alarm-status
-              $chargerImage.src = data.driverType + '.png';
-              $chargerImage.alt = data.driverType;
               
             })
             .catch(error => {
               console.error('Error fetching data:', error);
-              if (!$item) {
-                $item = document.createElement('div');
-                $item.classList.add('item');
-                $items.appendChild($item);
-              }
-              $item.textContent = 'Error loading data';
             });
         }
 
