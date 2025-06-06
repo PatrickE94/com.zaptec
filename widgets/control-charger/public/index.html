@@ -50,6 +50,23 @@
         const $homeyTextSmallElements = document.querySelectorAll('.homey-text-small');
 
         const $selectedDeviceId = Homey.getDeviceIds()[0];
+        const $cableButton = $locksContainer.querySelector('md-filled-icon-button');
+
+        // Add click event listener to cable button
+        $cableButton.addEventListener('click', () => {
+          const isCurrentlyLocked = $locksContainer.classList.contains('locked');
+          const newLockState = !isCurrentlyLocked; 
+          
+          Homey.api('POST', `/?deviceId=${$selectedDeviceId}`, {
+            lock: newLockState
+          })
+          .then(() => {
+            // console.log('Lock command sent successfully');
+          })
+          .catch(error => {
+            console.error('Error locking/unlocking charger:', error);
+          });
+        });
 
         // Mapping for charging mode verdier
         function getChargingModeText(value) {
@@ -72,8 +89,6 @@
           Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
             .then(data => {
        
-
-              // Sett bakgrunnsbilde hvis driverType er pro eller go
               if (data.driverType === 'pro' || data.driverType === 'home') {
                 $mainContainer.classList.add('pro-background');
                 $mainContainer.classList.remove('go-background');
@@ -133,7 +148,6 @@
         // Oppdater umiddelbart
         updateChargeMode();
 
-        // Oppdater hvert sekund
         setInterval(updateChargeMode, 2000);
 
       }

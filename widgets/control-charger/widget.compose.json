@@ -13,6 +13,10 @@
     "getChargerState": {
       "method": "GET",
       "path": "/"
+    },
+    "lockCharger": {
+      "method": "POST",
+      "path": "/"
     }
   }
 }

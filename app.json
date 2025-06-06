@@ -3076,6 +3076,10 @@
         "getChargerState": {
           "method": "GET",
           "path": "/"
+        },
+        "lockCharger": {
+          "method": "POST",
+          "path": "/"
         }
       },
       "id": "control-charger"

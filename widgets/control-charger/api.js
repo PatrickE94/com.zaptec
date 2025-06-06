@@ -50,5 +50,54 @@ module.exports = {
         message: 'Device not found'
       };
     }
+  },
+
+  async lockCharger({ homey, query, body }) {
+    const selectedDeviceId = query.deviceId;
+    const lockState = body.lock;
+    
+    // console.log('lockCharger called:', { deviceId: selectedDeviceId, lock: lockState });
+    
+    // Liste over alle driver typer
+    const driverTypes = ['pro', 'go', 'go2', 'home'];
+    let selectedDevice = null;
+
+    // Søk gjennom alle driver typer
+    for (const driverType of driverTypes) {
+      try {
+        const driver = await homey.drivers.getDriver(driverType);
+        const devices = driver.getDevices();
+        selectedDevice = devices.find(device => device.getId() === selectedDeviceId);
+        if (selectedDevice) {
+          break;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    if (selectedDevice) {
+      try {
+        // Call the device's lockCable method which uses api.ts lockCharger function
+        await selectedDevice.lockCable(lockState);
+        
+        return {
+          status: 'ok',
+          message: 'Cable lock updated successfully',
+          lockState: lockState
+        };
+      } catch (error) {
+        console.error('Error setting cable lock:', error);
+        return {
+          status: 'error',
+          message: 'Failed to set cable lock: ' + error.message
+        };
+      }
+    } else {
+      return {
+        status: 'error',
+        message: 'Device not found'
+      };
+    }
   }
 };
