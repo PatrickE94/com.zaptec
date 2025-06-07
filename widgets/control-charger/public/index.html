@@ -1,0 +1,245 @@
+<html>
+  <head>
+    <link href="./style.css" rel="stylesheet">
+    <script src="./bundle.js"></script>
+  </head>
+
+  <body class="homey-widget-full">
+    <div class="main-container">
+      <div class="left-section">
+        <!-- Charging indicator overlay -->
+        <div class="charging-indicator" id="chargingIndicator" style="display: none;">
+          <md-icon>bolt</md-icon>
+        </div>
+      </div>
+      <div class="right-section">
+        <div class="locks-container" id="locksContainer">
+          <md-filled-icon-button>
+            <md-icon>lock</md-icon>
+          </md-filled-icon-button>
+          <p class="homey-text-small" data-i18n="widget.cable">Cable</p>
+          <p class="homey-text-small-light">loading...</p>
+        </div>
+        <div class="locks-container fab-container" id="chargeModeContainer">
+          <!-- Main round button -->
+          <md-filled-icon-button id="mainChargeFab">
+            <md-icon>bolt</md-icon>
+          </md-filled-icon-button>
+          
+          <!-- Mini FABs for options (initially hidden) - horizontal layout -->
+          <div class="fab-menu-horizontal" id="fabMenuHorizontal" style="display: none;">
+            <md-fab id="standardFab" class="mini-fab" size="small" data-mode="0">
+              <md-icon slot="icon">flash_on</md-icon>
+            </md-fab>
+            <md-fab id="smartFab" class="mini-fab" size="small" data-mode="4">
+              <md-icon slot="icon">psychology</md-icon>
+            </md-fab>
+            <md-fab id="scheduleFab" class="mini-fab" size="small" data-mode="16">
+              <md-icon slot="icon">schedule</md-icon>
+            </md-fab>
+          </div>
+          
+          <p class="homey-text-small" data-i18n="widget.chargemode">Chargemode</p>
+          <p class="homey-text-small-light">loading...</p>
+        </div>
+        <div class="locks-container" id="accessContainer">
+          <md-filled-icon-button>
+            <md-icon>key</md-icon>
+          </md-filled-icon-button>
+          <p class="homey-text-small" data-i18n="widget.access">Access</p>
+          <p class="homey-text-small-light">loading...</p>
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function onHomeyReady(Homey) {
+        Homey.ready({ height: 150 });
+
+        const $locksContainer = document.getElementById('locksContainer');
+        const $accessContainer = document.getElementById('accessContainer');
+        const $chargeModeContainer = document.getElementById('chargeModeContainer');
+        const $cableIcon = $locksContainer.querySelector('md-icon');
+        const $cableStatusText = $locksContainer.querySelector('.homey-text-small-light');
+        const $accessIcon = $accessContainer.querySelector('md-icon');
+        const $accessStatusText = $accessContainer.querySelector('.homey-text-small-light');
+        const $chargeModeStatusText = $chargeModeContainer.querySelector('.homey-text-small-light');
+        const $mainContainer = document.querySelector('.main-container');
+        const $homeyTextSmallElements = document.querySelectorAll('.homey-text-small');
+
+        const $selectedDeviceId = Homey.getDeviceIds()[0];
+        const $cableButton = $locksContainer.querySelector('md-filled-icon-button');
+        const $accessButton = $accessContainer.querySelector('md-filled-icon-button');
+        const $mainChargeFab = document.getElementById('mainChargeFab');
+        const $fabMenuHorizontal = document.getElementById('fabMenuHorizontal');
+        const $miniFabs = document.querySelectorAll('.mini-fab');
+        const $chargingIndicator = document.getElementById('chargingIndicator');
+
+        // Add click event listener to cable button
+        $cableButton.addEventListener('click', () => {
+          const isCurrentlyLocked = $locksContainer.classList.contains('locked');
+          const newLockState = !isCurrentlyLocked; 
+          
+          Homey.api('POST', `/?deviceId=${$selectedDeviceId}`, {
+            lock: newLockState
+          })
+          .then(() => {
+            // console.log('Lock command sent successfully');
+          })
+          .catch(error => {
+            console.error('Error locking/unlocking charger:', error);
+          });
+        });
+
+        // Add click event listener to access button
+        $accessButton.addEventListener('click', () => {
+          const isCurrentlyRestricted = $accessContainer.classList.contains('locked');
+          const newAuthState = !isCurrentlyRestricted; 
+          
+          Homey.api('PUT', `/auth?deviceId=${$selectedDeviceId}`, {
+            requireAuthentication: newAuthState
+          })
+          .then(() => {
+            // console.log('Authentication requirement updated successfully');
+          })
+          .catch(error => {
+            console.error('Error setting authentication requirement:', error);
+          });
+        });
+
+        // Add click event listener to main FAB
+        let fabMenuOpen = false;
+        $mainChargeFab.addEventListener('click', (e) => {
+          e.stopPropagation();
+          fabMenuOpen = !fabMenuOpen;
+          
+          if (fabMenuOpen) {
+            $fabMenuHorizontal.style.display = 'flex';
+          } else {
+            $fabMenuHorizontal.style.display = 'none';
+          }
+        });
+
+        // Handle mini FAB clicks
+        $miniFabs.forEach(fab => {
+          fab.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const selectedMode = fab.getAttribute('data-mode');
+            
+            Homey.api('PUT', `/charging-mode?deviceId=${$selectedDeviceId}`, {
+              chargingMode: selectedMode
+            })
+            .then(() => {
+              // console.log('Charging mode updated successfully');
+              // Hide FABs after selection
+              fabMenuOpen = false;
+              $fabMenuHorizontal.style.display = 'none';
+            })
+            .catch(error => {
+              console.error('Error setting charging mode:', error);
+            });
+          });
+        });
+
+        // Hide FAB menu when clicking outside
+        document.addEventListener('click', () => {
+          if (fabMenuOpen) {
+            fabMenuOpen = false;
+            $fabMenuHorizontal.style.display = 'none';
+          }
+        });
+
+        // Mapping for charging mode verdier
+        function getChargingModeText(value) {
+          switch(value) {
+            case '0':
+            case 0:
+              return Homey.__("widget.chargingmode.standard");
+            case '4':
+            case 4:
+              return Homey.__("widget.chargingmode.smart");
+            case '16':
+            case 16:
+              return Homey.__("widget.chargingmode.schedule");
+            default:
+              return Homey.__("widget.chargingmode.standard");
+          }
+        }
+       
+        function updateChargeMode() {
+          Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
+            .then(data => {
+      
+              if (data.driverType === 'pro' || data.driverType === 'home') {
+                $mainContainer.classList.add('pro-background');
+                $mainContainer.classList.remove('go-background');
+              } else if (data.driverType === 'go' || data.driverType === 'go2') {
+                $mainContainer.classList.add('go-background');
+                $mainContainer.classList.remove('pro-background');
+              } else {
+                $mainContainer.classList.remove('pro-background', 'go-background');
+              }
+
+              // Legg til/fjern .go klasse på alle homey-text-small elementer
+              $homeyTextSmallElements.forEach(element => {
+                if (data.driverType === 'go' || data.driverType === 'go2') {
+                  element.classList.add('go');
+                } else {
+                  element.classList.remove('go');
+                }
+              });
+
+              // Oppdater cable lock basert på capability
+              if (data.cablePermanentLock === true) {
+                // Locked state
+                $locksContainer.classList.remove('unlocked');
+                $locksContainer.classList.add('locked');
+                $cableIcon.textContent = 'lock';
+                $cableStatusText.textContent = Homey.__("widget.locked");
+              } else {
+                // Unlocked state
+                $locksContainer.classList.remove('locked');
+                $locksContainer.classList.add('unlocked');
+                $cableIcon.textContent = 'lock_open';
+                $cableStatusText.textContent = Homey.__("widget.unlocked");
+              }
+
+              // Oppdater access basert på requireAuthentication setting
+              if (data.requireAuthentication === true) {
+                // Begrenset tilgang - grønn bakgrunn
+                $accessContainer.classList.remove('unlocked');
+                $accessContainer.classList.add('locked');
+                $accessStatusText.textContent = Homey.__("widget.restricted");
+              } else {
+                // Åpen tilgang - grå bakgrunn
+                $accessContainer.classList.remove('locked');
+                $accessContainer.classList.add('unlocked');
+                $accessStatusText.textContent = Homey.__("widget.open");
+              }
+
+              // Oppdater charge mode basert på charging_mode capability
+              $chargeModeStatusText.textContent = getChargingModeText(data.chargingMode);
+
+              // Oppdater charging indicator basert på charging_button capability
+              if (data.chargingButton === true) {
+                $chargingIndicator.style.display = 'flex';
+              } else {
+                $chargingIndicator.style.display = 'none';
+              }
+              
+            })
+            .catch(error => {
+              console.error('Error fetching data:', error);
+            });
+        }
+
+        // Oppdater umiddelbart
+        updateChargeMode();
+
+        setInterval(updateChargeMode, 2000);
+
+      }
+       
+    </script>
+  </body>
+</html>

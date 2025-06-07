@@ -8,5 +8,19 @@
     "username_missing": "Vennligst skriv inn en e-post adresse",
     "password_missing": "Vennligst skriv inn ditt passord",
     "authentication_failed": "Kunne ikke autentisere med nye innloggingsopplysninger"
+  },
+  "widget": {
+    "cable": "Kabel",
+    "chargemode": "Lademodus",
+    "access": "Tilgang",
+    "chargingmode": {
+      "standard": "Standard",
+      "smart": "Smart",
+      "schedule": "Tidsplan"
+    },
+    "locked": "Låst",
+    "unlocked": "Låst",
+    "restricted": "Begrenset",
+    "open": "Åpen"
   }
 } 

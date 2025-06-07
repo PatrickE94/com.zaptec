@@ -1,0 +1,30 @@
+{
+  "name": {
+    "en": "Charger",
+    "no": "Lader"
+  },
+  "height": 140,
+  "settings": [],
+  "devices": {
+    "type": "app",
+    "singular": true
+  },
+  "api": {
+    "getChargerState": {
+      "method": "GET",
+      "path": "/"
+    },
+    "lockCharger": {
+      "method": "POST",
+      "path": "/"
+    },
+    "setAuthenticationRequirement": {
+      "method": "PUT",
+      "path": "/auth"
+    },
+    "setChargingMode": {
+      "method": "PUT",
+      "path": "/charging-mode"
+    }
+  }
+}

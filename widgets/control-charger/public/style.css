@@ -1,0 +1,222 @@
+/* Material Icons font fallback */
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Ensure md-icon uses Material Icons font */
+md-icon {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+}
+
+/* Check icon button styling */
+md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+  --md-filled-icon-button-container-size: 56px;
+  --md-filled-icon-button-icon-size: 28px;
+  margin: 5px;
+}
+
+/* Cable lock states */
+#locksContainer.locked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+}
+
+#locksContainer.unlocked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #d0d0d0;
+  --md-filled-icon-button-icon-color: #19312f;
+}
+
+/* Access states */
+#accessContainer.locked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+}
+
+#accessContainer.unlocked md-filled-icon-button {
+  --md-filled-icon-button-container-color: #d0d0d0;
+  --md-filled-icon-button-icon-color: #19312f;
+}
+
+/* Charge mode container - special styling */
+#chargeModeContainer md-filled-icon-button {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+}
+
+body {
+  overflow: hidden;
+  padding: var(--homey-su-2);
+}
+
+.main-container {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  height: 100%;
+}
+
+.left-section {
+  flex: 0 0 100px; /* Fixed width instead of flex: 1 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* For positioning the charging indicator */
+}
+
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 5px; /* Redusert fra 10px til 5px */
+  align-items: center;
+  justify-content: space-around;
+  padding-right: 10px;
+  min-width: 0; /* Prevent overflow issues */
+}
+
+.locks-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+#chargerImage {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+/* Pro driver background styling */
+.main-container.pro-background {
+  background-image: url('pro.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.main-container.go-background {
+  background-image: url('go.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Hide charger image when using background */
+#chargerImage.hidden {
+  display: none;
+}
+
+.homey-text-small {
+  text-shadow: 0 1px 1px rgb(0 0 0 / 50%);
+}
+
+.homey-text-small.go {
+  color: #1d3b31;
+  font-weight: 500;
+  text-shadow: 1px 0 1px rgba(236, 234, 234, 0.829);
+}
+
+.homey-text-small-light {
+  color: #000000;
+  font-weight: 400;
+  background-color: rgba(255, 255, 255, 0.116);
+  padding: 0px 3px;
+  border-radius: 4px;
+}
+
+/* FAB Container styling */
+.fab-container {
+  position: relative;
+}
+
+/* Main round button styling (same as other icon buttons) */
+#mainChargeFab {
+  --md-filled-icon-button-container-color: #19312f;
+  --md-filled-icon-button-icon-color: #d0d0d0;
+  --md-filled-icon-button-container-size: 56px;
+  --md-filled-icon-button-icon-size: 28px;
+  margin: 5px;
+}
+
+/* Horizontal FAB Menu */
+.fab-menu-horizontal {
+  position: absolute;
+  top: 65px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  z-index: 1000;
+  animation: fabMenuSlideIn 0.3s ease-out;
+}
+
+/* Mini FABs styling */
+.mini-fab {
+  --md-fab-container-color: #19312f;
+  --md-fab-icon-color: #d0d0d0;
+  --md-fab-container-width: 40px;
+  --md-fab-container-height: 40px;
+  transition: all 0.3s ease;
+}
+
+@keyframes fabMenuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Charging indicator styling */
+.charging-indicator {
+  position: absolute;
+  top: 37%;
+  left: 56%;
+  transform: translate(-50%, -50%);
+  background: rgba(25, 49, 47, 0.8);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  animation: chargingPulse 2s infinite;
+}
+
+.charging-indicator md-icon {
+  color: #4CAF50;
+  font-size: 24px;
+}
+
+@keyframes chargingPulse {
+  0% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+

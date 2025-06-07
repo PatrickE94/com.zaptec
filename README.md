@@ -16,3 +16,10 @@ To use the github action for versioning, tagging, changelog and publishing, one 
 [Homey App](https://homey.app/a/com.zaptec)  
 [Homey Community](https://community.homey.app/t/app-pro-zaptec-charging/118631)
 
+Using [Material Web](https://github.com/material-components/material-web) for components.
+Import modules in index.js
+And bundle using rollup:
+```
+cd widgets/lights/public &&
+npx rollup -p @rollup/plugin-node-resolve index.js -o bundle.js
+```
