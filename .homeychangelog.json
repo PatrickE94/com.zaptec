@@ -91,5 +91,8 @@
   },
   "1.9.0": {
     "en": "Possible to change user credentials with repair. Better support for Energy tab with new device class and continously updated values."
+  },
+  "1.10.0": {
+    "en": "Adding beautiful dashboards to view and control your charger"
   }
 }
