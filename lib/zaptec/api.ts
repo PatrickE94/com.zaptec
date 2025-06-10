@@ -93,6 +93,7 @@ async function requestWithBackoff(
 ): Promise<Response<string>> {
   let retries = 0;
   let backoff = 500;
+  let lastError: Error | null = null;
 
   const delay = (ms: number): Promise<void> =>
     new Promise((resolve) => {
@@ -100,25 +101,43 @@ async function requestWithBackoff(
     });
 
   while (retries < maxRetries) {
-    const response = await request(path, options, data);
+    try {
+      const response = await request(path, options, data);
 
-    // If not a 429 response, return immediately
-    if (response.response.statusCode !== 429) return response;
+      // If not a 429 response, return immediately
+      if (response.response.statusCode !== 429) return response;
 
-    // If retry after header is set, use that value
-    const retryAfter = response.response.headers['retry-after'];
-    if (retryAfter !== undefined && retryAfter) {
-      const retryAfterSeconds = Number(retryAfter);
-      if (!Number.isNaN(retryAfterSeconds)) backoff = retryAfterSeconds * 1000;
+      // If retry after header is set, use that value
+      const retryAfter = response.response.headers['retry-after'];
+      if (retryAfter !== undefined && retryAfter) {
+        const retryAfterSeconds = Number(retryAfter);
+        if (!Number.isNaN(retryAfterSeconds)) backoff = retryAfterSeconds * 1000;
+      }
+
+      // Wait and increase backoff time
+      await delay(backoff);
+      backoff *= 2; // Exponential backoff
+      retries += 1;
+    } catch (error: any) {
+      lastError = error;
+      
+      // If it's a network error (like ECONNREFUSED, ETIMEDOUT, etc.), retry
+      if (error.code && ['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'].includes(error.code)) {
+        await delay(backoff);
+        backoff *= 2;
+        retries += 1;
+        continue;
+      }
+      
+      // If it's not a network error, throw immediately
+      throw new Error(`Network error while communicating with charger: ${error.message}`);
     }
-
-    // Wait and increase backoff time
-    await delay(backoff);
-    backoff *= 2; // Exponential backoff
-    retries += 1;
   }
 
-  throw new Error(`Max retries exceeded for path: ${path}`);
+  // If we get here, we've exceeded max retries
+  const baseMsg = `Could not reach charger after ${maxRetries} attempts`;
+  const errorDetail = lastError ? `: ${lastError.message}` : '';
+  throw new Error(`${baseMsg}${errorDetail}. Please check your internet connection and try again.`);
 }
 
 /**
