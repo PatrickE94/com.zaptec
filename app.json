@@ -764,7 +764,11 @@
         "id": "is_charging",
         "title": {
           "en": "Charger !{{is|is not}} charging",
-          "no": "Lader !{{lader|lader ikke}}"
+          "no": "Bil lader !{{|ikke}}"
+        },
+        "titleFormatted": {
+          "en": "Charger !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
         },
         "hint": {
           "en": "Checks if the charger is currently charging a car.",
@@ -781,6 +785,10 @@
       {
         "id": "is_connected",
         "title": {
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
+        },
+        "titleFormatted": {
           "en": "Car !{{is|is not}} connected",
           "no": "Bil !{{er|er ikke}} tilkoblet"
         },
@@ -802,6 +810,10 @@
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
         },
+        "titleFormatted": {
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
+        },
         "args": [
           {
             "type": "device",
@@ -813,6 +825,10 @@
       {
         "id": "authentication_required",
         "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "titleFormatted": {
           "en": "Authentication !{{is|is not}} required",
           "no": "Autentisering !{{er|er ikke}} påkrevd"
         },
@@ -830,6 +846,10 @@
           "en": "Car !{{is|is not}} charging",
           "no": "Bil lader !{{|ikke}}"
         },
+        "titleFormatted": {
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
+        },
         "args": [
           {
             "type": "device",
@@ -841,6 +861,10 @@
       {
         "id": "go2_is_connected",
         "title": {
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
+        },
+        "titleFormatted": {
           "en": "Car !{{is|is not}} connected",
           "no": "Bil !{{er|er ikke}} tilkoblet"
         },
@@ -858,6 +882,10 @@
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
         },
+        "titleFormatted": {
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
+        },
         "args": [
           {
             "type": "device",
@@ -869,6 +897,10 @@
       {
         "id": "go2_authentication_required",
         "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "titleFormatted": {
           "en": "Authentication !{{is|is not}} required",
           "no": "Autentisering !{{er|er ikke}} påkrevd"
         },
@@ -886,6 +918,10 @@
           "en": "Car !{{is|is not}} charging",
           "no": "Bil lader !{{|ikke}}"
         },
+        "titleFormatted": {
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
+        },
         "args": [
           {
             "type": "device",
@@ -897,6 +933,10 @@
       {
         "id": "home_is_connected",
         "title": {
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
+        },
+        "titleFormatted": {
           "en": "Car !{{is|is not}} connected",
           "no": "Bil !{{er|er ikke}} tilkoblet"
         },
@@ -914,6 +954,10 @@
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
         },
+        "titleFormatted": {
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
+        },
         "args": [
           {
             "type": "device",
@@ -925,6 +969,10 @@
       {
         "id": "home_authentication_required",
         "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "titleFormatted": {
           "en": "Authentication !{{is|is not}} required",
           "no": "Autentisering !{{er|er ikke}} påkrevd"
         },
@@ -942,6 +990,10 @@
           "en": "Car !{{is|is not}} charging",
           "no": "Bil lader !{{|ikke}}"
         },
+        "titleFormatted": {
+          "en": "Car !{{is|is not}} charging",
+          "no": "Bil lader !{{|ikke}}"
+        },
         "args": [
           {
             "type": "device",
@@ -953,6 +1005,10 @@
       {
         "id": "pro_is_connected",
         "title": {
+          "en": "Car !{{is|is not}} connected",
+          "no": "Bil !{{er|er ikke}} tilkoblet"
+        },
+        "titleFormatted": {
           "en": "Car !{{is|is not}} connected",
           "no": "Bil !{{er|er ikke}} tilkoblet"
         },
@@ -970,6 +1026,10 @@
           "en": "Charging !{{is|is not}} finished",
           "no": "Lading !{{er|er ikke}} fullført"
         },
+        "titleFormatted": {
+          "en": "Charging !{{is|is not}} finished",
+          "no": "Lading !{{er|er ikke}} fullført"
+        },
         "args": [
           {
             "type": "device",
@@ -981,6 +1041,10 @@
       {
         "id": "pro_authentication_required",
         "title": {
+          "en": "Authentication !{{is|is not}} required",
+          "no": "Autentisering !{{er|er ikke}} påkrevd"
+        },
+        "titleFormatted": {
           "en": "Authentication !{{is|is not}} required",
           "no": "Autentisering !{{er|er ikke}} påkrevd"
         },

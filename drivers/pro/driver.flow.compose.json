@@ -155,11 +155,19 @@
       "title": {
         "en": "Car !{{is|is not}} charging",
         "no": "Bil lader !{{|ikke}}"
+      },
+      "titleFormatted": {
+        "en": "Car !{{is|is not}} charging",
+        "no": "Bil lader !{{|ikke}}"
       }
     },
     {
       "id": "pro_is_connected",
       "title": {
+        "en": "Car !{{is|is not}} connected",
+        "no": "Bil !{{er|er ikke}} tilkoblet"
+      },
+      "titleFormatted": {
         "en": "Car !{{is|is not}} connected",
         "no": "Bil !{{er|er ikke}} tilkoblet"
       }
@@ -169,11 +177,19 @@
       "title": {
         "en": "Charging !{{is|is not}} finished",
         "no": "Lading !{{er|er ikke}} fullført"
+      },
+      "titleFormatted": {
+        "en": "Charging !{{is|is not}} finished",
+        "no": "Lading !{{er|er ikke}} fullført"
       }
     },
     {
       "id": "pro_authentication_required",
       "title": {
+        "en": "Authentication !{{is|is not}} required",
+        "no": "Autentisering !{{er|er ikke}} påkrevd"
+      },
+      "titleFormatted": {
         "en": "Authentication !{{is|is not}} required",
         "no": "Autentisering !{{er|er ikke}} påkrevd"
       }

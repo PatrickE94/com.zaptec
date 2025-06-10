@@ -154,7 +154,11 @@
       "id": "is_charging",
       "title": {
         "en": "Charger !{{is|is not}} charging",
-        "no": "Lader !{{lader|lader ikke}}"
+        "no": "Bil lader !{{|ikke}}"
+      },
+      "titleFormatted": {
+        "en": "Charger !{{is|is not}} charging",
+        "no": "Bil lader !{{|ikke}}"
       },
       "hint": {
         "en": "Checks if the charger is currently charging a car.",
@@ -164,6 +168,10 @@
     {
       "id": "is_connected",
       "title": {
+        "en": "Car !{{is|is not}} connected",
+        "no": "Bil !{{er|er ikke}} tilkoblet"
+      },
+      "titleFormatted": {
         "en": "Car !{{is|is not}} connected",
         "no": "Bil !{{er|er ikke}} tilkoblet"
       },
@@ -177,11 +185,19 @@
       "title": {
         "en": "Charging !{{is|is not}} finished",
         "no": "Lading !{{er|er ikke}} fullført"
+      },
+      "titleFormatted": {
+        "en": "Charging !{{is|is not}} finished",
+        "no": "Lading !{{er|er ikke}} fullført"
       }
     },
     {
       "id": "authentication_required",
       "title": {
+        "en": "Authentication !{{is|is not}} required",
+        "no": "Autentisering !{{er|er ikke}} påkrevd"
+      },
+      "titleFormatted": {
         "en": "Authentication !{{is|is not}} required",
         "no": "Autentisering !{{er|er ikke}} påkrevd"
       }
