@@ -236,49 +236,57 @@ export class Go2Charger extends Homey.Device {
    * We should catch errors inside this function!
    */
   protected pollValues() {
-    if (this.api === undefined) return;
-   
-    // Poll charger info
-    this.api
-      .getCharger(this.getData().id)
-      .then((charger) => {
-        this.setSettings({
-          requireAuthentication: charger.IsAuthorizationRequired,
+    try {
+      if (this.api === undefined) return;
+     
+      // Poll charger info
+      this.api
+        .getCharger(this.getData().id)
+        .then((charger) => {
+          this.setSettings({
+            requireAuthentication: charger.IsAuthorizationRequired,
+          });
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to poll charger info: ${e}`);        
+          this.setUnavailable(
+            this.homey.__('errors.authentication_failed')
+          );
         });
-      })
-      .catch((e) => {
-        this.logToDebug(`Failed to poll charger info: ${e}`);        
-        this.setUnavailable(
-          this.homey.__('errors.authentication_failed')
-        );
-      });
 
-    // Poll state variables from the API.
-    this.api
-      .getChargerState(this.getData().id)
-      .then(async (states) => {
-        for (const state of states) {
-          // Wrap each state handling individually so that a single bad state processing
-          // doesn't drop all values. It makes the app more usable when it's failing.
-          try {
-            await this.handleState(state);
-          } catch (e) {
-            this.logToDebug(
-              `Failed to handle charger state ${state.StateId}: ${e}`,
-            );
+      // Poll state variables from the API.
+      this.api
+        .getChargerState(this.getData().id)
+        .then(async (states) => {
+          for (const state of states) {
+            // Wrap each state handling individually so that a single bad state processing
+            // doesn't drop all values. It makes the app more usable when it's failing.
+            try {
+              await this.handleState(state);
+            } catch (e) {
+              this.logToDebug(
+                `Failed to handle charger state ${state.StateId}: ${e}`,
+              );
+            }
           }
-        }
-      })
-      .catch((e) => {
-        this.logToDebug(`Failed to poll charger state: ${e}`);
-      });
+        })
+        .catch((e) => {
+          this.logToDebug(`Failed to poll charger state: ${e}`);
+        });
 
-    // Poll the available current for the installation.
-    // TODO: Is this really necessary? Is it interesting to watch live?
-    // It's more likely to be changed by us?
-    this.pollInstallationValues().catch((e) => {
-      this.logToDebug(`Failed to poll available current: ${e}`);
-    });
+      // Poll the available current for the installation.
+      // TODO: Is this really necessary? Is it interesting to watch live?
+      // It's more likely to be changed by us?
+      this.pollInstallationValues().catch((e) => {
+        this.logToDebug(`Failed to poll available current: ${e}`);
+      });
+    } catch (error) {
+      this.logToDebug(`Unexpected error in pollValues: ${error}`);
+      // Avoid setting device unavailable for every error to prevent flapping
+      if (error instanceof Error && error.message.includes('authentication')) {
+        this.setUnavailable(this.homey.__('errors.authentication_failed'));
+      }
+    }
   }
 
   /**
