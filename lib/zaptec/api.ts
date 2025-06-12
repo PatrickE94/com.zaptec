@@ -114,6 +114,15 @@ async function requestWithBackoff(
     try {
       const response = await request(path, options, data);
 
+      // Handle nginx errors (500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout)
+      const statusCode = response.response.statusCode || 0;
+      if ([500, 502, 503, 504].includes(statusCode) && response.data.includes('nginx')) {
+        await delay(backoff);
+        backoff *= 2;
+        retries += 1;
+        continue;
+      }
+
       // If not a 429 response, return immediately
       if (response.response.statusCode !== 429) return response;
 
