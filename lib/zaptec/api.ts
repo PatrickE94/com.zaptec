@@ -160,11 +160,12 @@ async function requestWithBackoff(
           'DEPTH_ZERO_SELF_SIGNED_CERT'  // Self-signed certificate
         ].includes(error.code) ||
         error.message?.includes('availability replica config/state change') ||
-        error.message?.includes('before secure TLS connection was established')) {
+        error.message?.includes('before secure TLS connection was established') ||
+        error.message?.includes('Request timed out')) {
         
-        // For ECONNRESET, use a longer backoff
-        if (error.code === 'ECONNRESET') {
-          backoff = Math.max(backoff, 2000); // Minimum 2 seconds for ECONNRESET
+        // For timeouts and connection resets, use a longer backoff
+        if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET') {
+          backoff = Math.max(backoff, 2000); // Minimum 2 seconds for these errors
         }
 
         await delay(backoff);
