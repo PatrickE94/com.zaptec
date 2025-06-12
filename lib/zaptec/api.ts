@@ -162,6 +162,11 @@ async function requestWithBackoff(
         error.message?.includes('availability replica config/state change') ||
         error.message?.includes('before secure TLS connection was established')) {
         
+        // For ECONNRESET, use a longer backoff
+        if (error.code === 'ECONNRESET') {
+          backoff = Math.max(backoff, 2000); // Minimum 2 seconds for ECONNRESET
+        }
+
         await delay(backoff);
         backoff *= 2;
         retries += 1;
