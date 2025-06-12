@@ -157,17 +157,18 @@ async function requestWithBackoff(
           'EPROTO',           // TLS protocol error
           'ECONNABORTED',     // Connection was aborted
           'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
-          'DEPTH_ZERO_SELF_SIGNED_CERT'  // Self-signed certificate
+          'DEPTH_ZERO_SELF_SIGNED_CERT',  // Self-signed certificate
+          'EAI_AGAIN'         // DNS lookup timed out
         ].includes(error.code) ||
         error.message?.includes('availability replica config/state change') ||
         error.message?.includes('before secure TLS connection was established') ||
         error.message?.includes('Request timed out')) {
         
-        // For timeouts and connection resets, use a longer backoff
-        if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET') {
-          backoff = Math.max(backoff, 2000); // Minimum 2 seconds for these errors
+        // For timeouts, connection resets, and DNS errors, use longer backoff
+        if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET' || error.code === 'EAI_AGAIN') {
+          backoff = Math.max(backoff, 2000); // Minimum 2 sekunder for disse feilene
         }
-
+        
         await delay(backoff);
         backoff *= 2;
         retries += 1;
