@@ -131,15 +131,16 @@ async function requestWithBackoff(
     } catch (error: any) {
       lastError = error;
       
-      // If it's a network error (like ECONNREFUSED, ETIMEDOUT, etc.), retry
-      if (error.code && ['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'].includes(error.code)) {
+      // If it's a network error or database availability error, retry
+      if (error.code && ['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'].includes(error.code) ||
+          error.message?.includes('availability replica config/state change')) {
         await delay(backoff);
         backoff *= 2;
         retries += 1;
         continue;
       }
       
-      // If it's not a network error, throw immediately
+      // If it's not a retryable error, throw immediately
       throw new Error(`Network error while communicating with charger: ${error.message}`);
     }
   }
