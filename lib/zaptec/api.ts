@@ -19,6 +19,14 @@ import {
   SessionListModel,
 } from './models';
 
+// Configure global https agent with proper maxSockets
+const agent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 25, // Increase from default 5
+  maxFreeSockets: 10,
+  timeout: 15000, // 15 seconds
+});
+
 /**
  * A wrapped HTTP response with some convenience
  */
@@ -47,7 +55,10 @@ async function request(
   return new Promise<Response<string>>((resolve, reject) => {
     const req = https.request(
       `https://api.zaptec.com${path}`,
-      options,
+      {
+        ...options,
+        agent, // Use our configured agent
+      },
       (response) => {
         const responseData: string[] = [];
         response.setEncoding('utf8');
@@ -65,8 +76,7 @@ async function request(
       },
     );
     req.on('error', reject);
-    req.setTimeout(15_000); // Default 15s timeout
-    req.on('timeout', () => reject(new Error(`Request timed out`)));
+    req.on('timeout', () => reject(new Error(`Request timed out after 15 seconds`)));
     if (data !== undefined) req.write(data);
     req.end();
   });
