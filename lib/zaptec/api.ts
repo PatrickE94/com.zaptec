@@ -25,12 +25,9 @@ const agent = new https.Agent({
   maxSockets: 25,
   maxFreeSockets: 10,
   timeout: 15000,
-  // Add TLS-specific settings
   rejectUnauthorized: true,
-  secureProtocol: 'TLS_method',
   minVersion: 'TLSv1.2',
   maxVersion: 'TLSv1.3',
-  // Add session handling
   session: undefined,
   sessionTimeout: 60,
 });
