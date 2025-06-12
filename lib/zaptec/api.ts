@@ -22,9 +22,17 @@ import {
 // Configure global https agent with proper maxSockets
 const agent = new https.Agent({
   keepAlive: true,
-  maxSockets: 25, // Increase from default 5
+  maxSockets: 25,
   maxFreeSockets: 10,
-  timeout: 15000, // 15 seconds
+  timeout: 15000,
+  // Add TLS-specific settings
+  rejectUnauthorized: true,
+  secureProtocol: 'TLS_method',
+  minVersion: 'TLSv1.2',
+  maxVersion: 'TLSv1.3',
+  // Add session handling
+  session: undefined,
+  sessionTimeout: 60,
 });
 
 /**
@@ -114,7 +122,7 @@ async function requestWithBackoff(
     try {
       const response = await request(path, options, data);
 
-      // Handle nginx errors (500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout)
+      // Handle nginx errors (500, 502, 503, 504)
       const statusCode = response.response.statusCode || 0;
       if ([500, 502, 503, 504].includes(statusCode) && response.data.includes('nginx')) {
         await delay(backoff);
@@ -140,9 +148,20 @@ async function requestWithBackoff(
     } catch (error: any) {
       lastError = error;
       
-      // If it's a network error or database availability error, retry
-      if (error.code && ['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'].includes(error.code) ||
-          error.message?.includes('availability replica config/state change')) {
+      // If it's a network error, database availability error, or TLS error, retry
+      if (error.code && [
+          'ECONNREFUSED', 
+          'ETIMEDOUT', 
+          'ECONNRESET', 
+          'ENETUNREACH',
+          'EPROTO',           // TLS protocol error
+          'ECONNABORTED',     // Connection was aborted
+          'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
+          'DEPTH_ZERO_SELF_SIGNED_CERT'  // Self-signed certificate
+        ].includes(error.code) ||
+        error.message?.includes('availability replica config/state change') ||
+        error.message?.includes('before secure TLS connection was established')) {
+        
         await delay(backoff);
         backoff *= 2;
         retries += 1;
