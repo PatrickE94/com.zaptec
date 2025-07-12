@@ -94,5 +94,8 @@
   },
   "1.10.0": {
     "en": "Adding beautiful dashboards to view and control your charger"
+  },
+  "1.10.1": {
+    "en": "Better error handling"
   }
 }
