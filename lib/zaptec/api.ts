@@ -19,6 +19,19 @@ import {
   SessionListModel,
 } from './models';
 
+// Configure global https agent with proper maxSockets
+const agent = new https.Agent({
+  keepAlive: true,
+  maxSockets: 25,
+  maxFreeSockets: 10,
+  timeout: 15000,
+  rejectUnauthorized: true,
+  minVersion: 'TLSv1.2',
+  maxVersion: 'TLSv1.3',
+  session: undefined,
+  sessionTimeout: 60,
+});
+
 /**
  * A wrapped HTTP response with some convenience
  */
@@ -47,7 +60,10 @@ async function request(
   return new Promise<Response<string>>((resolve, reject) => {
     const req = https.request(
       `https://api.zaptec.com${path}`,
-      options,
+      {
+        ...options,
+        agent, // Use our configured agent
+      },
       (response) => {
         const responseData: string[] = [];
         response.setEncoding('utf8');
@@ -65,8 +81,7 @@ async function request(
       },
     );
     req.on('error', reject);
-    req.setTimeout(15_000); // Default 15s timeout
-    req.on('timeout', () => reject(new Error(`Request timed out`)));
+    req.on('timeout', () => reject(new Error(`Request timed out after 15 seconds`)));
     if (data !== undefined) req.write(data);
     req.end();
   });
@@ -104,6 +119,15 @@ async function requestWithBackoff(
     try {
       const response = await request(path, options, data);
 
+      // Handle nginx errors (500, 502, 503, 504)
+      const statusCode = response.response.statusCode || 0;
+      if ([500, 502, 503, 504].includes(statusCode) && response.data.includes('nginx')) {
+        await delay(backoff);
+        backoff *= 2;
+        retries += 1;
+        continue;
+      }
+
       // If not a 429 response, return immediately
       if (response.response.statusCode !== 429) return response;
 
@@ -121,15 +145,34 @@ async function requestWithBackoff(
     } catch (error: any) {
       lastError = error;
       
-      // If it's a network error (like ECONNREFUSED, ETIMEDOUT, etc.), retry
-      if (error.code && ['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'ENETUNREACH'].includes(error.code)) {
+      // If it's a network error, database availability error, or TLS error, retry
+      if (error.code && [
+          'ECONNREFUSED', 
+          'ETIMEDOUT', 
+          'ECONNRESET', 
+          'ENETUNREACH',
+          'EPROTO',           // TLS protocol error
+          'ECONNABORTED',     // Connection was aborted
+          'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
+          'DEPTH_ZERO_SELF_SIGNED_CERT',  // Self-signed certificate
+          'EAI_AGAIN'         // DNS lookup timed out
+        ].includes(error.code) ||
+        error.message?.includes('availability replica config/state change') ||
+        error.message?.includes('before secure TLS connection was established') ||
+        error.message?.includes('Request timed out')) {
+        
+        // For timeouts, connection resets, and DNS errors, use longer backoff
+        if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET' || error.code === 'EAI_AGAIN') {
+          backoff = Math.max(backoff, 2000); // Minimum 2 sekunder for disse feilene
+        }
+        
         await delay(backoff);
         backoff *= 2;
         retries += 1;
         continue;
       }
       
-      // If it's not a network error, throw immediately
+      // If it's not a retryable error, throw immediately
       throw new Error(`Network error while communicating with charger: ${error.message}`);
     }
   }
