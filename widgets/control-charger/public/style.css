@@ -1,8 +1,105 @@
 /* Material Icons font fallback */
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
-/* Ensure md-icon uses Material Icons font */
-md-icon {
+/* Custom icon button styling to replace md-filled-icon-button */
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0;
+  position: relative;
+  overflow: hidden;
+  margin: 5px;
+}
+
+.filled-icon-button {
+  background-color: #19312f;
+  color: #d0d0d0;
+}
+
+/* .filled-icon-button:hover {
+  background-color: #1a3530;
+  transform: scale(1.05);
+}
+
+.filled-icon-button:active {
+  transform: scale(0.95);
+} */
+
+.filled-icon-button .material-icons {
+  font-size: 28px;
+  color: inherit;
+}
+
+/* FAB styling */
+.fab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0;
+  position: relative;
+  overflow: hidden;
+  background-color: #19312f;
+  color: #d0d0d0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* .fab:hover {
+  background-color: #1a3530;
+  transform: scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.fab:active {
+  transform: scale(0.95);
+} */
+
+.fab .material-icons {
+  font-size: 24px;
+  color: inherit;
+}
+
+.mini-fab {
+  width: 40px;
+  height: 40px;
+}
+
+.mini-fab .material-icons {
+  font-size: 20px;
+}
+
+/* FAB menu styling */
+.fab-menu-horizontal {
+  display: none;
+  flex-direction: row;
+  gap: 10px;
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+.fab-menu-horizontal.show {
+  opacity: 1;
+}
+
+/* Material Icons styling */
+.material-icons {
   font-family: 'Material Icons';
   font-weight: normal;
   font-style: normal;
@@ -16,43 +113,35 @@ md-icon {
   direction: ltr;
 }
 
-/* Check icon button styling */
-md-filled-icon-button {
-  --md-filled-icon-button-container-color: #19312f;
-  --md-filled-icon-button-icon-color: #d0d0d0;
-  --md-filled-icon-button-container-size: 56px;
-  --md-filled-icon-button-icon-size: 28px;
-  margin: 5px;
-}
-
 /* Cable lock states */
-#locksContainer.locked md-filled-icon-button {
-  --md-filled-icon-button-container-color: #19312f;
-  --md-filled-icon-button-icon-color: #d0d0d0;
+#locksContainer.locked .filled-icon-button {
+  background-color: #19312f;
+  color: #d0d0d0;
 }
 
-#locksContainer.unlocked md-filled-icon-button {
-  --md-filled-icon-button-container-color: #d0d0d0;
-  --md-filled-icon-button-icon-color: #19312f;
+#locksContainer.unlocked .filled-icon-button {
+  background-color: #d0d0d0;
+  color: #19312f;
 }
 
 /* Access states */
-#accessContainer.locked md-filled-icon-button {
-  --md-filled-icon-button-container-color: #19312f;
-  --md-filled-icon-button-icon-color: #d0d0d0;
+#accessContainer.locked .filled-icon-button {
+  background-color: #19312f;
+  color: #d0d0d0;
 }
 
-#accessContainer.unlocked md-filled-icon-button {
-  --md-filled-icon-button-container-color: #d0d0d0;
-  --md-filled-icon-button-icon-color: #19312f;
+#accessContainer.unlocked .filled-icon-button {
+  background-color: #d0d0d0;
+  color: #19312f;
 }
 
 /* Charge mode container - special styling */
-#chargeModeContainer md-filled-icon-button {
-  --md-filled-icon-button-container-color: #19312f;
-  --md-filled-icon-button-icon-color: #d0d0d0;
+#chargeModeContainer .filled-icon-button {
+  background-color: #19312f;
+  color: #d0d0d0;
 }
 
+/* Existing styles continue below */
 body {
   overflow: hidden;
   padding: var(--homey-su-2);
@@ -66,7 +155,7 @@ body {
 }
 
 .left-section {
-  flex: 0 0 100px; /* Fixed width instead of flex: 1 */
+  flex: 0 0 96px; /* Fixed width instead of flex: 1 */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -77,11 +166,10 @@ body {
   flex: 1;
   display: flex;
   flex-direction: row;
-  gap: 5px; /* Redusert fra 10px til 5px */
-  align-items: center;
-  justify-content: space-around;
-  padding-right: 10px;
-  min-width: 0; /* Prevent overflow issues */
+  /* gap: 5px; */
+  align-items: stretch;
+  justify-content: space-between;
+  min-width: 0;
 }
 
 .locks-container {
@@ -89,105 +177,32 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   margin: 0;
+  position: relative;
+  flex: 0 0 auto;
+  width: auto;
 }
 
-#chargerImage {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
+.locks-container .homey-text-small,
+.locks-container .homey-text-small-light {
+  align-self: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Pro driver background styling */
-.main-container.pro-background {
-  background-image: url('pro.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
 
-.main-container.go-background {
-  background-image: url('go.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
 
-/* Hide charger image when using background */
-#chargerImage.hidden {
-  display: none;
-}
-
-.homey-text-small {
-  text-shadow: 0 1px 1px rgb(0 0 0 / 50%);
-}
-
-.homey-text-small.go {
-  color: #1d3b31;
-  font-weight: 500;
-  text-shadow: 1px 0 1px rgba(236, 234, 234, 0.829);
-}
-
-.homey-text-small-light {
-  color: #000000;
-  font-weight: 400;
-  background-color: rgba(255, 255, 255, 0.116);
-  padding: 0px 3px;
-  border-radius: 4px;
-}
-
-/* FAB Container styling */
 .fab-container {
   position: relative;
-}
-
-/* Main round button styling (same as other icon buttons) */
-#mainChargeFab {
-  --md-filled-icon-button-container-color: #19312f;
-  --md-filled-icon-button-icon-color: #d0d0d0;
-  --md-filled-icon-button-container-size: 56px;
-  --md-filled-icon-button-icon-size: 28px;
-  margin: 5px;
-}
-
-/* Horizontal FAB Menu */
-.fab-menu-horizontal {
-  position: absolute;
-  top: 65px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  z-index: 1000;
-  animation: fabMenuSlideIn 0.3s ease-out;
-}
-
-/* Mini FABs styling */
-.mini-fab {
-  --md-fab-container-color: #19312f;
-  --md-fab-icon-color: #d0d0d0;
-  --md-fab-container-width: 40px;
-  --md-fab-container-height: 40px;
-  transition: all 0.3s ease;
-}
-
-@keyframes fabMenuSlideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
+  overflow: visible;
 }
 
 /* Charging indicator styling */
 .charging-indicator {
   position: absolute;
-  top: 37%;
-  left: 56%;
+  top: 35%;
+  left: 50%;
   transform: translate(-50%, -50%);
   background: rgba(25, 49, 47, 0.8);
   border-radius: 50%;
@@ -220,3 +235,47 @@ body {
   }
 }
 
+.homey-text-small {
+  margin: 4px 0 2px 0;
+  text-shadow: 0 1px 1px rgb(0 0 0 / 50%);
+  text-align: center !important;
+  width: 100%;
+  white-space: nowrap;
+  display: block;
+}
+
+.homey-text-small-light {
+  text-align: center !important;
+  box-sizing: border-box;
+  color: #000000;
+  font-weight: 400;
+  background-color: rgba(255, 255, 255, 0.116);
+  padding: 0px 3px;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: block;
+}
+
+.homey-text-small.go {
+  color: #1d3b31;
+  font-weight: 500;
+  text-shadow: 1px 0 1px rgba(236, 234, 234, 0.829);
+}
+
+.main-container.pro-background {
+  background-image: url('pro.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.main-container.go-background {
+  background-image: url('go.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8px;
+  padding: 8px;
+}

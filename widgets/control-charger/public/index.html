@@ -1,7 +1,7 @@
 <html>
   <head>
     <link href="./style.css" rel="stylesheet">
-    <script src="./bundle.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
 
   <body class="homey-widget-full">
@@ -9,43 +9,43 @@
       <div class="left-section">
         <!-- Charging indicator overlay -->
         <div class="charging-indicator" id="chargingIndicator" style="display: none;">
-          <md-icon>bolt</md-icon>
+          <i class="material-icons">bolt</i>
         </div>
       </div>
       <div class="right-section">
         <div class="locks-container" id="locksContainer">
-          <md-filled-icon-button>
-            <md-icon>lock</md-icon>
-          </md-filled-icon-button>
+          <button class="icon-button filled-icon-button">
+            <i class="material-icons">lock</i>
+          </button>
           <p class="homey-text-small" data-i18n="widget.cable">Cable</p>
           <p class="homey-text-small-light">loading...</p>
         </div>
         <div class="locks-container fab-container" id="chargeModeContainer">
           <!-- Main round button -->
-          <md-filled-icon-button id="mainChargeFab">
-            <md-icon>bolt</md-icon>
-          </md-filled-icon-button>
+          <button class="icon-button filled-icon-button fab-main" id="mainChargeFab">
+            <i class="material-icons">bolt</i>
+          </button>
           
           <!-- Mini FABs for options (initially hidden) - horizontal layout -->
           <div class="fab-menu-horizontal" id="fabMenuHorizontal" style="display: none;">
-            <md-fab id="standardFab" class="mini-fab" size="small" data-mode="0">
-              <md-icon slot="icon">flash_on</md-icon>
-            </md-fab>
-            <md-fab id="smartFab" class="mini-fab" size="small" data-mode="4">
-              <md-icon slot="icon">psychology</md-icon>
-            </md-fab>
-            <md-fab id="scheduleFab" class="mini-fab" size="small" data-mode="16">
-              <md-icon slot="icon">schedule</md-icon>
-            </md-fab>
+            <button class="fab mini-fab" id="standardFab" data-mode="0">
+              <i class="material-icons">flash_on</i>
+            </button>
+            <button class="fab mini-fab" id="smartFab" data-mode="4">
+              <i class="material-icons">psychology</i>
+            </button>
+            <button class="fab mini-fab" id="scheduleFab" data-mode="16">
+              <i class="material-icons">schedule</i>
+            </button>
           </div>
           
           <p class="homey-text-small" data-i18n="widget.chargemode">Chargemode</p>
           <p class="homey-text-small-light">loading...</p>
         </div>
         <div class="locks-container" id="accessContainer">
-          <md-filled-icon-button>
-            <md-icon>key</md-icon>
-          </md-filled-icon-button>
+          <button class="icon-button filled-icon-button">
+            <i class="material-icons">key</i>
+          </button>
           <p class="homey-text-small" data-i18n="widget.access">Access</p>
           <p class="homey-text-small-light">loading...</p>
         </div>
@@ -59,51 +59,85 @@
         const $locksContainer = document.getElementById('locksContainer');
         const $accessContainer = document.getElementById('accessContainer');
         const $chargeModeContainer = document.getElementById('chargeModeContainer');
-        const $cableIcon = $locksContainer.querySelector('md-icon');
+        const $cableIcon = $locksContainer.querySelector('.material-icons');
         const $cableStatusText = $locksContainer.querySelector('.homey-text-small-light');
-        const $accessIcon = $accessContainer.querySelector('md-icon');
+        const $accessIcon = $accessContainer.querySelector('.material-icons');
         const $accessStatusText = $accessContainer.querySelector('.homey-text-small-light');
         const $chargeModeStatusText = $chargeModeContainer.querySelector('.homey-text-small-light');
         const $mainContainer = document.querySelector('.main-container');
         const $homeyTextSmallElements = document.querySelectorAll('.homey-text-small');
 
         const $selectedDeviceId = Homey.getDeviceIds()[0];
-        const $cableButton = $locksContainer.querySelector('md-filled-icon-button');
-        const $accessButton = $accessContainer.querySelector('md-filled-icon-button');
+        const $cableButton = $locksContainer.querySelector('.icon-button');
+        const $accessButton = $accessContainer.querySelector('.icon-button');
         const $mainChargeFab = document.getElementById('mainChargeFab');
         const $fabMenuHorizontal = document.getElementById('fabMenuHorizontal');
         const $miniFabs = document.querySelectorAll('.mini-fab');
         const $chargingIndicator = document.getElementById('chargingIndicator');
 
         // Add click event listener to cable button
-        $cableButton.addEventListener('click', () => {
+        $cableButton.addEventListener('click', (e) => {
+          // console.log('Cable button clicked'); // Debug log
+          e.preventDefault();
+          e.stopPropagation();
+          
           const isCurrentlyLocked = $locksContainer.classList.contains('locked');
           const newLockState = !isCurrentlyLocked; 
+          
+          // console.log('Current lock state:', isCurrentlyLocked, 'New state:', newLockState); // Debug log
+          
+          // Show loading state
+          $cableStatusText.textContent = 'Updating...';
+          $cableButton.style.opacity = '0.6';
           
           Homey.api('POST', `/?deviceId=${$selectedDeviceId}`, {
             lock: newLockState
           })
           .then(() => {
             // console.log('Lock command sent successfully');
+            // Reset button appearance
+            $cableButton.style.opacity = '1';
+            // Force update immediately after successful API call
+            setTimeout(updateChargeMode, 100);
           })
           .catch(error => {
             console.error('Error locking/unlocking charger:', error);
+            // Reset button appearance on error
+            $cableButton.style.opacity = '1';
+            $cableStatusText.textContent = 'Error';
           });
         });
 
         // Add click event listener to access button
-        $accessButton.addEventListener('click', () => {
+        $accessButton.addEventListener('click', (e) => {
+          // console.log('Access button clicked'); // Debug log
+          e.preventDefault();
+          e.stopPropagation();
+          
           const isCurrentlyRestricted = $accessContainer.classList.contains('locked');
           const newAuthState = !isCurrentlyRestricted; 
+          
+          // console.log('Current auth state:', isCurrentlyRestricted, 'New state:', newAuthState); // Debug log
+          
+          // Show loading state
+          $accessStatusText.textContent = 'Updating...';
+          $accessButton.style.opacity = '0.6';
           
           Homey.api('PUT', `/auth?deviceId=${$selectedDeviceId}`, {
             requireAuthentication: newAuthState
           })
           .then(() => {
             // console.log('Authentication requirement updated successfully');
+            // Reset button appearance
+            $accessButton.style.opacity = '1';
+            // Force update immediately after successful API call
+            setTimeout(updateChargeMode, 100);
           })
           .catch(error => {
             console.error('Error setting authentication requirement:', error);
+            // Reset button appearance on error
+            $accessButton.style.opacity = '1';
+            $accessStatusText.textContent = 'Error';
           });
         });
 
@@ -115,8 +149,12 @@
           
           if (fabMenuOpen) {
             $fabMenuHorizontal.style.display = 'flex';
+            $fabMenuHorizontal.classList.add('show');
           } else {
-            $fabMenuHorizontal.style.display = 'none';
+            $fabMenuHorizontal.classList.remove('show');
+            setTimeout(() => {
+              $fabMenuHorizontal.style.display = 'none';
+            }, 200);
           }
         });
 
@@ -133,7 +171,10 @@
               // console.log('Charging mode updated successfully');
               // Hide FABs after selection
               fabMenuOpen = false;
-              $fabMenuHorizontal.style.display = 'none';
+              $fabMenuHorizontal.classList.remove('show');
+              setTimeout(() => {
+                $fabMenuHorizontal.style.display = 'none';
+              }, 200);
             })
             .catch(error => {
               console.error('Error setting charging mode:', error);
@@ -145,7 +186,10 @@
         document.addEventListener('click', () => {
           if (fabMenuOpen) {
             fabMenuOpen = false;
-            $fabMenuHorizontal.style.display = 'none';
+            $fabMenuHorizontal.classList.remove('show');
+            setTimeout(() => {
+              $fabMenuHorizontal.style.display = 'none';
+            }, 200);
           }
         });
 
@@ -169,6 +213,16 @@
         function updateChargeMode() {
           Homey.api('GET', `/?deviceId=${$selectedDeviceId}`)
             .then(data => {
+
+              //test
+              // data.driverType = 'pro';
+              // data.cablePermanentLock = false;
+              // data.chargingMode = 1;
+              // data.requireAuthentication = false;
+              // data.chargingButton = true
+              //test
+
+              // console.log(data);
       
               if (data.driverType === 'pro' || data.driverType === 'home') {
                 $mainContainer.classList.add('pro-background');
@@ -188,7 +242,7 @@
                   element.classList.remove('go');
                 }
               });
-
+              
               // Oppdater cable lock basert på capability
               if (data.cablePermanentLock === true) {
                 // Locked state
@@ -196,12 +250,14 @@
                 $locksContainer.classList.add('locked');
                 $cableIcon.textContent = 'lock';
                 $cableStatusText.textContent = Homey.__("widget.locked");
+                // console.log('Cable updated to locked state');
               } else {
                 // Unlocked state
                 $locksContainer.classList.remove('locked');
                 $locksContainer.classList.add('unlocked');
                 $cableIcon.textContent = 'lock_open';
                 $cableStatusText.textContent = Homey.__("widget.unlocked");
+                // console.log('Cable updated to unlocked state');
               }
 
               // Oppdater access basert på requireAuthentication setting
@@ -210,11 +266,13 @@
                 $accessContainer.classList.remove('unlocked');
                 $accessContainer.classList.add('locked');
                 $accessStatusText.textContent = Homey.__("widget.restricted");
+                // console.log('Access updated to restricted state');
               } else {
                 // Åpen tilgang - grå bakgrunn
                 $accessContainer.classList.remove('locked');
                 $accessContainer.classList.add('unlocked');
                 $accessStatusText.textContent = Homey.__("widget.open");
+                // console.log('Access updated to open state');
               }
 
               // Oppdater charge mode basert på charging_mode capability
