@@ -19,7 +19,7 @@
       "schedule": "Tidsplan"
     },
     "locked": "Låst",
-    "unlocked": "Låst",
+    "unlocked": "Ulåst",
     "restricted": "Begrenset",
     "open": "Åpen"
   }
