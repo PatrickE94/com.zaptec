@@ -7,7 +7,11 @@
   "settings": [],
   "devices": {
     "type": "app",
-    "singular": true
+    "singular": true,
+    "filter": {
+      "class": "evcharger",
+      "capabilities": "cable_permanent_lock"
+    }
   },
   "api": {
     "getChargerState": {
