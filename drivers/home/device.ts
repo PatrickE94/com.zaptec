@@ -80,7 +80,6 @@ export class HomeCharger extends Homey.Device {
     const energyConfig = this.getEnergy();
       if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power.signed_meter_value") {
         this.setEnergy({
-          cumulative: true,
           evCharger: true,
           meterPowerImportedCapability: "meter_power.signed_meter_value"
         }).catch((e) => {
