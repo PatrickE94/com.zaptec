@@ -21,6 +21,7 @@
     "locked": "Låst",
     "unlocked": "Ulåst",
     "restricted": "Begrenset",
-    "open": "Åpen"
+    "open": "Åpen",
+    "car_connected": "Bil tilkoblet"
   }
 } 

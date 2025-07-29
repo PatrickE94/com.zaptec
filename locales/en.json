@@ -21,6 +21,7 @@
     "locked": "Locked",
     "unlocked": "Unlocked",
     "restricted": "Restricted",
-    "open": "Open"
+    "open": "Open",
+    "car_connected": "Car connected"
     }
 }

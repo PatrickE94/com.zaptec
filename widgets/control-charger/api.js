@@ -34,7 +34,9 @@ module.exports = {
       const cablePermanentLock = selectedDevice.getCapabilityValue('cable_permanent_lock');
       const chargingMode = selectedDevice.getCapabilityValue('charging_mode');
       const chargingButton = selectedDevice.getCapabilityValue('charging_button');
+      const measurePower = selectedDevice.getCapabilityValue('measure_power');
       const requireAuthentication = selectedDevice.getSetting('requireAuthentication');
+      const carConnected = selectedDevice.getCapabilityValue('alarm_generic.car_connected');
 
       return {
         status: 'ok',
@@ -43,7 +45,9 @@ module.exports = {
         cablePermanentLock: cablePermanentLock,
         chargingMode: chargingMode,
         chargingButton: chargingButton,
-        requireAuthentication: requireAuthentication
+        measurePower: (measurePower / 1000).toFixed(1),
+        requireAuthentication: requireAuthentication,
+        carConnected: carConnected
       };
     } else {
       // console.log('Device not found in any driver');

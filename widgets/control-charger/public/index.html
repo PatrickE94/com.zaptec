@@ -11,6 +11,10 @@
         <div class="charging-indicator" id="chargingIndicator" style="display: none;">
           <md-icon>bolt</md-icon>
         </div>
+        <!-- Power text display -->
+        <div class="power-text" id="powerText" style="display: none;">
+          <p class="homey-text-small-light" id="powerValue"></p>
+        </div>
       </div>
       <div class="right-section">
         <div class="locks-container" id="locksContainer">
@@ -74,6 +78,8 @@
         const $fabMenuHorizontal = document.getElementById('fabMenuHorizontal');
         const $miniFabs = document.querySelectorAll('.mini-fab');
         const $chargingIndicator = document.getElementById('chargingIndicator');
+        const $powerText = document.getElementById('powerText');
+        const $powerValue = document.getElementById('powerValue');
 
         // Add click event listener to cable button
         $cableButton.addEventListener('click', () => {
@@ -226,6 +232,21 @@
               } else {
                 $chargingIndicator.style.display = 'none';
               }
+              
+                              // Oppdater power text basert på measurePower capability og car connected status
+                if (data.chargingButton === true) {
+                  // Viser strømforbruk når det lades
+                  $powerText.style.display = 'block';
+                  $powerValue.textContent = `${data.measurePower} kW`;
+                } else if (data.carConnected === true) {
+                  // Viser "Bil tilkoblet" når bil er tilkoblet men ikke lader
+                  $powerText.style.display = 'block';
+                  $powerValue.textContent = Homey.__("widget.car_connected");
+                } else {
+                  $powerText.style.display = 'none';
+                }
+                
+
               
             })
             .catch(error => {
