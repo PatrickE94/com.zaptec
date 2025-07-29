@@ -97,5 +97,8 @@
   },
   "1.10.1": {
     "en": "Better error handling"
+  },
+  "1.10.2": {
+    "en": "Added power and car connected status to widget. Changes to energy properties. Bug fixes."
   }
 }
