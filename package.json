@@ -16,10 +16,11 @@
     "homey"
   ],
   "scripts": {
+    "postinstall": "node scripts/postinstall.js",
     "check": "tsc",
     "lint": "eslint --ext .js,.ts --ignore-path .gitignore .",
     "test": "mocha",
-    "prettier": "prettier --write **/*.ts", 
+    "prettier": "prettier --write **/*.ts",
     "validate": "homey app validate --level verified",
     "build": "homey app build",
     "start": "homey app run",
@@ -49,10 +50,13 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "node-cron": "^3.0.2",
-    "source-map-support": "^0.5.21",
     "@material/web": "^2.2.0",
     "@rollup/plugin-node-resolve": "^16.0.0",
-    "rollup": "^4.29.0"
+    "node-cron": "^3.0.2",
+    "rollup": "^4.29.0",
+    "source-map-support": "^0.5.21"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-android-arm-eabi": "^4.52.5"
   }
 }
