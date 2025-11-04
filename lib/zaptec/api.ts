@@ -338,6 +338,7 @@ export class ZaptecApi {
         grant_type: 'password',
         username,
         password,
+        scope: 'offline_access',
       }),
     );
 
