@@ -103,5 +103,8 @@
   },
   "1.10.3": {
     "en": "Patch casing change in authentication response"
+  },
+  "1.10.4": {
+    "en": "Add missing scope parameter to authentication"
   }
 }
