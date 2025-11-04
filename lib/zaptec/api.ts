@@ -342,9 +342,9 @@ export class ZaptecApi {
     );
 
     if (response.statusCode === 200) {
-      if (data.token_type !== 'Bearer') {
+      if (data.token_type.toLowerCase() !== 'bearer') {
         throw new Error(
-          `Invalid token type received ${data.token_type}, expected ${data.token_type}`,
+          `Invalid token type received ${data.token_type}, expected Bearer`,
         );
       }
 
