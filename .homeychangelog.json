@@ -100,5 +100,8 @@
   },
   "1.10.2": {
     "en": "Added power and car connected status to widget. Changes to energy properties. Bug fixes."
+  },
+  "1.10.3": {
+    "en": "Patch casing change in authentication response"
   }
 }
