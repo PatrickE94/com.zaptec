@@ -22,7 +22,7 @@
     "test": "mocha",
     "prettier": "prettier --write **/*.ts",
     "validate": "homey app validate --level verified",
-    "build": "homey app build",
+    "build": "tsc",
     "start": "homey app run",
     "publish": "homey app publish"
   },
