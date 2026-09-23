@@ -3175,7 +3175,7 @@
       "units": {
         "en": "A"
       },
-      "setable": false,
+      "setable": true,
       "getable": true,
       "insights": true,
       "uiComponent": "sensor",
