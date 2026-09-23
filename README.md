@@ -20,6 +20,5 @@ Using [Material Web](https://github.com/material-components/material-web) for co
 Import modules in index.js
 And bundle using rollup:
 ```
-cd widgets/lights/public &&
-npx rollup -p @rollup/plugin-node-resolve index.js -o bundle.js
+npm run build:widget
 ```

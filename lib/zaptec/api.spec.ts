@@ -12,7 +12,7 @@ const api = new ZaptecApi('1.0.0', mockHomey);
 describe('Zaptec API Client', () => {
   it('should use token after authentication', async () => {
     nock('https://api.zaptec.com')
-      .post('/oauth/token', 'grant_type=password&username=test&password=123')
+      .post('/oauth/token', 'grant_type=password&username=test&password=123&scope=offline_access')
       .reply(200, {
         access_token: 'VALID_TOKEN',
         token_type: 'Bearer',

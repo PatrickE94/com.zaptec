@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   root: true,
+  ignorePatterns: ['widgets/*/public/bundle.js'],
   parser: '@typescript-eslint/parser',
   plugins: ['@typescript-eslint', 'prettier'],
   extends: [
@@ -47,4 +48,16 @@ module.exports = {
       { checksVoidReturn: false },
     ],
   },
+  overrides: [
+    {
+      // Widget entry points are bundled by rollup, so they only need dev dependencies
+      files: ['widgets/*/public/index.js'],
+      rules: {
+        'import/no-extraneous-dependencies': [
+          'error',
+          { devDependencies: true },
+        ],
+      },
+    },
+  ],
 };
