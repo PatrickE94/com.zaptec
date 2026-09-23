@@ -16,12 +16,16 @@ on:
         description: Changelog
         required: true
 
+# Needed in order to push the version commit and create a release
+permissions:
+  contents: write
+
 jobs:
   main:
     name: Build Homey release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Update app version
         uses: athombv/github-action-homey-app-version@master
@@ -31,9 +35,10 @@ jobs:
           changelog: ${{ inputs.changelog }}
 
       - name: Commit and push generated version
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Update Homey App Version to v${{ steps.update_app_version.outputs.version }}
+          tag_name: v${{ steps.update_app_version.outputs.version }}
           tagging_message: v${{ steps.update_app_version.outputs.version }}
 
       - name: Publish app
@@ -47,7 +52,7 @@ jobs:
           echo "App release to be managed at ${{ steps.publish.outputs.url }}" >> $GITHUB_STEP_SUMMARY
           
       - name: Generate Github Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           body: ${{ inputs.changelog }}
           generate_release_notes: true

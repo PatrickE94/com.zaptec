@@ -40,7 +40,7 @@ export class Go2Charger extends Homey.Device {
     this.cronTasks.push(
       cron.schedule('0,30 * * * * *', () => this.pollValues()), //every 30 seconds
       cron.schedule('59 * * * * *', () => this.updateDebugLog()), //every minute
-      cron.schedule('0 0 7 * * * *', () => { // 7AM every day
+      cron.schedule('0 0 7 * * *', () => { // 7AM every day
         // Random delay between 0 and 120 seconds
         const jitter = Math.floor(Math.random() * 120000);
         setTimeout(() => {

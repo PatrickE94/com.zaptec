@@ -11,18 +11,24 @@ jobs:
     name: Validate Homey App
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
+          cache: npm
 
       - name: Install dependencies
         run: npm ci --ignore-scripts --audit=false
 
+      - name: Type check
+        run: npm run check
+
+      - name: Run tests
+        run: npm test
+
       - name: Install Homey CLI
-        run: npm -g install homey
+        run: npm -g install homey@4
 
       - name: App needs to pass verified level validation
         run: homey app validate --level=verified
-        
