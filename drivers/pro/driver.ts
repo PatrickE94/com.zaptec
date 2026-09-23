@@ -15,6 +15,11 @@ interface InstallationCurrentControlArgs {
   device: ProCharger;
 }
 
+interface PhaseSwitchCurrentControlArgs {
+  current: number;
+  device: ProCharger;
+}
+
 class ProDriver extends Homey.Driver {
   /**
    * onInit is called when the driver is initialized.
@@ -50,6 +55,19 @@ class ProDriver extends Homey.Driver {
             current2,
             current3,
           );
+        },
+      );
+
+    this.homey.flow
+      .getActionCard('pro_installation_phase_switch_current_control')
+      .registerRunListener(
+        async ({ current, device }: PhaseSwitchCurrentControlArgs) => {
+          this.log(`[${device.getName()}] Action 'pro_installation_phase_switch_current_control' triggered`);
+          this.log(`[${device.getName()}] - current: '${current}' amps`);
+          if (!device.hasCapability('available_installation_current'))
+            throw new Error(this.homey.__('errors.missing_installation_access'));
+
+          return device.setInstallationThreeToOnePhaseSwitchCurrent(current);
         },
       );
 

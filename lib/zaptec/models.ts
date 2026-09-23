@@ -600,6 +600,11 @@ export interface InstallationExternalUpdateModel {
    * charge current.
    */
   MinPowerOfflineMode?: boolean | null;
+  /**
+   * Format: double
+   * @description Set 3to1 switch current for installation
+   */
+  ThreeToOnePhaseSwitchCurrent?: number | null;
 }
 
 /**
