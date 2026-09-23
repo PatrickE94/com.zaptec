@@ -1156,6 +1156,24 @@
         ]
       },
       {
+        "id": "go_authorize_charging",
+        "title": {
+          "en": "Authorize charging",
+          "no": "Autoriser lading"
+        },
+        "hint": {
+          "en": "Authorizes a new charging session when the installation requires authorization.",
+          "no": "Autoriserer en ny ladeøkt når installasjonen krever autorisering."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go"
+          }
+        ]
+      },
+      {
         "id": "go_cable_permanent_lock",
         "title": {
           "en": "Lock cable to charging station",
@@ -1388,6 +1406,24 @@
         "title": {
           "en": "Stop charging",
           "no": "Stopp lading"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=go2"
+          }
+        ]
+      },
+      {
+        "id": "go2_authorize_charging",
+        "title": {
+          "en": "Authorize charging",
+          "no": "Autoriser lading"
+        },
+        "hint": {
+          "en": "Authorizes a new charging session when the installation requires authorization.",
+          "no": "Autoriserer en ny ladeøkt når installasjonen krever autorisering."
         },
         "args": [
           {
@@ -1640,6 +1676,24 @@
         ]
       },
       {
+        "id": "home_authorize_charging",
+        "title": {
+          "en": "Authorize charging",
+          "no": "Autoriser lading"
+        },
+        "hint": {
+          "en": "Authorizes a new charging session when the installation requires authorization.",
+          "no": "Autoriserer en ny ladeøkt når installasjonen krever autorisering."
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=home"
+          }
+        ]
+      },
+      {
         "id": "home_cable_permanent_lock",
         "title": {
           "en": "Lock cable to charging station",
@@ -1872,6 +1926,24 @@
         "title": {
           "en": "Stop charging",
           "no": "Stopp lading"
+        },
+        "args": [
+          {
+            "type": "device",
+            "name": "device",
+            "filter": "driver_id=pro"
+          }
+        ]
+      },
+      {
+        "id": "pro_authorize_charging",
+        "title": {
+          "en": "Authorize charging",
+          "no": "Autoriser lading"
+        },
+        "hint": {
+          "en": "Authorizes a new charging session when the installation requires authorization.",
+          "no": "Autoriserer en ny ladeøkt når installasjonen krever autorisering."
         },
         "args": [
           {

@@ -7,7 +7,9 @@
     "failed_charging_mode_update": "Failed to update installation charging mode",
     "username_missing": "Please enter an e-mail address",
     "password_missing": "Please enter your password",
-    "authentication_failed": "Failed to authenticate with new credentials"
+    "authentication_failed": "Failed to authenticate with new credentials",
+    "charging_not_paused": "Charging can only be resumed when it is paused. Use 'Authorize charging' to start a new session.",
+    "charging_not_stoppable": "Charging is already paused or no car is connected"
   },
   "widget": {
     "cable": "Cable",

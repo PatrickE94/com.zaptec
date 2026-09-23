@@ -7,6 +7,10 @@ import {
   ChargerOperationMode,
   chargerOperationModeStr,
   chargerOperationModeFromStr,
+  ChargeControlState,
+  canResumeCharging,
+  canStopCharging,
+  chargeControlStateFromStates,
 } from '../../lib/zaptec';
 import { ApiError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
@@ -16,6 +20,7 @@ export class HomeCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
+  private chargeControlState?: ChargeControlState;
   private tokenRenewalTimeout: NodeJS.Timeout | undefined;
 
   /**
@@ -355,6 +360,7 @@ export class HomeCharger extends Homey.Device {
       this.api
         .getChargerState(this.getData().id)
         .then(async (states) => {
+          this.chargeControlState = chargeControlStateFromStates(states);
           for (const state of states) {
             // Wrap each state handling individually so that a single bad state processing
             // doesn't drop all values. It makes the app more usable when it's failing.
@@ -815,14 +821,20 @@ export class HomeCharger extends Homey.Device {
   }
 
   /**
-   * Send command to start/resume a charging session.
+   * Send command to resume a paused charging session.
    */
   public async startCharging() {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (this.chargeControlState && !canResumeCharging(this.chargeControlState))
+      throw new Error(this.homey.__('errors.charging_not_paused'));
     // TODO: Send different command if it has old firmware
     return this.api
       .sendCommand(this.getData().id, Command.ResumeCharging)
-      .then(() => true)
+      .then(() => {
+        // Don't block another command on state polled before this one
+        this.chargeControlState = undefined;
+        return true;
+      })
       .catch((e) => {
         this.logToDebug(`startCharging failure: ${e}`);
         throw new Error(`Failed to turn on the charger: ${e}`);
@@ -834,13 +846,33 @@ export class HomeCharger extends Homey.Device {
    */
   public async stopCharging() {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (this.chargeControlState && !canStopCharging(this.chargeControlState))
+      throw new Error(this.homey.__('errors.charging_not_stoppable'));
     // TODO: Send different command if it has old firmware
     return this.api
       .sendCommand(this.getData().id, Command.StopChargingFinal)
-      .then(() => true)
+      .then(() => {
+        // Don't block another command on state polled before this one
+        this.chargeControlState = undefined;
+        return true;
+      })
       .catch((e) => {
         this.logToDebug(`stopCharging failure: ${e}`);
         throw new Error(`Failed to turn off the charger: ${e}`);
+      });
+  }
+
+  /**
+   * Authorize a new charging session waiting for authorization.
+   */
+  public async authorizeCharging() {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .authorizeCharge(this.getData().id)
+      .then(() => true)
+      .catch((e) => {
+        this.logToDebug(`authorizeCharging failure: ${e}`);
+        throw new Error(`Failed to authorize charging: ${e}`);
       });
   }
 
