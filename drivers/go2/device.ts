@@ -719,6 +719,30 @@ export class Go2Charger extends Homey.Device {
   }
 
   /**
+   * Adjust the current at which the installation switches from 3-phase to
+   * 1-phase charging.
+   *
+   * @param {number} current - Switch current in Ampere
+   */
+  public async setInstallationThreeToOnePhaseSwitchCurrent(current: number) {
+    if (this.api === undefined) throw new Error(`API not initialized!`);
+    return this.api
+      .updateInstallation(this.getData().installationId, {
+        ThreeToOnePhaseSwitchCurrent: current,
+      })
+      .then(() => {
+        this.logToDebug(`Updated 3 to 1-phase switch current`);
+        return true;
+      })
+      .catch((e) => {
+        this.logToDebug(`setThreeToOnePhaseSwitchCurrent failure: ${e}`);
+        throw new Error(
+          `${this.homey.__('errors.failed_phase_switch_current_update')}: ${e}`,
+        );
+      });
+  }
+
+  /**
    * Send command to start/resume a charging session.
    */
   public async startCharging() {

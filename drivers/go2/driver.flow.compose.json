@@ -253,6 +253,36 @@
       ]
     },
     {
+      "id": "go2_installation_phase_switch_current_control",
+      "title": {
+        "en": "Set 3 to 1-phase switch current to",
+        "no": "Sett strøm for bytte fra 3 til 1 fase til"
+      },
+      "titleFormatted": {
+        "en": "Set 3 to 1-phase switch current to [[current]]",
+        "no": "Sett strøm for bytte fra 3 til 1 fase til [[current]]"
+      },
+      "hint": {
+        "en": "Changes the current at which chargers in this installation switch from 3-phase to 1-phase charging. 0 A never switches to 1-phase, 32 A always charges on 1-phase.",
+        "no": "Endrer strømmen der ladere i denne installasjonen bytter fra 3-fase til 1-fase lading. 0 A bytter aldri til 1-fase, 32 A lader alltid på 1-fase."
+      },
+      "args": [
+        {
+          "name": "current",
+          "type": "range",
+          "title": {
+            "en": "Current",
+            "no": "Strøm"
+          },
+          "min": 0,
+          "max": 32,
+          "step": 1,
+          "label": " A",
+          "labelDecimals": 0
+        }
+      ]
+    },
+    {
       "id": "go2_start_charging",
       "title": {
         "en": "Start charging",
