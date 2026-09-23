@@ -38,8 +38,11 @@ export class GoCharger extends Homey.Device {
     await this.migrateEnergy();
     this.registerCapabilityListeners();
 
+    const pollOffset = Math.floor(Math.random() * 30);
     this.cronTasks.push(
-      cron.schedule('0,30 * * * * *', () => this.pollValues()), //every 30 seconds
+      // Every 30 seconds, offset randomly per device so chargers on the same
+      // account don't all hit the API rate limit at the same moment.
+      cron.schedule(`${pollOffset},${pollOffset + 30} * * * * *`, () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()), //every minute
       cron.schedule('0 0 7 * * *', () => { // 7AM every day
         // Random delay between 0 and 120 seconds

@@ -27,4 +27,17 @@ describe('Zaptec API Client', () => {
     await api.authenticate('test', '123');
     await api.getChargers({});
   });
+
+  it('should retry after being rate limited', async function () {
+    this.timeout(5000);
+
+    nock('https://api.zaptec.com')
+      .get('/api/chargers/abc')
+      .reply(429, '', { 'Retry-After': '0' })
+      .get('/api/chargers/abc')
+      .reply(200, { Id: 'abc' });
+
+    const charger = await api.getCharger('abc');
+    assert.strictEqual(charger.Id, 'abc');
+  });
 });

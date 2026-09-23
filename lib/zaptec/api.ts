@@ -2,6 +2,14 @@ import http from 'http';
 import https from 'https';
 import querystring from 'querystring';
 import { ApiError } from './error';
+import {
+  RateLimiter,
+  apiLimiterFor,
+  backoffWithJitter,
+  parseRetryAfter,
+  sleep,
+  tokenEndpointLimiter,
+} from './ratelimit';
 import { Command, DeviceType, InstallationType, UserRole, Feature, MODEL_PREFIX_MAP } from './enums';
 import {
   ChargePriority,
@@ -88,12 +96,16 @@ async function request(
 }
 
 /**
- * Perform a HTTP request against the Zaptec API and handle 429 responses with backoff
+ * Perform a HTTP request against the Zaptec API, respecting rate limits and
+ * retrying on 429 responses and transient errors.
  *
- * This is a convenience function to promisify the HTTP API, alongside sane defaults.
+ * Every attempt waits for a token from the given limiter. On 429 the whole
+ * limiter is paused, so every device sharing it backs off together rather
+ * than each one retrying into the limit on its own.
  *
  * Assumes a 15s timeout is wanted.
  *
+ * @param {RateLimiter} limiter - Limiter shared by all requests counted against the same limit.
  * @param {string} path - URL path to endpoint
  * @param {[http.RequestOptions]} options - Generic Node HTTP options to pass with request
  * @param {[string]} data - Any data to write as the body of the request.
@@ -101,6 +113,7 @@ async function request(
  * @returns {Response<string>} A response object with the response body and HTTP message object.
  */
 async function requestWithBackoff(
+  limiter: RateLimiter,
   path: string,
   options: https.RequestOptions,
   data?: string,
@@ -110,20 +123,15 @@ async function requestWithBackoff(
   let backoff = 500;
   let lastError: Error | null = null;
 
-  const delay = (ms: number): Promise<void> =>
-    new Promise((resolve) => {
-      setTimeout(() => resolve(), ms);
-    });
-
   while (retries < maxRetries) {
     try {
+      await limiter.acquire();
       const response = await request(path, options, data);
 
       // Handle nginx errors (500, 502, 503, 504)
       const statusCode = response.response.statusCode || 0;
       if ([500, 502, 503, 504].includes(statusCode) && response.data.includes('nginx')) {
-        await delay(backoff);
-        backoff *= 2;
+        await sleep(backoffWithJitter(retries, backoff));
         retries += 1;
         continue;
       }
@@ -131,16 +139,12 @@ async function requestWithBackoff(
       // If not a 429 response, return immediately
       if (response.response.statusCode !== 429) return response;
 
-      // If retry after header is set, use that value
-      const retryAfter = response.response.headers['retry-after'];
-      if (retryAfter !== undefined && retryAfter) {
-        const retryAfterSeconds = Number(retryAfter);
-        if (!Number.isNaN(retryAfterSeconds)) backoff = retryAfterSeconds * 1000;
-      }
-
-      // Wait and increase backoff time
-      await delay(backoff);
-      backoff *= 2; // Exponential backoff
+      // Respect Retry-After, but keep growing the delay if we keep hitting the
+      // limit. Pausing the limiter holds back every request sharing it, and
+      // this request waits for the pause when acquiring its next token.
+      const retryAfter = parseRetryAfter(response.response.headers['retry-after']);
+      limiter.pause(Math.max(retryAfter ?? 1000, backoffWithJitter(retries, 1000)));
+      lastError = new Error('Rate limited by the Zaptec API');
       retries += 1;
     } catch (error: any) {
       lastError = error;
@@ -165,9 +169,8 @@ async function requestWithBackoff(
         if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET' || error.code === 'EAI_AGAIN') {
           backoff = Math.max(backoff, 2000); // Minimum 2 sekunder for disse feilene
         }
-        
-        await delay(backoff);
-        backoff *= 2;
+
+        await sleep(backoffWithJitter(retries, backoff));
         retries += 1;
         continue;
       }
@@ -190,6 +193,7 @@ export class ZaptecApi {
   private version: string;
   protected bearerToken?: string;
   private homey: any;
+  private account = '';
 
   constructor(version: string, homey: any) {
     this.version = version;
@@ -208,7 +212,7 @@ export class ZaptecApi {
     if (this.bearerToken !== undefined)
       headers.Authorization = `Bearer ${this.bearerToken}`;
 
-    const response = await requestWithBackoff(path, {
+    const response = await requestWithBackoff(this.limiterFor(path), path, {
       method: 'GET',
       headers,
       ...options,
@@ -252,6 +256,7 @@ export class ZaptecApi {
       headers.Authorization = `Bearer ${this.bearerToken}`;
 
     const response = await requestWithBackoff(
+      this.limiterFor(path),
       path,
       {
         method: 'POST',
@@ -299,6 +304,7 @@ export class ZaptecApi {
       headers.Authorization = `Bearer ${this.bearerToken}`;
 
     const response = await requestWithBackoff(
+      this.limiterFor(path),
       path,
       {
         method: 'PUT',
@@ -328,6 +334,14 @@ export class ZaptecApi {
     };
   }
 
+  /**
+   * Pick the rate limiter a request counts against.
+   */
+  private limiterFor(path: string): RateLimiter {
+    if (path.startsWith('/oauth/token')) return tokenEndpointLimiter();
+    return apiLimiterFor(this.account);
+  }
+
   public async authenticate(
     username: string,
     password: string,
@@ -350,6 +364,7 @@ export class ZaptecApi {
       }
 
       this.bearerToken = data.access_token;
+      this.account = username;
       return data.expires_in;
     }
 
