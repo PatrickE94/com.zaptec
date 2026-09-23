@@ -103,6 +103,12 @@ export class Go2Charger extends Homey.Device {
       if (this.api === undefined) return;
       await this.setInstallationChargingMode(Number(value) as Feature);
     });
+    this.registerCapabilityListener(
+      'available_installation_current',
+      async (value) => {
+        await this.setInstallationAvailableCurrent(value, value, value);
+      },
+    );
   }
 
   /**
