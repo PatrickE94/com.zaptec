@@ -89,6 +89,10 @@ class HomeDriver extends Homey.Driver {
       .registerRunListener(async ({ device }) => device.stopCharging());
 
     this.homey.flow
+      .getActionCard('home_authorize_charging')
+      .registerRunListener(async ({ device }) => device.authorizeCharging());
+
+    this.homey.flow
       .getActionCard('home_cable_permanent_lock')
       .registerRunListener(async ({ device }) =>
         device

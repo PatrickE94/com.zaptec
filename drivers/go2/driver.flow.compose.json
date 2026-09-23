@@ -267,6 +267,17 @@
       }
     },
     {
+      "id": "go2_authorize_charging",
+      "title": {
+        "en": "Authorize charging",
+        "no": "Autoriser lading"
+      },
+      "hint": {
+        "en": "Authorizes a new charging session when the installation requires authorization.",
+        "no": "Autoriserer en ny ladeøkt når installasjonen krever autorisering."
+      }
+    },
+    {
       "id": "go2_cable_permanent_lock",
       "title": {
         "en": "Lock cable to charging station",

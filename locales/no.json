@@ -7,7 +7,9 @@
     "failed_charging_mode_update": "Kunne ikke oppdatere installasjonens lademodus",
     "username_missing": "Vennligst skriv inn en e-post adresse",
     "password_missing": "Vennligst skriv inn ditt passord",
-    "authentication_failed": "Kunne ikke autentisere med nye innloggingsopplysninger"
+    "authentication_failed": "Kunne ikke autentisere med nye innloggingsopplysninger",
+    "charging_not_paused": "Lading kan bare gjenopptas når den er satt på pause. Bruk 'Autoriser lading' for å starte en ny ladeøkt.",
+    "charging_not_stoppable": "Ladingen er allerede satt på pause, eller ingen bil er tilkoblet"
   },
   "widget": {
     "cable": "Kabel",

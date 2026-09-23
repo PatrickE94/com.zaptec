@@ -540,6 +540,20 @@ export class ZaptecApi {
       throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
+  /**
+   * Authorize a charging session waiting for authorization.
+   *
+   * NOTE: Undocumented API call, mirrors the Home Assistant integration.
+   */
+  public async authorizeCharge(chargerId: string): Promise<void> {
+    const { response } = await this.post(
+      `/api/chargers/${chargerId}/authorizecharge`,
+    );
+
+    if (response.statusCode !== 200)
+      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+  }
+
   public async lockCharger(chargerId: string, lock: boolean): Promise<void> {
     const { data, response } = await this.post<TokenResponse>(
       `/api/chargers/${chargerId}/localSettings`,

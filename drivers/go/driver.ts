@@ -89,6 +89,10 @@ class GoDriver extends Homey.Driver {
       .registerRunListener(async ({ device }) => device.stopCharging());
 
     this.homey.flow
+      .getActionCard('go_authorize_charging')
+      .registerRunListener(async ({ device }) => device.authorizeCharging());
+
+    this.homey.flow
       .getActionCard('go_cable_permanent_lock')
       .registerRunListener(async ({ device }) =>
         device
