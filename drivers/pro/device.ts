@@ -934,6 +934,8 @@ export class ProCharger extends Homey.Device {
    */
   public async setInstallationChargingMode(chargingMode: Feature) {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (!this.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
       .updateInstallationProperties(this.getData().installationId, {
         EnabledFeatures: chargingMode,

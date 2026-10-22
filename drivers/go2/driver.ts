@@ -132,7 +132,8 @@ class Go2Driver extends Homey.Driver {
 
     this.homey.flow
       .getActionCard('go2_set_charging_mode')
-      .registerRunListener(this.onSetChargingMode.bind(this));
+      .registerRunListener(async ({ device, mode }) =>
+        device.setInstallationChargingMode(Number(mode) as Feature));
   }
 
   /**
@@ -145,17 +146,6 @@ class Go2Driver extends Homey.Driver {
     if( !device.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return device.setInstallationAuthenticationRequirement(requireAuth);
-  }
-
-  /**
-   * Handle setting charging mode
-   */
-  private async onSetChargingMode(
-    { device, mode }: { device: Go2Charger; mode: string },
-  ) {
-    if( !device.hasCapability('available_installation_current'))
-      throw new Error(this.homey.__('errors.missing_installation_access'));
-    return device.setInstallationChargingMode(Number(mode) as Feature);
   }
 
   async onPair(session: any) {
