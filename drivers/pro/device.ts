@@ -803,6 +803,8 @@ export class ProCharger extends Homey.Device {
     current3: number,
   ) {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (!this.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
       .updateInstallation(this.getData().installationId, {
         AvailableCurrentPhase1: current1,
@@ -829,6 +831,8 @@ export class ProCharger extends Homey.Device {
    */
   public async setInstallationThreeToOnePhaseSwitchCurrent(current: number) {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (!this.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
       .updateInstallation(this.getData().installationId, {
         ThreeToOnePhaseSwitchCurrent: current,
