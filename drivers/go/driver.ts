@@ -110,7 +110,8 @@ class GoDriver extends Homey.Driver {
 
     this.homey.flow
       .getActionCard('set_authentication_requirement')
-      .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
+      .registerRunListener(async ({ device, require }) =>
+        device.setInstallationAuthenticationRequirement(require === 'true'));
 
     this.homey.flow
       .getActionCard('set_charging_mode')
@@ -199,18 +200,6 @@ class GoDriver extends Homey.Driver {
         return false;
       }
     });
-  }
-
-  /**
-   * Handle setting authentication requirement
-   */
-  private async onSetAuthenticationRequirement(
-    { device, require }: { device: GoCharger; require: string },
-  ) {
-    const requireAuth = require === 'true';
-    if( !device.hasCapability('available_installation_current'))
-      throw new Error(this.homey.__('errors.missing_installation_access'));
-    return device.setInstallationAuthenticationRequirement(requireAuth);
   }
 }
 
