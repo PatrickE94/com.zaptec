@@ -266,10 +266,6 @@ export class ProCharger extends Homey.Device {
     // Handle changes to authentication requirement
     if (changes.changedKeys.some((k) => k === 'requireAuthentication')) {
       try {
-        if (!this.hasCapability('available_installation_current')) {
-          throw new Error(this.homey.__('errors.missing_installation_access'));
-        }
-        
         const requireAuthValue = changes.newSettings.requireAuthentication;
         const requireAuth = typeof requireAuthValue === 'string' 
           ? requireAuthValue === 'true' 
@@ -898,6 +894,8 @@ export class ProCharger extends Homey.Device {
    */
   public async setInstallationAuthenticationRequirement(requireAuthentication: boolean) {
     if (this.api === undefined) throw new Error(`API not initialized!`);
+    if (!this.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
       .updateInstallationAuthenticationRequirement(this.getData().installationId, requireAuthentication)
       .then(() => {

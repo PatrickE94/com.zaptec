@@ -128,24 +128,13 @@ class ProDriver extends Homey.Driver {
 
     this.homey.flow
       .getActionCard('pro_set_authentication_requirement')
-      .registerRunListener(this.onSetAuthenticationRequirement.bind(this));
+      .registerRunListener(async ({ device, require }) =>
+        device.setInstallationAuthenticationRequirement(require === 'true'));
 
     this.homey.flow
       .getActionCard('pro_set_charging_mode')
       .registerRunListener(async ({ device, mode }) =>
         device.setInstallationChargingMode(Number(mode) as Feature));
-  }
-
-  /**
-   * Handle setting authentication requirement
-   */
-  private async onSetAuthenticationRequirement(
-    { device, require }: { device: ProCharger; require: string },
-  ) {
-    const requireAuth = require === 'true';
-    if( !device.hasCapability('available_installation_current'))
-      throw new Error(this.homey.__('errors.missing_installation_access'));
-    return device.setInstallationAuthenticationRequirement(requireAuth);
   }
 
   async onPair(session: any) {
