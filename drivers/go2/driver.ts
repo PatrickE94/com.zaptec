@@ -47,8 +47,6 @@ class Go2Driver extends Homey.Driver {
           this.log(
             `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
           );          
-          if( !device.hasCapability('available_installation_current'))
-            throw new Error(this.homey.__('errors.missing_installation_access'));
 
           return device.setInstallationAvailableCurrent(
             current1,
@@ -64,8 +62,6 @@ class Go2Driver extends Homey.Driver {
         async ({ current, device }: PhaseSwitchCurrentControlArgs) => {
           this.log(`[${device.getName()}] Action 'go2_installation_phase_switch_current_control' triggered`);
           this.log(`[${device.getName()}] - current: '${current}' amps`);
-          if (!device.hasCapability('available_installation_current'))
-            throw new Error(this.homey.__('errors.missing_installation_access'));
 
           return device.setInstallationThreeToOnePhaseSwitchCurrent(current);
         },

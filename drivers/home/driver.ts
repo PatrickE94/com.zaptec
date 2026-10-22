@@ -42,8 +42,6 @@ class HomeDriver extends Homey.Driver {
           this.log(
             `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
           );
-          if( !device.hasCapability('available_installation_current'))
-            throw new Error(this.homey.__('errors.missing_installation_access'));
 
           return device.setInstallationAvailableCurrent(
             current1,
