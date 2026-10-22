@@ -41,7 +41,7 @@ class GoDriver extends Homey.Driver {
           );
           this.log(
             `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
-          );          
+          );
 
           return device.setInstallationAvailableCurrent(
             current1,
