@@ -1,5 +1,6 @@
 import nock from 'nock';
 import { ZaptecApi } from './api';
+import { InvalidCredentialsError } from './error';
 import assert from 'assert';
 
 // Mock Homey object for tests
@@ -39,5 +40,81 @@ describe('Zaptec API Client', () => {
 
     const charger = await api.getCharger('abc');
     assert.strictEqual(charger.Id, 'abc');
+  });
+
+  describe('with credentials', () => {
+    const tokenReply = (token: string) => ({
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: 9000,
+    });
+
+    it('should log in once for concurrent requests', async function () {
+      this.timeout(5000);
+      const lazyApi = new ZaptecApi('1.0.0', mockHomey);
+      lazyApi.setCredentials('lazy', 'secret');
+
+      const login = nock('https://api.zaptec.com')
+        .post('/oauth/token', 'grant_type=password&username=lazy&password=secret&scope=offline_access')
+        .once()
+        .reply(200, tokenReply('LAZY_TOKEN'));
+
+      nock('https://api.zaptec.com')
+        .matchHeader('Authorization', 'Bearer LAZY_TOKEN')
+        .get('/api/chargers/a')
+        .reply(200, { Id: 'a' })
+        .get('/api/chargers/b')
+        .reply(200, { Id: 'b' });
+
+      await Promise.all([lazyApi.getCharger('a'), lazyApi.getCharger('b')]);
+      assert.ok(login.isDone());
+    });
+
+    it('should log in again and retry once when the token is rejected', async function () {
+      this.timeout(10000);
+      const lazyApi = new ZaptecApi('1.0.0', mockHomey);
+      lazyApi.setCredentials('retry', 'secret');
+
+      nock('https://api.zaptec.com')
+        .post('/oauth/token')
+        .reply(200, tokenReply('OLD_TOKEN'))
+        .post('/oauth/token')
+        .reply(200, tokenReply('NEW_TOKEN'));
+
+      nock('https://api.zaptec.com')
+        .matchHeader('Authorization', 'Bearer OLD_TOKEN')
+        .get('/api/chargers/abc')
+        .reply(401, '');
+
+      nock('https://api.zaptec.com')
+        .matchHeader('Authorization', 'Bearer NEW_TOKEN')
+        .get('/api/chargers/abc')
+        .reply(200, { Id: 'abc' });
+
+      const charger = await lazyApi.getCharger('abc');
+      assert.strictEqual(charger.Id, 'abc');
+    });
+
+    it('should stop logging in after the credentials are rejected', async function () {
+      this.timeout(10000);
+      const lazyApi = new ZaptecApi('1.0.0', mockHomey);
+      lazyApi.setCredentials('wrong', 'password');
+
+      nock('https://api.zaptec.com').post('/oauth/token').once().reply(400, {});
+
+      await assert.rejects(lazyApi.getCharger('abc'), InvalidCredentialsError);
+      // No login is attempted, nock would fail the request with "No match"
+      await assert.rejects(lazyApi.getCharger('abc'), InvalidCredentialsError);
+
+      nock('https://api.zaptec.com')
+        .post('/oauth/token')
+        .reply(200, tokenReply('FIXED_TOKEN'))
+        .get('/api/chargers/abc')
+        .reply(200, { Id: 'abc' });
+
+      lazyApi.setCredentials('wrong', 'fixed');
+      const charger = await lazyApi.getCharger('abc');
+      assert.strictEqual(charger.Id, 'abc');
+    });
   });
 });

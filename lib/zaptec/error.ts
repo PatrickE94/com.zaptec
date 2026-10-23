@@ -92,3 +92,12 @@ export class ApiError extends Error {
     super(`${errToStr(code)} ${details ? ': ' : ''} ${details}`);
   }
 }
+
+/**
+ * The token endpoint rejected the username or password.
+ */
+export class InvalidCredentialsError extends Error {
+  constructor() {
+    super('Username or password is invalid');
+  }
+}

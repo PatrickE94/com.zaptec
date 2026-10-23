@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
 import querystring from 'querystring';
-import { ApiError } from './error';
+import { ApiError, InvalidCredentialsError } from './error';
 import {
   RateLimiter,
   apiLimiterFor,
@@ -194,6 +194,10 @@ export class ZaptecApi {
   protected bearerToken?: string;
   private homey: any;
   private account = '';
+  private credentials?: { username: string; password: string };
+  private tokenExpiresAt = 0;
+  private login?: Promise<number>;
+  private rejectedLogin?: InvalidCredentialsError;
 
   constructor(version: string, homey: any) {
     this.version = version;
@@ -224,9 +228,49 @@ export class ZaptecApi {
   }
 
   /**
+   * Store the credentials used to log in when a request needs a token.
+   */
+  public setCredentials(username: string, password: string) {
+    if (
+      this.credentials?.username === username &&
+      this.credentials?.password === password
+    )
+      return;
+    this.credentials = { username, password };
+    this.bearerToken = undefined;
+    this.rejectedLogin = undefined;
+  }
+
+  /**
+   * Make sure we hold a token which isn't about to expire.
+   *
+   * Concurrent callers share a single login. Once the credentials are
+   * rejected we stop trying until new ones are set, so a wrong password
+   * doesn't keep the shared token endpoint busy.
+   */
+  private async ensureToken() {
+    if (this.credentials === undefined) return;
+    if (this.rejectedLogin !== undefined) throw this.rejectedLogin;
+    if (this.bearerToken !== undefined && Date.now() < this.tokenExpiresAt - 60_000)
+      return;
+
+    const { username, password } = this.credentials;
+    this.login ??= this.authenticate(username, password)
+      .catch((e) => {
+        if (e instanceof InvalidCredentialsError) this.rejectedLogin = e;
+        throw e;
+      })
+      .finally(() => {
+        this.login = undefined;
+      });
+    await this.login;
+  }
+
+  /**
    * Send a request and decode the JSON response.
    *
-   * Objects are sent as JSON, strings as form data.
+   * Objects are sent as JSON, strings as form data. Logs in first when we have
+   * credentials, and once more if the token is rejected.
    */
   private async send<T>(
     method: 'GET' | 'POST' | 'PUT',
@@ -234,30 +278,19 @@ export class ZaptecApi {
     data?: string | object,
     options?: http.RequestOptions,
   ): Promise<Response<T>> {
-    const headers: Record<string, string> = {
-      Accept: 'application/json',
-      'User-Agent': this.getUserAgent(),
-    };
+    const isLogin = path.startsWith('/oauth/token');
+    if (!isLogin) await this.ensureToken();
 
-    if (method !== 'GET')
-      headers['Content-Type'] =
-        typeof data === 'object'
-          ? 'application/json'
-          : 'application/x-www-form-urlencoded';
-
-    if (this.bearerToken !== undefined)
-      headers.Authorization = `Bearer ${this.bearerToken}`;
-
-    const response = await requestWithBackoff(
-      this.limiterFor(path),
-      path,
-      {
-        method,
-        headers,
-        ...options,
-      },
-      typeof data === 'object' ? JSON.stringify(data) : data,
-    );
+    let response = await this.sendOnce(method, path, data, options);
+    if (
+      response.response.statusCode === 401 &&
+      !isLogin &&
+      this.credentials !== undefined
+    ) {
+      this.bearerToken = undefined;
+      await this.ensureToken();
+      response = await this.sendOnce(method, path, data, options);
+    }
 
     let responseData;
     try {
@@ -277,6 +310,38 @@ export class ZaptecApi {
       data: responseData,
       response: response.response,
     };
+  }
+
+  private async sendOnce(
+    method: 'GET' | 'POST' | 'PUT',
+    path: string,
+    data?: string | object,
+    options?: http.RequestOptions,
+  ): Promise<Response<string>> {
+    const headers: Record<string, string> = {
+      Accept: 'application/json',
+      'User-Agent': this.getUserAgent(),
+    };
+
+    if (method !== 'GET')
+      headers['Content-Type'] =
+        typeof data === 'object'
+          ? 'application/json'
+          : 'application/x-www-form-urlencoded';
+
+    if (this.bearerToken !== undefined)
+      headers.Authorization = `Bearer ${this.bearerToken}`;
+
+    return requestWithBackoff(
+      this.limiterFor(path),
+      path,
+      {
+        method,
+        headers,
+        ...options,
+      },
+      typeof data === 'object' ? JSON.stringify(data) : data,
+    );
   }
 
   /**
@@ -309,12 +374,13 @@ export class ZaptecApi {
       }
 
       this.bearerToken = data.access_token;
+      this.tokenExpiresAt = Date.now() + data.expires_in * 1000;
       this.account = username;
       return data.expires_in;
     }
 
     if (response.statusCode === 400) {
-      throw new Error(`Username or password is invalid`);
+      throw new InvalidCredentialsError();
     } else {
       throw new Error(
         `Unexpected authentication response of ${response.statusCode}`,

@@ -16,7 +16,6 @@ export class ProCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
-  private tokenRenewalTimeout: NodeJS.Timeout | undefined;
 
   /**
    * onInit is called when the device is initialized.
@@ -25,9 +24,7 @@ export class ProCharger extends Homey.Device {
     this.log('ProCharger is initializing');
     const appVersion = this.homey.app.manifest.version;
     this.api = new ZaptecApi(appVersion, this.homey);
-    this.renewToken();
-
-    await this.api.authenticate(
+    this.api.setCredentials(
       this.getSetting('username'),
       this.getSetting('password'),
     );
@@ -295,41 +292,6 @@ export class ProCharger extends Homey.Device {
   async onDeleted() {
     this.log('ProCharger has been deleted');
     for (const task of this.cronTasks) task.stop();
-  }
-
-  /**
-   * Renew the access token to the API
-   */
-  protected renewToken() {
-    if (this.api === undefined) {
-      if (this.tokenRenewalTimeout === undefined) {
-        // retry in 30 seconds
-        this.tokenRenewalTimeout = setTimeout(this.renewToken.bind(this), 30);
-      }
-
-      this.logToDebug(`API class not created yet`);
-      return;
-    }
-
-    clearTimeout(this.tokenRenewalTimeout);
-    this.tokenRenewalTimeout = undefined;
-
-    // We renew the token by simply authenticating again.
-    this.api
-      .authenticate(this.getSetting('username'), this.getSetting('password'))
-      .then((expires) => {
-        // Renew 30 seconds before expiry
-        this.tokenRenewalTimeout = setTimeout(
-          this.renewToken.bind(this),
-          (expires - 30) * 1000,
-        );
-        this.logToDebug(`Renewed token successfully`);
-      })
-      .catch((e) => {
-        this.logToDebug(`Failed to renew authentication token: ${e}`);
-        // retry in 30 seconds
-        this.tokenRenewalTimeout = setTimeout(() => this.renewToken(), 30_000);
-      });
   }
 
   /**
@@ -982,8 +944,8 @@ export class ProCharger extends Homey.Device {
    */
   public async reAuthenticate(username: string, password: string) {
     if (this.api) {
-      await this.api.authenticate(username, password);
-      this.log('Device re-authenticated with new credentials');
+      this.api.setCredentials(username, password);
+      this.log('Device credentials updated');
     }
     await this.setAvailable();
     await this.pollValues();
