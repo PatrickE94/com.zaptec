@@ -11,6 +11,7 @@ import {
 import { ApiError, InvalidCredentialsError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 import { Feature } from '../../lib/zaptec/enums';
+import type { ZaptecApp } from '../../app';
 
 export class HomeCharger extends Homey.Device {
   private debugLog: string[] = [];
@@ -23,12 +24,7 @@ export class HomeCharger extends Homey.Device {
    */
   async onInit() {
     this.log('HomeCharger is initializing');
-    const appVersion = this.homey.app.manifest.version;
-    this.api = new ZaptecApi(appVersion, this.homey);
-    this.api.setCredentials(
-      this.getSetting('username'),
-      this.getSetting('password'),
-    );
+    await this.useAccount();
 
     await this.migrateClass();
     await this.migrateCapabilities();
@@ -939,14 +935,36 @@ export class HomeCharger extends Homey.Device {
   }
 
   /**
+   * Connect to the shared client for this device's account.
+   *
+   * A password in the device settings comes from pairing, repair or an older
+   * app version. It is moved to the account store so it lives in one place.
+   */
+  private async useAccount() {
+    const app = this.homey.app as ZaptecApp;
+    const username = this.getSetting('username');
+    const password = this.getSetting('password');
+    if (password) {
+      app.setAccount(username, password);
+      await this.setSettings({ password: '' });
+    }
+
+    try {
+      this.api = app.getApi(username);
+    } catch (e) {
+      this.api = undefined;
+      this.logToDebug(`${e}, repair the device to log in again`);
+      await this.setUnavailable(this.homey.__('errors.authentication_failed'));
+    }
+  }
+
+  /**
    * Re-authenticate the device with new credentials
    * Used during repair process when credentials are updated
    */
-  public async reAuthenticate(username: string, password: string) {
-    if (this.api) {
-      this.api.setCredentials(username, password);
-      this.log('Device credentials updated');
-    }
+  public async reAuthenticate() {
+    await this.useAccount();
+    this.log('Device credentials updated');
     this.credentialsRejected = false;
     await this.setAvailable();
     this.pollValues();
