@@ -204,38 +204,7 @@ export class ZaptecApi {
     path: string,
     options: http.RequestOptions,
   ): Promise<Response<T>> {
-    const headers: Record<string, string> = {
-      Accept: 'application/json',
-      'User-Agent': this.getUserAgent(),
-    };
-
-    if (this.bearerToken !== undefined)
-      headers.Authorization = `Bearer ${this.bearerToken}`;
-
-    const response = await requestWithBackoff(this.limiterFor(path), path, {
-      method: 'GET',
-      headers,
-      ...options,
-    });
-
-    let responseData;
-    try {
-      responseData =
-        response.data.length > 0 ? JSON.parse(response.data) : response.data;
-    } catch (e) {
-      throw new Error(`Failed to parse response: ${response.data}`);
-    }
-
-    if (response.response.statusCode === 500) {
-      // Service returned error, decode the error code
-      if ('Code' in responseData)
-        throw new ApiError(responseData.Code, responseData.Details);
-    }
-
-    return {
-      data: responseData,
-      response: response.response,
-    };
+    return this.send<T>('GET', path, undefined, options);
   }
 
   protected async post<T>(
@@ -243,47 +212,7 @@ export class ZaptecApi {
     data?: string | object,
     options?: http.RequestOptions,
   ): Promise<Response<T>> {
-    const headers: Record<string, string> = {
-      'Content-Type':
-        typeof data === 'object'
-          ? 'application/json'
-          : 'application/x-www-form-urlencoded',
-      Accept: 'application/json',
-      'User-Agent': this.getUserAgent(),
-    };
-
-    if (this.bearerToken !== undefined)
-      headers.Authorization = `Bearer ${this.bearerToken}`;
-
-    const response = await requestWithBackoff(
-      this.limiterFor(path),
-      path,
-      {
-        method: 'POST',
-        headers,
-        ...options,
-      },
-      typeof data === 'object' ? JSON.stringify(data) : data,
-    );
-
-    let responseData;
-    try {
-      responseData =
-        response.data.length > 0 ? JSON.parse(response.data) : response.data;
-    } catch (e) {
-      throw new Error(`Failed to parse response: ${response.data}`);
-    }
-
-    if (response.response.statusCode === 500) {
-      // Service returned error, decode the error code
-      if ('Code' in responseData)
-        throw new ApiError(responseData.Code, responseData.Details);
-    }
-
-    return {
-      data: responseData,
-      response: response.response,
-    };
+    return this.send<T>('POST', path, data, options);
   }
 
   protected async put<T>(
@@ -291,14 +220,30 @@ export class ZaptecApi {
     data?: string | object,
     options?: http.RequestOptions,
   ): Promise<Response<T>> {
+    return this.send<T>('PUT', path, data, options);
+  }
+
+  /**
+   * Send a request and decode the JSON response.
+   *
+   * Objects are sent as JSON, strings as form data.
+   */
+  private async send<T>(
+    method: 'GET' | 'POST' | 'PUT',
+    path: string,
+    data?: string | object,
+    options?: http.RequestOptions,
+  ): Promise<Response<T>> {
     const headers: Record<string, string> = {
-      'Content-Type':
-        typeof data === 'object'
-          ? 'application/json'
-          : 'application/x-www-form-urlencoded',
       Accept: 'application/json',
       'User-Agent': this.getUserAgent(),
     };
+
+    if (method !== 'GET')
+      headers['Content-Type'] =
+        typeof data === 'object'
+          ? 'application/json'
+          : 'application/x-www-form-urlencoded';
 
     if (this.bearerToken !== undefined)
       headers.Authorization = `Bearer ${this.bearerToken}`;
@@ -307,7 +252,7 @@ export class ZaptecApi {
       this.limiterFor(path),
       path,
       {
-        method: 'PUT',
+        method,
         headers,
         ...options,
       },
