@@ -195,7 +195,7 @@ class HomeDriver extends Homey.Driver {
         // Re-authenticate the device's API instance with new credentials
         // since onSettings won't be called (username/password not in driver.settings.compose.json)
         if (device) {
-          await device.reAuthenticate(username, password);
+          await device.reAuthenticate();
         }
         
         return true;

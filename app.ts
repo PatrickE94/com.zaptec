@@ -1,10 +1,16 @@
 import sourceMapSupport from 'source-map-support';
 import { App } from 'homey';
 import * as appJson from './app.json';
+import { ZaptecApi } from './lib/zaptec';
 
 sourceMapSupport.install();
 
-class ZaptecApp extends App {
+/** homey.settings key holding { [username]: password } for every account */
+const ACCOUNTS = 'accounts';
+
+export class ZaptecApp extends App {
+  private clients = new Map<string, ZaptecApi>();
+
   /**
    * onInit is called when the app is initialized.
    */
@@ -16,6 +22,33 @@ class ZaptecApp extends App {
 
     this.log(`firmwareVersion: ${firmwareVersion}`);
     this.log(`appVersion: ${appVersion}`);
+  }
+
+  /**
+   * Save the password for an account. A client already shared by devices on
+   * the account uses it from the next request.
+   */
+  setAccount(username: string, password: string) {
+    const accounts = this.homey.settings.get(ACCOUNTS) ?? {};
+    this.homey.settings.set(ACCOUNTS, { ...accounts, [username]: password });
+    this.clients.get(username)?.setCredentials(username, password);
+  }
+
+  /**
+   * The client shared by every device on an account.
+   */
+  getApi(username: string): ZaptecApi {
+    let api = this.clients.get(username);
+    if (api !== undefined) return api;
+
+    const password = this.homey.settings.get(ACCOUNTS)?.[username];
+    if (password === undefined)
+      throw new Error(`No credentials stored for ${username}`);
+
+    api = new ZaptecApi(this.homey.manifest.version, this.homey);
+    api.setCredentials(username, password);
+    this.clients.set(username, api);
+    return api;
   }
 
   async onUninit(): Promise<void> {
