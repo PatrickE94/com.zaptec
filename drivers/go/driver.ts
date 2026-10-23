@@ -7,6 +7,7 @@ import {
 import type { GoCharger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
 import PairSession = require('homey/lib/PairSession');
+import type { ZaptecApp } from '../../app';
 
 interface InstallationCurrentControlArgs {
   current1: number;
@@ -137,6 +138,7 @@ class GoDriver extends Homey.Driver {
         api = new ZaptecApi(appVersion, this.homey);
 
         await api.authenticate(username, password);
+        (this.homey.app as ZaptecApp).setAccount(username, password);
         return true;
       } catch (_error) {
         this.log("Failed to authenticate with Zaptec's API. Error:", _error);
@@ -156,7 +158,6 @@ class GoDriver extends Homey.Driver {
           },
           settings: {
             username,
-            password,
             deviceid: charger.DeviceId,
           },
         })) || []
@@ -180,17 +181,11 @@ class GoDriver extends Homey.Driver {
         const validationApi = new ZaptecApi(appVersion, this.homey);
         await validationApi.authenticate(username, password);
         
-        // Credentials are valid, update device settings
-        await device.setSettings({
-          username,
-          password,
-        });
-        
-        // Re-authenticate the device's API instance with new credentials
-        // since onSettings won't be called (username/password not in driver.settings.compose.json)
-        if (device) {
-          await device.reAuthenticate();
-        }
+        // Credentials are valid, store them for the account and move the
+        // device over to it
+        (this.homey.app as ZaptecApp).setAccount(username, password);
+        await device.setSettings({ username });
+        await device.reAuthenticate();
         
         return true;
       } catch (_error) {
