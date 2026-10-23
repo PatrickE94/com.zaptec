@@ -857,8 +857,8 @@ export class Go2Charger extends Homey.Device {
   /**
    * Connect to the shared client for this device's account.
    *
-   * A password in the device settings comes from pairing, repair or an older
-   * app version. It is moved to the account store so it lives in one place.
+   * Older app versions kept the password in the device settings. It is moved
+   * to the account store so it lives in one place.
    */
   private async useAccount() {
     const app = this.homey.app as ZaptecApp;
