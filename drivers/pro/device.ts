@@ -8,7 +8,7 @@ import {
   chargerOperationModeStr,
   chargerOperationModeFromStr,
 } from '../../lib/zaptec';
-import { ApiError } from '../../lib/zaptec/error';
+import { ApiError, InvalidCredentialsError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 import { Feature } from '../../lib/zaptec/enums';
 
@@ -16,6 +16,7 @@ export class ProCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
   private api?: ZaptecApi;
+  private credentialsRejected = false;
 
   /**
    * onInit is called when the device is initialized.
@@ -107,6 +108,7 @@ export class ProCharger extends Homey.Device {
           this.logToDebug(`Got charger info - added device id`);
         })
         .catch((e) => {
+          if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger info: ${e}`);
         });
     }
@@ -313,6 +315,7 @@ export class ProCharger extends Homey.Device {
           });
         })
         .catch((e) => {
+          if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger info: ${e}`);
           this.setUnavailable(
             this.homey.__('errors.authentication_failed')
@@ -336,6 +339,7 @@ export class ProCharger extends Homey.Device {
           }
         })
         .catch((e) => {
+          if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger state: ${e}`);
         });
 
@@ -343,6 +347,7 @@ export class ProCharger extends Homey.Device {
       // TODO: Is this really necessary? Is it interesting to watch live?
       // It's more likely to be changed by us?
       this.pollInstallationValues().catch((e) => {
+        if (this.handleAuthFailure(e)) return;
         this.logToDebug(`Failed to poll available current: ${e}`);
       });
     } catch (error) {
@@ -373,6 +378,7 @@ export class ProCharger extends Homey.Device {
             this.addCapability('charging_mode');
       })
       .catch((e) => {
+        if (this.handleAuthFailure(e)) return;
         this.logToDebug(`Failed to poll installation: ${e}`);
         if (this.hasCapability('available_installation_current')) 
           this.removeCapability('available_installation_current');
@@ -396,6 +402,7 @@ export class ProCharger extends Homey.Device {
         this.logToDebug(`Got yearly power history`);
       })
       .catch((e) => {
+        if (this.handleAuthFailure(e)) return;
         this.logToDebug(`Failed to poll charge history: ${e}`);
       });
   }
@@ -561,6 +568,7 @@ export class ProCharger extends Homey.Device {
     const info = await this.api
       .getInstallation(this.getData().installationId)
       .catch((e) => {     
+        if (this.handleAuthFailure(e)) throw e;
         if (e instanceof ApiError && e.message.indexOf('Unknown object') >= 0 && this.hasCapability('available_installation_current'))
           this.removeCapability('available_installation_current');
         this.logToDebug(
@@ -915,6 +923,26 @@ export class ProCharger extends Homey.Device {
   }
 
   /**
+   * Handle a request failing because the credentials were rejected.
+   *
+   * The device becomes unavailable and the failure is logged once, until new
+   * credentials are set through repair.
+   *
+   * @returns {boolean} - true if the error was a rejected login
+   */
+  protected handleAuthFailure(e: unknown): boolean {
+    if (!(e instanceof InvalidCredentialsError)) return false;
+    if (this.credentialsRejected) return true;
+
+    this.credentialsRejected = true;
+    this.logToDebug(`Zaptec rejected the credentials, repair the device to update them: ${e.message}`);
+    this.setUnavailable(this.homey.__('errors.authentication_failed')).catch((err) =>
+      this.error('Failed to mark device unavailable', err),
+    );
+    return true;
+  }
+
+  /**
    * Push a logline onto the debug log visible to user
    *
    * @param {string} line - Line to log
@@ -947,8 +975,10 @@ export class ProCharger extends Homey.Device {
       this.api.setCredentials(username, password);
       this.log('Device credentials updated');
     }
+    this.credentialsRejected = false;
     await this.setAvailable();
-    await this.pollValues();
+    this.pollValues();
+    this.pollSlowValues();
   }
 }
 
