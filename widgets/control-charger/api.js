@@ -23,7 +23,7 @@ module.exports = {
           selectedDriverId = driverType;
           break;
         }
-      } catch (error) {
+      } catch {
         continue;
       }
     }
@@ -76,7 +76,7 @@ module.exports = {
         if (selectedDevice) {
           break;
         }
-      } catch (error) {
+      } catch {
         continue;
       }
     }
@@ -128,7 +128,7 @@ module.exports = {
         if (selectedDevice) {
           break;
         }
-      } catch (error) {
+      } catch {
         continue;
       }
     }
@@ -180,7 +180,7 @@ module.exports = {
         if (selectedDevice) {
           break;
         }
-      } catch (error) {
+      } catch {
         continue;
       }
     }

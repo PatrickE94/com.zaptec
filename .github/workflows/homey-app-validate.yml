@@ -1,9 +1,6 @@
 name: Validate Homey App
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
   pull_request:
 
 jobs:
@@ -23,6 +20,12 @@ jobs:
 
       - name: Type check
         run: npm run check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
 
       - name: Run tests
         run: npm test
