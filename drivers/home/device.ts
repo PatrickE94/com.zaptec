@@ -290,6 +290,7 @@ export class HomeCharger extends Homey.Device {
   async onDeleted() {
     this.log('HomeCharger has been deleted');
     for (const task of this.cronTasks) task.stop();
+    (this.homey.app as ZaptecApp).releaseAccount(this.getSetting('username'), this.getData().id);
   }
 
   /**
@@ -933,8 +934,8 @@ export class HomeCharger extends Homey.Device {
   /**
    * Connect to the shared client for this device's account.
    *
-   * Older app versions kept the password in the device settings. It is moved
-   * to the account store so it lives in one place.
+   * Pairing and older app versions put the password in the device settings.
+   * It is moved to the account store so it lives in one place.
    */
   private async useAccount() {
     const app = this.homey.app as ZaptecApp;
