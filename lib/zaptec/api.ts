@@ -96,6 +96,17 @@ async function request(
 }
 
 /**
+ * Read the code and message of a failed request.
+ *
+ * The Homey runtime hands network errors over serialized as
+ * { $__type: 'Error', data: { code, message } } rather than as an Error.
+ */
+export function networkErrorDetails(error: any): { code?: string; message?: string } {
+  const { code, message } = error?.data ?? error ?? {};
+  return { code, message };
+}
+
+/**
  * Perform a HTTP request against the Zaptec API, respecting rate limits and
  * retrying on 429 responses and transient errors.
  *
@@ -147,10 +158,11 @@ async function requestWithBackoff(
       lastError = new Error('Rate limited by the Zaptec API');
       retries += 1;
     } catch (error: any) {
-      lastError = error;
-      
+      const { code, message } = networkErrorDetails(error);
+      lastError = new Error(message, { cause: error });
+
       // If it's a network error, database availability error, or TLS error, retry
-      if (error.code && [
+      if (code && [
           'ECONNREFUSED', 
           'ETIMEDOUT', 
           'ECONNRESET', 
@@ -159,14 +171,15 @@ async function requestWithBackoff(
           'ECONNABORTED',     // Connection was aborted
           'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
           'DEPTH_ZERO_SELF_SIGNED_CERT',  // Self-signed certificate
-          'EAI_AGAIN'         // DNS lookup timed out
-        ].includes(error.code) ||
-        error.message?.includes('availability replica config/state change') ||
-        error.message?.includes('before secure TLS connection was established') ||
-        error.message?.includes('Request timed out')) {
+          'EAI_AGAIN',        // DNS lookup timed out
+          'ENOTFOUND'         // DNS lookup failed, seen briefly on Homey
+        ].includes(code) ||
+        message?.includes('availability replica config/state change') ||
+        message?.includes('before secure TLS connection was established') ||
+        message?.includes('Request timed out')) {
         
         // For timeouts, connection resets, and DNS errors, use longer backoff
-        if (error.message?.includes('Request timed out') || error.code === 'ECONNRESET' || error.code === 'EAI_AGAIN') {
+        if (message?.includes('Request timed out') || code === 'ECONNRESET' || code === 'EAI_AGAIN' || code === 'ENOTFOUND') {
           backoff = Math.max(backoff, 2000); // Minimum 2 sekunder for disse feilene
         }
 
@@ -176,7 +189,7 @@ async function requestWithBackoff(
       }
       
       // If it's not a retryable error, throw immediately
-      throw new Error(`Network error while communicating with charger: ${error.message}`, {
+      throw new Error(`Network error while communicating with charger: ${message}`, {
         cause: error,
       });
     }
@@ -185,7 +198,9 @@ async function requestWithBackoff(
   // If we get here, we've exceeded max retries
   const baseMsg = `Could not reach charger after ${maxRetries} attempts`;
   const errorDetail = lastError ? `: ${lastError.message}` : '';
-  throw new Error(`${baseMsg}${errorDetail}. Please check your internet connection and try again.`);
+  throw new Error(`${baseMsg}${errorDetail}. Please check your internet connection and try again.`, {
+    cause: lastError?.cause,
+  });
 }
 
 /**
