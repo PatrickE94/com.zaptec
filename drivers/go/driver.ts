@@ -32,92 +32,62 @@ class GoDriver extends Homey.Driver {
 
     this.homey.flow
       .getActionCard('installation_current_control')
-      .registerRunListener(
-        async ({
-          current1,
-          current2,
-          current3,
-          device,
-        }: InstallationCurrentControlArgs) => {
-          this.log(
-            `[${device.getName()}] Action 'installation_current_control' triggered`,
-          );
-          this.log(
-            `[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`,
-          );
+      .registerRunListener(async ({ current1, current2, current3, device }: InstallationCurrentControlArgs) => {
+        this.log(`[${device.getName()}] Action 'installation_current_control' triggered`);
+        this.log(`[${device.getName()}] - current: '${current1}/${current2}/${current3}' amps`);
 
-          return device.setInstallationAvailableCurrent(
-            current1,
-            current2,
-            current3,
-          );
-        },
-      );
+        return device.setInstallationAvailableCurrent(current1, current2, current3);
+      });
 
     this.homey.flow
       .getConditionCard('is_charging')
-      .registerRunListener(async ({ device }) =>
-        device.getCapabilityValue('charging_button'),
-      );
+      .registerRunListener(async ({ device }) => device.getCapabilityValue('charging_button'));
 
     this.homey.flow
       .getConditionCard('is_connected')
-      .registerRunListener(
-        async ({ device }) =>
-          !!device.getCapabilityValue('alarm_generic.car_connected'),
-      );
+      .registerRunListener(async ({ device }) => !!device.getCapabilityValue('alarm_generic.car_connected'));
 
     this.homey.flow
       .getConditionCard('charging_is_finished')
       .registerRunListener(
         async ({ device }) =>
-          device.getCapabilityValue('charge_mode') ===
-          chargerOperationModeStr(ChargerOperationMode.Connected_Finishing),
+          device.getCapabilityValue('charge_mode')
+          === chargerOperationModeStr(ChargerOperationMode.Connected_Finishing),
       );
 
     this.homey.flow
       .getConditionCard('authentication_required')
-      .registerRunListener(async ({ device }) =>
-        device.getSetting('requireAuthentication'),
-      );
+      .registerRunListener(async ({ device }) => device.getSetting('requireAuthentication'));
 
-    this.homey.flow
-      .getActionCard('start_charging')
-      .registerRunListener(async ({ device }) => device.startCharging());
+    this.homey.flow.getActionCard('start_charging').registerRunListener(async ({ device }) => device.startCharging());
 
-    this.homey.flow
-      .getActionCard('stop_charging')
-      .registerRunListener(async ({ device }) => device.stopCharging());
+    this.homey.flow.getActionCard('stop_charging').registerRunListener(async ({ device }) => device.stopCharging());
 
     this.homey.flow
       .getActionCard('go_cable_permanent_lock')
       .registerRunListener(async ({ device }) =>
-        device
-          .lockCable(true)
-          .then(() => device.setCapabilityValue('cable_permanent_lock', true)),
+        device.lockCable(true).then(() => device.setCapabilityValue('cable_permanent_lock', true)),
       );
 
     this.homey.flow
       .getActionCard('go_cable_permanent_open')
       .registerRunListener(async ({ device }) =>
-        device
-          .lockCable(false)
-          .then(() => device.setCapabilityValue('cable_permanent_lock', false)),
+        device.lockCable(false).then(() => device.setCapabilityValue('cable_permanent_lock', false)),
       );
 
-      this.homey.flow
+    this.homey.flow
       .getActionCard('go_reboot_charger')
       .registerRunListener(async ({ device }) => device.rebootCharger());
 
     this.homey.flow
       .getActionCard('set_authentication_requirement')
       .registerRunListener(async ({ device, require }) =>
-        device.setInstallationAuthenticationRequirement(require === 'true'));
+        device.setInstallationAuthenticationRequirement(require === 'true'),
+      );
 
     this.homey.flow
       .getActionCard('set_charging_mode')
-      .registerRunListener(async ({ device, mode }) =>
-        device.setInstallationChargingMode(Number(mode) as Feature));
+      .registerRunListener(async ({ device, mode }) => device.setInstallationChargingMode(Number(mode) as Feature));
   }
 
   async onPair(session: any) {
@@ -127,13 +97,13 @@ class GoDriver extends Homey.Driver {
     let api: ZaptecApi;
 
     session.setHandler('login', async (data: { username: string; password: string }) => {
-      username = data.username.trim();;
+      username = data.username.trim();
       password = data.password.trim();
       if (!username || username.length === 0) {
-          throw new Error(this.homey.__('errors.username_missing'));
+        throw new Error(this.homey.__('errors.username_missing'));
       }
       if (!password || password.length === 0) {
-          throw new Error(this.homey.__('errors.password_missing'));
+        throw new Error(this.homey.__('errors.password_missing'));
       }
 
       try {
@@ -168,7 +138,6 @@ class GoDriver extends Homey.Driver {
     });
   }
 
-
   async onRepair(session: PairSession, device: GoCharger) {
     this.log('GoDriver is repairing');
     let username = '';
@@ -183,7 +152,7 @@ class GoDriver extends Homey.Driver {
         // Validate credentials by attempting authentication
         const validationApi = new ZaptecApi(appVersion, this.homey);
         await validationApi.authenticate(username, password);
-        
+
         // Credentials are valid, store them for the account and move the
         // device over to it
         const previousUsername = device.getSetting('username');
@@ -191,7 +160,7 @@ class GoDriver extends Homey.Driver {
         await device.setSettings({ username });
         await device.reAuthenticate();
         (this.homey.app as ZaptecApp).releaseAccount(previousUsername);
-        
+
         return true;
       } catch (_error) {
         this.log("Failed to authenticate with Zaptec's API. Error:", _error);

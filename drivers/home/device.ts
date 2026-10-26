@@ -34,7 +34,8 @@ export class HomeCharger extends ZaptecDevice {
       // account don't all hit the API rate limit at the same moment.
       cron.schedule(`${pollOffset},${pollOffset + 30} * * * * *`, () => this.pollValues()),
       cron.schedule('59 * * * * *', () => this.updateDebugLog()), //every minute
-      cron.schedule('0 0 7 * * *', () => { // 7AM every day
+      cron.schedule('0 0 7 * * *', () => {
+        // 7AM every day
         // Random delay between 0 and 120 seconds
         const jitter = Math.floor(Math.random() * 120000);
         setTimeout(() => {
@@ -66,18 +67,22 @@ export class HomeCharger extends ZaptecDevice {
     }
   }
 
-   /**
+  /**
    * Migrate energy settings from the old settings format to the new one.
    */
   private async migrateEnergy() {
     const energyConfig = this.getEnergy();
-      if (energyConfig?.cumulative !== true || energyConfig?.evCharger !== true || energyConfig?.meterPowerImportedCapability !== "meter_power.signed_meter_value") {
-        this.setEnergy({
-          evCharger: true,
-          meterPowerImportedCapability: "meter_power.signed_meter_value"
-        }).catch((e) => {
-          this.logToDebug(`Failed to migrate energy: ${e}`);
-        });
+    if (
+      energyConfig?.cumulative !== true
+      || energyConfig?.evCharger !== true
+      || energyConfig?.meterPowerImportedCapability !== 'meter_power.signed_meter_value'
+    ) {
+      this.setEnergy({
+        evCharger: true,
+        meterPowerImportedCapability: 'meter_power.signed_meter_value',
+      }).catch((e) => {
+        this.logToDebug(`Failed to migrate energy: ${e}`);
+      });
     }
   }
 
@@ -101,27 +106,27 @@ export class HomeCharger extends ZaptecDevice {
           if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger info: ${e}`, e);
         });
-      }
-      
-      if (this.getSetting('showVoltage')){
-        await this.addCapability('measure_voltage.phase1');
-        await this.addCapability('measure_voltage.phase2');
-        await this.addCapability('measure_voltage.phase3');
-      }else{
-        await this.removeCapability('measure_voltage.phase1');
-        await this.removeCapability('measure_voltage.phase2');
-        await this.removeCapability('measure_voltage.phase3');    
-      }
-      if (this.getSetting('showCurrent')){
-        await this.addCapability('measure_current.phase1');
-        await this.addCapability('measure_current.phase2');
-        await this.addCapability('measure_current.phase3');
-      }else{
-        await this.removeCapability('measure_current.phase1');
-        await this.removeCapability('measure_current.phase2');
-        await this.removeCapability('measure_current.phase3');    
-      }
     }
+
+    if (this.getSetting('showVoltage')) {
+      await this.addCapability('measure_voltage.phase1');
+      await this.addCapability('measure_voltage.phase2');
+      await this.addCapability('measure_voltage.phase3');
+    } else {
+      await this.removeCapability('measure_voltage.phase1');
+      await this.removeCapability('measure_voltage.phase2');
+      await this.removeCapability('measure_voltage.phase3');
+    }
+    if (this.getSetting('showCurrent')) {
+      await this.addCapability('measure_current.phase1');
+      await this.addCapability('measure_current.phase2');
+      await this.addCapability('measure_current.phase3');
+    } else {
+      await this.removeCapability('measure_current.phase1');
+      await this.removeCapability('measure_current.phase2');
+      await this.removeCapability('measure_current.phase3');
+    }
+  }
 
   /**
    * Verify all expected capabilities and apply changes to capabilities.
@@ -137,18 +142,28 @@ export class HomeCharger extends ZaptecDevice {
     }
 
     // Log version information for debugging
-    this.logToDebug(`Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`);
-    
+    this.logToDebug(
+      `Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`,
+    );
+
     // Only run migrations if needed
     if (lastInstalledVersion < '1.7.2') {
-      const remove: string[] = ['measure_temperature','meter_power.this_year',
-        'meter_power.current_session','meter_power','meter_power.last_session','measure_power','alarm_generic.car_connected','measure_humidity',
-        'measure_temperature.sensor1','measure_temperature.sensor2',
-        'measure_signal_strength','communication_method'
+      const remove: string[] = [
+        'measure_temperature',
+        'meter_power.this_year',
+        'meter_power.current_session',
+        'meter_power',
+        'meter_power.last_session',
+        'measure_power',
+        'alarm_generic.car_connected',
+        'measure_humidity',
+        'measure_temperature.sensor1',
+        'measure_temperature.sensor2',
+        'measure_signal_strength',
+        'communication_method',
       ];
 
-      for (const cap of remove)
-        if (this.hasCapability(cap)) await this.removeCapability(cap);
+      for (const cap of remove) if (this.hasCapability(cap)) await this.removeCapability(cap);
 
       const add = [
         'measure_power',
@@ -159,20 +174,19 @@ export class HomeCharger extends ZaptecDevice {
         'measure_humidity',
         'measure_temperature.sensor1',
         'measure_temperature.sensor2',
-        'cable_permanent_lock', 
+        'cable_permanent_lock',
         'meter_power.signed_meter_value',
         'measure_signal_strength',
-        'communication_method'
+        'communication_method',
       ];
 
-      for (const cap of add)
-        if (!this.hasCapability(cap)) await this.addCapability(cap);
+      for (const cap of add) if (!this.hasCapability(cap)) await this.addCapability(cap);
     }
-    
+
     // Store current version as "last installed" after migration
     await this.setSettings({
-      lastInstalledVersion: this.homey.app.manifest.version
-    }).catch(e => {
+      lastInstalledVersion: this.homey.app.manifest.version,
+    }).catch((e) => {
       this.logToDebug(`Error storing version information: ${e}`);
     });
   }
@@ -192,12 +206,9 @@ export class HomeCharger extends ZaptecDevice {
     this.registerCapabilityListener('charging_mode', async (value) => {
       await this.setInstallationChargingMode(Number(value) as Feature);
     });
-    this.registerCapabilityListener(
-      'available_installation_current',
-      async (value) => {
-        await this.setInstallationAvailableCurrent(value, value, value);
-      },
-    );
+    this.registerCapabilityListener('available_installation_current', async (value) => {
+      await this.setInstallationAvailableCurrent(value, value, value);
+    });
   }
 
   /**
@@ -249,15 +260,14 @@ export class HomeCharger extends ZaptecDevice {
         await this.removeCapability('measure_current.phase3');
       }
     }
-    
+
     // Handle changes to authentication requirement
     if (changes.changedKeys.some((k) => k === 'requireAuthentication')) {
       try {
         const requireAuthValue = changes.newSettings.requireAuthentication;
-        const requireAuth = typeof requireAuthValue === 'string' 
-          ? requireAuthValue === 'true' 
-          : Boolean(requireAuthValue);
-        
+        const requireAuth =
+          typeof requireAuthValue === 'string' ? requireAuthValue === 'true' : Boolean(requireAuthValue);
+
         await this.setInstallationAuthenticationRequirement(requireAuth);
         this.logToDebug(`Updated authentication requirement to ${requireAuth} via settings`);
       } catch (e) {
@@ -316,9 +326,7 @@ export class HomeCharger extends ZaptecDevice {
             try {
               await this.handleState(state);
             } catch (e) {
-              this.logToDebug(
-                `Failed to handle charger state ${state.StateId}: ${e}`,
-              );
+              this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`);
             }
           }
           this.log(`Polled charger state (${states.length} values)`);
@@ -354,16 +362,14 @@ export class HomeCharger extends ZaptecDevice {
         if (installation.Id === this.getData().installationId)
           if (!this.hasCapability('available_installation_current'))
             this.addCapability('available_installation_current');
-          if (!this.hasCapability('charging_mode'))
-            this.addCapability('charging_mode');
+        if (!this.hasCapability('charging_mode')) this.addCapability('charging_mode');
       })
       .catch((e) => {
         if (this.handleAuthFailure(e)) return;
         this.logToDebug(`Failed to poll installation: ${e}`, e);
-        if (this.hasCapability('available_installation_current')) 
+        if (this.hasCapability('available_installation_current'))
           this.removeCapability('available_installation_current');
-        if (this.hasCapability('charging_mode'))
-          this.removeCapability('charging_mode');
+        if (this.hasCapability('charging_mode')) this.removeCapability('charging_mode');
       });
 
     this.api
@@ -374,8 +380,7 @@ export class HomeCharger extends ZaptecDevice {
         PageSize: 50,
       })
       .then((charges) => {
-        const yearlyEnergy =
-          charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+        const yearlyEnergy = charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power', yearlyEnergy);
       })
       .then(() => {
@@ -397,9 +402,7 @@ export class HomeCharger extends ZaptecDevice {
       // Operation mode is the basis of most of our state!
       case SmartDeviceObservation.ChargerOperationMode:
         if (state.ValueAsString !== undefined && state.ValueAsString !== null) {
-          await this.updateChargeMode(
-            Number(state.ValueAsString) as ChargerOperationMode,
-          );
+          await this.updateChargeMode(Number(state.ValueAsString) as ChargerOperationMode);
         }
         break;
 
@@ -411,91 +414,58 @@ export class HomeCharger extends ZaptecDevice {
 
       case SmartDeviceObservation.CurrentPhase1:
         if (this.hasCapability('measure_current.phase1')) {
-          await this.setCapabilityValue(
-            'measure_current.phase1',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_current.phase1', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.CurrentPhase2:
         if (this.hasCapability('measure_current.phase2')) {
-          await this.setCapabilityValue(
-            'measure_current.phase2',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_current.phase2', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.CurrentPhase3:
         if (this.hasCapability('measure_current.phase3')) {
-          await this.setCapabilityValue(
-            'measure_current.phase3',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_current.phase3', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.VoltagePhase1:
         if (this.hasCapability('measure_voltage.phase1')) {
-          await this.setCapabilityValue(
-            'measure_voltage.phase1',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_voltage.phase1', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.VoltagePhase2:
         if (this.hasCapability('measure_voltage.phase2')) {
-          await this.setCapabilityValue(
-            'measure_voltage.phase2',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_voltage.phase2', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.VoltagePhase3:
         if (this.hasCapability('measure_voltage.phase3')) {
-          await this.setCapabilityValue(
-            'measure_voltage.phase3',
-            Number(state.ValueAsString),
-          );
+          await this.setCapabilityValue('measure_voltage.phase3', Number(state.ValueAsString));
         }
         break;
 
       case SmartDeviceObservation.TotalChargePower:
-        await this.setCapabilityValue(
-          'measure_power',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('measure_power', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.TotalChargePowerSession:
-        await this.setCapabilityValue(
-          'meter_power.current_session',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('meter_power.current_session', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.TemperatureInternal5:
-        await this.setCapabilityValue(
-          'measure_temperature.sensor1',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('measure_temperature.sensor1', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.TemperatureInternal6:
-        await this.setCapabilityValue(
-          'measure_temperature.sensor2',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('measure_temperature.sensor2', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.Humidity:
-        await this.setCapabilityValue(
-          'measure_humidity',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('measure_humidity', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.SmartComputerSoftwareApplicationVersion:
@@ -511,10 +481,7 @@ export class HomeCharger extends ZaptecDevice {
         break;
 
       case SmartDeviceObservation.PermanentCableLock:
-        await this.setCapabilityValue(
-          'cable_permanent_lock',
-          Number(state.ValueAsString) === 1,
-        );
+        await this.setCapabilityValue('cable_permanent_lock', Number(state.ValueAsString) === 1);
         break;
 
       case SmartDeviceObservation.SignedMeterValue:
@@ -522,19 +489,13 @@ export class HomeCharger extends ZaptecDevice {
         break;
 
       case SmartDeviceObservation.CommunicationSignalStrength:
-        await this.setCapabilityValue(
-          'measure_signal_strength',
-          Number(state.ValueAsString),
-        );
+        await this.setCapabilityValue('measure_signal_strength', Number(state.ValueAsString));
         break;
 
       case SmartDeviceObservation.CommunicationMode:
-        await this.setCapabilityValue(
-          'communication_method',
-          state.ValueAsString
-        );
+        await this.setCapabilityValue('communication_method', state.ValueAsString);
         break;
-        
+
       default:
         break;
     }
@@ -545,61 +506,50 @@ export class HomeCharger extends ZaptecDevice {
    */
   protected async pollInstallationValues() {
     if (!this.hasCapability('available_installation_current')) return;
-    const info = await this.api
-      .getInstallation(this.getData().installationId)
-      .catch((e) => {     
-        if (this.handleAuthFailure(e)) throw e;
-        if (e instanceof ApiError && e.message.indexOf('Unknown object') >= 0 && this.hasCapability('available_installation_current'))
-          this.removeCapability('available_installation_current');
-        this.logToDebug(
-          `Failed to get installation info when updating available current: ${e}`,
-          e,
-        );
-        throw e;
-      });
+    const info = await this.api.getInstallation(this.getData().installationId).catch((e) => {
+      if (this.handleAuthFailure(e)) throw e;
+      if (
+        e instanceof ApiError
+        && e.message.indexOf('Unknown object') >= 0
+        && this.hasCapability('available_installation_current')
+      )
+        this.removeCapability('available_installation_current');
+      this.logToDebug(`Failed to get installation info when updating available current: ${e}`, e);
+      throw e;
+    });
 
     // Update the authentication requirement setting to match the actual value from the installation
     if (info.IsRequiredAuthentication !== undefined) {
       const currentSetting = this.getSetting('requireAuthentication');
       if (currentSetting !== info.IsRequiredAuthentication) {
-        this.setSettings({ requireAuthentication: info.IsRequiredAuthentication })
-          .catch(e => this.logToDebug(`Failed to update requireAuthentication setting: ${e}`));
+        this.setSettings({ requireAuthentication: info.IsRequiredAuthentication }).catch((e) =>
+          this.logToDebug(`Failed to update requireAuthentication setting: ${e}`),
+        );
       }
     }
-    
+
     // Update the charging mode capability to match the actual value from the installation
     if (info.EnabledFeatures !== undefined) {
-      if (info.EnabledFeatures === Feature.None)
-        await this.setCapabilityValue('charging_mode', '0');
+      if (info.EnabledFeatures === Feature.None) await this.setCapabilityValue('charging_mode', '0');
       else if (info.EnabledFeatures === Feature.PowerManagement_Schedule)
         await this.setCapabilityValue('charging_mode', '16');
       else if (info.EnabledFeatures === Feature.PowerManagement_Apm)
         await this.setCapabilityValue('charging_mode', '4');
     }
 
-    const isNumber = (n: number | undefined | null): n is number =>
-      n !== undefined && n !== null;
+    const isNumber = (n: number | undefined | null): n is number => n !== undefined && n !== null;
     const maxCurrent = isNumber(info.MaxCurrent) ? info.MaxCurrent : 40;
 
     // TODO: Should we bring back phase individual installation current?
     const availableCurrent = Math.min(
-      isNumber(info.AvailableCurrentPhase1)
-        ? info.AvailableCurrentPhase1
-        : maxCurrent,
-      isNumber(info.AvailableCurrentPhase2)
-        ? info.AvailableCurrentPhase2
-        : maxCurrent,
-      isNumber(info.AvailableCurrentPhase3)
-        ? info.AvailableCurrentPhase3
-        : maxCurrent,
+      isNumber(info.AvailableCurrentPhase1) ? info.AvailableCurrentPhase1 : maxCurrent,
+      isNumber(info.AvailableCurrentPhase2) ? info.AvailableCurrentPhase2 : maxCurrent,
+      isNumber(info.AvailableCurrentPhase3) ? info.AvailableCurrentPhase3 : maxCurrent,
     );
 
     // TODO: Is this interesting as a capability or should we expose it as a
     // global token only?
-    await this.setCapabilityValue(
-      'available_installation_current',
-      availableCurrent,
-    );
+    await this.setCapabilityValue('available_installation_current', availableCurrent);
   }
 
   /**
@@ -612,30 +562,21 @@ export class HomeCharger extends ZaptecDevice {
       newMode === ChargerOperationMode.Connected_Charging,
     );
 
-    const previousMode = chargerOperationModeFromStr(
-      this.getCapabilityValue('charge_mode'),
-    );
+    const previousMode = chargerOperationModeFromStr(this.getCapabilityValue('charge_mode'));
 
     const previouslyDisconnected =
-      previousMode === ChargerOperationMode.Unknown ||
-      previousMode === ChargerOperationMode.Disconnected;
+      previousMode === ChargerOperationMode.Unknown || previousMode === ChargerOperationMode.Disconnected;
 
     const newModeConnected =
-      newMode === ChargerOperationMode.Connected_Requesting ||
-      newMode === ChargerOperationMode.Connected_Charging ||
-      newMode === ChargerOperationMode.Connected_Finishing;
+      newMode === ChargerOperationMode.Connected_Requesting
+      || newMode === ChargerOperationMode.Connected_Charging
+      || newMode === ChargerOperationMode.Connected_Finishing;
 
-    await this.setCapabilityValue(
-      'charge_mode',
-      chargerOperationModeStr(newMode),
-    );
-    await this.setCapabilityValue(
-      'alarm_generic.car_connected',
-      newModeConnected,
-    );
+    await this.setCapabilityValue('charge_mode', chargerOperationModeStr(newMode));
+    await this.setCapabilityValue('alarm_generic.car_connected', newModeConnected);
 
     // If no mode change occurs, don't run the triggers
-    if (previousMode === newMode) return;    
+    if (previousMode === newMode) return;
 
     this.logToDebug(`Charger operation mode update: ${previousMode} to ${newMode}`);
 
@@ -648,30 +589,22 @@ export class HomeCharger extends ZaptecDevice {
 
     // Entering charging state => Charging starts
     if (newMode === ChargerOperationMode.Connected_Charging) {
-      await this.homey.flow
-        .getDeviceTriggerCard('home_charging_starts')
-        .trigger(this, tokens);
+      await this.homey.flow.getDeviceTriggerCard('home_charging_starts').trigger(this, tokens);
     }
 
     // Changed from charging state => Charging stops
     if (previousMode === ChargerOperationMode.Connected_Charging) {
-      await this.homey.flow
-        .getDeviceTriggerCard('home_charging_stops')
-        .trigger(this, tokens);
+      await this.homey.flow.getDeviceTriggerCard('home_charging_stops').trigger(this, tokens);
     }
 
     // Was disconnected and now becomes connected => Car connected
     if (newModeConnected && previouslyDisconnected) {
-      await this.homey.flow
-        .getDeviceTriggerCard('home_car_connects')
-        .trigger(this, tokens);
+      await this.homey.flow.getDeviceTriggerCard('home_car_connects').trigger(this, tokens);
     }
 
     // Was connected and now becomes disconnected => Car disconnected
     if (!newModeConnected && !previouslyDisconnected) {
-      await this.homey.flow
-        .getDeviceTriggerCard('home_car_disconnects')
-        .trigger(this, tokens);
+      await this.homey.flow.getDeviceTriggerCard('home_car_disconnects').trigger(this, tokens);
     }
   }
 
@@ -693,10 +626,7 @@ export class HomeCharger extends ZaptecDevice {
         SignedSession: string;
       } = JSON.parse(data);
 
-      await this.setCapabilityValue(
-        'meter_power.last_session',
-        Number(session.Energy),
-      );
+      await this.setCapabilityValue('meter_power.last_session', Number(session.Energy));
     } catch (e) {
       this.logToDebug(`onLastSession fail: ${e}`);
     }
@@ -721,19 +651,20 @@ export class HomeCharger extends ZaptecDevice {
           ST?: string;
         }[];
       } = JSON.parse(jsonStr);
-      
+
       const rv = ocmf.RD?.[0]?.RV;
       if (rv !== undefined) {
         const num = Number(rv);
         const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
         this.setSettings({
           signedMeterValue: formatted,
-        }).then(() => {
-          this.setCapabilityValue('meter_power.signed_meter_value', num);
         })
-        .catch((e) => {
-          this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
-        });
+          .then(() => {
+            this.setCapabilityValue('meter_power.signed_meter_value', num);
+          })
+          .catch((e) => {
+            this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
+          });
       }
     } catch (e) {
       this.logToDebug(`onSignedMeterValue fail: ${e}`);
@@ -747,11 +678,7 @@ export class HomeCharger extends ZaptecDevice {
    * @param {number} current2 - Phase 2 current in Ampere
    * @param {number} current3 - Phase 3 current in Ampere
    */
-  public async setInstallationAvailableCurrent(
-    current1: number,
-    current2: number,
-    current3: number,
-  ) {
+  public async setInstallationAvailableCurrent(current1: number, current2: number, current3: number) {
     if (!this.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
@@ -784,7 +711,7 @@ export class HomeCharger extends ZaptecDevice {
 
   /**
    * Sets whether the installation requires authentication for charging
-   * 
+   *
    * @param {boolean} requireAuthentication - true if authentication is required, false otherwise
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
@@ -805,7 +732,7 @@ export class HomeCharger extends ZaptecDevice {
 
   /**
    * Sends a command to reboot the charger
-   * 
+   *
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async rebootCharger() {
@@ -820,26 +747,26 @@ export class HomeCharger extends ZaptecDevice {
 
   /**
    * Sets the charging mode for the installation
-   * 
+   *
    * @param {Feature} chargingMode - the charging mode to set
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
-    public async setInstallationChargingMode(chargingMode: Feature) {
-      if (!this.hasCapability('available_installation_current'))
-        throw new Error(this.homey.__('errors.missing_installation_access'));
-      return this.api
-        .updateInstallationProperties(this.getData().installationId, {
-          EnabledFeatures: chargingMode,
-        })
-        .then(() => {
-          this.logToDebug(`Updated charging mode to ${chargingMode}`);
-          return true;
-        })
-        .catch((e) => {
-          this.logToDebug(`setInstallationChargingMode failure: ${e}`);
-          throw new Error(`${this.homey.__('errors.failed_charging_mode_update')}: ${e}`);
-        });
-    }
+  public async setInstallationChargingMode(chargingMode: Feature) {
+    if (!this.hasCapability('available_installation_current'))
+      throw new Error(this.homey.__('errors.missing_installation_access'));
+    return this.api
+      .updateInstallationProperties(this.getData().installationId, {
+        EnabledFeatures: chargingMode,
+      })
+      .then(() => {
+        this.logToDebug(`Updated charging mode to ${chargingMode}`);
+        return true;
+      })
+      .catch((e) => {
+        this.logToDebug(`setInstallationChargingMode failure: ${e}`);
+        throw new Error(`${this.homey.__('errors.failed_charging_mode_update')}: ${e}`);
+      });
+  }
 }
 
 module.exports = HomeCharger;

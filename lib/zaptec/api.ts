@@ -60,11 +60,7 @@ export interface Response<T> {
  * @param {[string]} data - Any data to write as the body of the request.
  * @returns {Response<string>} A response object with the response body and HTTP message object.
  */
-async function request(
-  path: string,
-  options: http.RequestOptions,
-  data?: string,
-): Promise<Response<string>> {
+async function request(path: string, options: http.RequestOptions, data?: string): Promise<Response<string>> {
   return new Promise<Response<string>>((resolve, reject) => {
     const req = https.request(
       `https://api.zaptec.com${path}`,
@@ -162,24 +158,31 @@ async function requestWithBackoff(
       lastError = new Error(message, { cause: error });
 
       // If it's a network error, database availability error, or TLS error, retry
-      if (code && [
-          'ECONNREFUSED', 
-          'ETIMEDOUT', 
-          'ECONNRESET', 
-          'ENETUNREACH',
-          'EPROTO',           // TLS protocol error
-          'ECONNABORTED',     // Connection was aborted
-          'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
-          'DEPTH_ZERO_SELF_SIGNED_CERT',  // Self-signed certificate
-          'EAI_AGAIN',        // DNS lookup timed out
-          'ENOTFOUND'         // DNS lookup failed, seen briefly on Homey
-        ].includes(code) ||
-        message?.includes('availability replica config/state change') ||
-        message?.includes('before secure TLS connection was established') ||
-        message?.includes('Request timed out')) {
-        
+      if (
+        (code
+          && [
+            'ECONNREFUSED',
+            'ETIMEDOUT',
+            'ECONNRESET',
+            'ENETUNREACH',
+            'EPROTO', // TLS protocol error
+            'ECONNABORTED', // Connection was aborted
+            'ERR_SSL_WRONG_VERSION_NUMBER', // TLS version mismatch
+            'DEPTH_ZERO_SELF_SIGNED_CERT', // Self-signed certificate
+            'EAI_AGAIN', // DNS lookup timed out
+            'ENOTFOUND', // DNS lookup failed, seen briefly on Homey
+          ].includes(code))
+        || message?.includes('availability replica config/state change')
+        || message?.includes('before secure TLS connection was established')
+        || message?.includes('Request timed out')
+      ) {
         // For timeouts, connection resets, and DNS errors, use longer backoff
-        if (message?.includes('Request timed out') || code === 'ECONNRESET' || code === 'EAI_AGAIN' || code === 'ENOTFOUND') {
+        if (
+          message?.includes('Request timed out')
+          || code === 'ECONNRESET'
+          || code === 'EAI_AGAIN'
+          || code === 'ENOTFOUND'
+        ) {
           backoff = Math.max(backoff, 2000); // Minimum 2 sekunder for disse feilene
         }
 
@@ -187,7 +190,7 @@ async function requestWithBackoff(
         retries += 1;
         continue;
       }
-      
+
       // If it's not a retryable error, throw immediately
       throw new Error(`Network error while communicating with charger: ${message}`, {
         cause: error,
@@ -221,26 +224,15 @@ export class ZaptecApi {
     this.homey = homey;
   }
 
-  protected async get<T>(
-    path: string,
-    options: http.RequestOptions,
-  ): Promise<Response<T>> {
+  protected async get<T>(path: string, options: http.RequestOptions): Promise<Response<T>> {
     return this.send<T>('GET', path, undefined, options);
   }
 
-  protected async post<T>(
-    path: string,
-    data?: string | object,
-    options?: http.RequestOptions,
-  ): Promise<Response<T>> {
+  protected async post<T>(path: string, data?: string | object, options?: http.RequestOptions): Promise<Response<T>> {
     return this.send<T>('POST', path, data, options);
   }
 
-  protected async put<T>(
-    path: string,
-    data?: string | object,
-    options?: http.RequestOptions,
-  ): Promise<Response<T>> {
+  protected async put<T>(path: string, data?: string | object, options?: http.RequestOptions): Promise<Response<T>> {
     return this.send<T>('PUT', path, data, options);
   }
 
@@ -248,11 +240,7 @@ export class ZaptecApi {
    * Store the credentials used to log in when a request needs a token.
    */
   public setCredentials(username: string, password: string) {
-    if (
-      this.credentials?.username === username &&
-      this.credentials?.password === password
-    )
-      return;
+    if (this.credentials?.username === username && this.credentials?.password === password) return;
     this.credentials = { username, password };
     this.bearerToken = undefined;
     this.rejectedLogin = undefined;
@@ -272,8 +260,7 @@ export class ZaptecApi {
       throw new MissingCredentialsError();
     }
     if (this.rejectedLogin !== undefined) throw this.rejectedLogin;
-    if (this.bearerToken !== undefined && Date.now() < this.tokenExpiresAt - 60_000)
-      return;
+    if (this.bearerToken !== undefined && Date.now() < this.tokenExpiresAt - 60_000) return;
 
     const { username, password } = this.credentials;
     this.login ??= this.authenticate(username, password)
@@ -303,11 +290,7 @@ export class ZaptecApi {
     if (!isLogin) await this.ensureToken();
 
     let response = await this.sendOnce(method, path, data, options);
-    if (
-      response.response.statusCode === 401 &&
-      !isLogin &&
-      this.credentials !== undefined
-    ) {
+    if (response.response.statusCode === 401 && !isLogin && this.credentials !== undefined) {
       this.bearerToken = undefined;
       await this.ensureToken();
       response = await this.sendOnce(method, path, data, options);
@@ -315,16 +298,14 @@ export class ZaptecApi {
 
     let responseData;
     try {
-      responseData =
-        response.data.length > 0 ? JSON.parse(response.data) : response.data;
+      responseData = response.data.length > 0 ? JSON.parse(response.data) : response.data;
     } catch (e) {
       throw new Error(`Failed to parse response: ${response.data}`);
     }
 
     if (response.response.statusCode === 500) {
       // Service returned error, decode the error code
-      if ('Code' in responseData)
-        throw new ApiError(responseData.Code, responseData.Details);
+      if ('Code' in responseData) throw new ApiError(responseData.Code, responseData.Details);
     }
 
     return {
@@ -345,13 +326,9 @@ export class ZaptecApi {
     };
 
     if (method !== 'GET')
-      headers['Content-Type'] =
-        typeof data === 'object'
-          ? 'application/json'
-          : 'application/x-www-form-urlencoded';
+      headers['Content-Type'] = typeof data === 'object' ? 'application/json' : 'application/x-www-form-urlencoded';
 
-    if (this.bearerToken !== undefined)
-      headers.Authorization = `Bearer ${this.bearerToken}`;
+    if (this.bearerToken !== undefined) headers.Authorization = `Bearer ${this.bearerToken}`;
 
     return requestWithBackoff(
       this.limiterFor(path),
@@ -373,10 +350,7 @@ export class ZaptecApi {
     return apiLimiterFor(this.account);
   }
 
-  public async authenticate(
-    username: string,
-    password: string,
-  ): Promise<number> {
+  public async authenticate(username: string, password: string): Promise<number> {
     const { data, response } = await this.post<TokenResponse>(
       '/oauth/token',
       querystring.stringify({
@@ -389,9 +363,7 @@ export class ZaptecApi {
 
     if (response.statusCode === 200) {
       if (data.token_type.toLowerCase() !== 'bearer') {
-        throw new Error(
-          `Invalid token type received ${data.token_type}, expected Bearer`,
-        );
+        throw new Error(`Invalid token type received ${data.token_type}, expected Bearer`);
       }
 
       this.bearerToken = data.access_token;
@@ -403,9 +375,7 @@ export class ZaptecApi {
     if (response.statusCode === 400) {
       throw new InvalidCredentialsError();
     } else {
-      throw new Error(
-        `Unexpected authentication response of ${response.statusCode}`,
-      );
+      throw new Error(`Unexpected authentication response of ${response.statusCode}`);
     }
   }
 
@@ -444,16 +414,12 @@ export class ZaptecApi {
       );
 
       if (response.statusCode !== 200) {
-        throw new Error(
-          `Unexpected response statusCode ${response.statusCode}`,
-        );
+        throw new Error(`Unexpected response statusCode ${response.statusCode}`);
       }
 
       const pageData = data.Data ?? [];
       if (!Array.isArray(pageData)) {
-        throw new Error(
-          `Expected Data to be an array, but got ${typeof pageData}`,
-        );
+        throw new Error(`Expected Data to be an array, but got ${typeof pageData}`);
       }
 
       allData = allData.concat(pageData);
@@ -489,70 +455,47 @@ export class ZaptecApi {
       {},
     );
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
   public async getCharger(id: string) {
-    const { data, response } = await this.get<ZapChargerViewModel>(
-      `/api/chargers/${id}`,
-      {},
-    );
+    const { data, response } = await this.get<ZapChargerViewModel>(`/api/chargers/${id}`, {});
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
-  public async updateCharger(
-    id: string,
-    properties: ChargerExternalUpdateModel,
-  ): Promise<void> {
-    const { response } = await this.post(
-      `/api/chargers/${id}/update`,
-      properties,
-    );
+  public async updateCharger(id: string, properties: ChargerExternalUpdateModel): Promise<void> {
+    const { response } = await this.post(`/api/chargers/${id}/update`, properties);
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   public async getChargerState(id: string) {
-    const { data, response } = await this.get<ChargerStateModel[]>(
-      `/api/chargers/${id}/state`,
-      {},
-    );
+    const { data, response } = await this.get<ChargerStateModel[]>(`/api/chargers/${id}/state`, {});
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
   public async sendCommand(chargerId: string, command: Command): Promise<void> {
-    const { response } = await this.post(
-      `/api/chargers/${chargerId}/sendCommand/${command}`,
-    );
+    const { response } = await this.post(`/api/chargers/${chargerId}/sendCommand/${command}`);
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   public async lockCharger(chargerId: string, lock: boolean): Promise<void> {
-    const { data, response } = await this.post<TokenResponse>(
-      `/api/chargers/${chargerId}/localSettings`,
-      {
-        Cable: {
-          PermanentLock: lock,
-        },
+    const { data, response } = await this.post<TokenResponse>(`/api/chargers/${chargerId}/localSettings`, {
+      Cable: {
+        PermanentLock: lock,
       },
-    );
+    });
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   // -------------------------- //
@@ -577,20 +520,15 @@ export class ZaptecApi {
       {},
     );
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
   public async getInstallation(id: string) {
-    const { data, response } = await this.get<InstallationModel>(
-      `/api/installation/${id}`,
-      {},
-    );
+    const { data, response } = await this.get<InstallationModel>(`/api/installation/${id}`, {});
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
@@ -601,89 +539,66 @@ export class ZaptecApi {
       {},
     );
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
-  public async updateInstallation(
-    id: string,
-    properties: InstallationExternalUpdateModel,
-  ): Promise<void> {
-    const { response } = await this.post(
-      `/api/installation/${id}/update`,
-      properties,
-    );
+  public async updateInstallation(id: string, properties: InstallationExternalUpdateModel): Promise<void> {
+    const { response } = await this.post(`/api/installation/${id}/update`, properties);
 
     if (response.statusCode === 403) {
       throw new Error(this.homey.__('errors.missing_auth_permissions'));
     }
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   /**
    * Update installation properties
-   * 
+   *
    * @param id Installation ID
    * @param properties Properties to update
    * @returns Promise resolving when successful
    */
   public async updateInstallationProperties(
     id: string,
-    properties: { EnabledFeatures?: Feature, IsRequiredAuthentication?: boolean },
+    properties: { EnabledFeatures?: Feature; IsRequiredAuthentication?: boolean },
   ): Promise<void> {
-    const { response } = await this.put(
-      `/api/installation/${id}`,
-      properties,
-    );
+    const { response } = await this.put(`/api/installation/${id}`, properties);
 
     if (response.statusCode === 403) {
       throw new Error(this.homey.__('errors.missing_auth_permissions'));
     }
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   /**
    * Update authentication requirements for an installation
-   * 
+   *
    * @param id Installation ID
    * @param requireAuthentication Whether authentication is required
    * @returns Promise resolving when successful
    */
-  public async updateInstallationAuthenticationRequirement(
-    id: string,
-    requireAuthentication: boolean,
-  ): Promise<void> {
+  public async updateInstallationAuthenticationRequirement(id: string, requireAuthentication: boolean): Promise<void> {
     // This endpoint requires a direct PUT to the installation with both Id and IsRequiredAuthentication
-    const { response } = await this.put(
-      `/api/installation/${id}`,
-      {
-        Id: id,
-        IsRequiredAuthentication: requireAuthentication
-      }
-    );
+    const { response } = await this.put(`/api/installation/${id}`, {
+      Id: id,
+      IsRequiredAuthentication: requireAuthentication,
+    });
 
     if (response.statusCode === 403) {
       throw new Error(this.homey.__('errors.missing_auth_permissions'));
     }
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   public async getInstallationHierarchy(id: string) {
-    const { data, response } = await this.get<InstallationTreeModel>(
-      `/api/installation/${id}/hierarchy`,
-      {},
-    );
+    const { data, response } = await this.get<InstallationTreeModel>(`/api/installation/${id}/hierarchy`, {});
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
@@ -693,28 +608,17 @@ export class ZaptecApi {
   // -------------------------- //
 
   public async getSession(id: string) {
-    const { data, response } = await this.get<SessionEndData>(
-      `/api/session/${id}`,
-      {},
-    );
+    const { data, response } = await this.get<SessionEndData>(`/api/session/${id}`, {});
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
 
-  public async updateSessionPriority(
-    id: string,
-    properties: ChargePriority,
-  ): Promise<void> {
-    const { response } = await this.post(
-      `/api/session/${id}/priority`,
-      properties,
-    );
+  public async updateSessionPriority(id: string, properties: ChargePriority): Promise<void> {
+    const { response } = await this.post(`/api/session/${id}/priority`, properties);
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
   }
 
   // -------------------------- //
@@ -727,8 +631,7 @@ export class ZaptecApi {
       {},
     );
 
-    if (response.statusCode !== 200)
-      throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 
     return data;
   }
@@ -767,11 +670,8 @@ export function describeChargers(chargers: PagedData<ChargerListModel>) {
   const list = chargers.Data ?? [];
   const lines = list.map(
     (c) =>
-      `- prefix=${c.DeviceId?.substring(0, 3) ?? 'none'} DeviceType=${c.DeviceType} ` +
-      `Active=${c.Active} Roles=${c.CurrentUserRoles}`,
+      `- prefix=${c.DeviceId?.substring(0, 3) ?? 'none'} DeviceType=${c.DeviceType} `
+      + `Active=${c.Active} Roles=${c.CurrentUserRoles}`,
   );
-  return [
-    `Got ${list.length} chargers over ${chargers.Pages} pages`,
-    ...lines,
-  ].join('\n');
+  return [`Got ${list.length} chargers over ${chargers.Pages} pages`, ...lines].join('\n');
 }

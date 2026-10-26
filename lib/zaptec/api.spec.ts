@@ -5,7 +5,7 @@ import assert from 'assert';
 
 // Mock Homey object for tests
 const mockHomey = {
-  __: (key: string) => key
+  __: (key: string) => key,
 };
 
 const api = new ZaptecApi('1.0.0', mockHomey);
@@ -65,10 +65,10 @@ describe('Zaptec API Client', () => {
       code: 'ENOTFOUND',
       message: 'getaddrinfo ENOTFOUND api.zaptec.com',
     });
-    assert.deepStrictEqual(
-      networkErrorDetails(Object.assign(new Error('reset'), { code: 'ECONNRESET' })),
-      { code: 'ECONNRESET', message: 'reset' },
-    );
+    assert.deepStrictEqual(networkErrorDetails(Object.assign(new Error('reset'), { code: 'ECONNRESET' })), {
+      code: 'ECONNRESET',
+      message: 'reset',
+    });
   });
 
   it('should fail without contacting Zaptec when no credentials are stored', async () => {

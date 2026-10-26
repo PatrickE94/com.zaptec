@@ -55,11 +55,7 @@ export class ZaptecApp extends App {
   releaseAccount(username: string, ignoreChargerId?: string) {
     const inUse = Object.values(this.homey.drivers.getDrivers())
       .flatMap((driver) => driver.getDevices())
-      .some(
-        (device) =>
-          device.getData().id !== ignoreChargerId &&
-          device.getSetting('username') === username,
-      );
+      .some((device) => device.getData().id !== ignoreChargerId && device.getSetting('username') === username);
     if (inUse) {
       this.log('Keeping account, a device still uses it');
       return;

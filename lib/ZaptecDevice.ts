@@ -1,10 +1,6 @@
 import Homey from 'homey';
 import { Command, ZaptecApi } from './zaptec';
-import {
-  isCharging,
-  isCommandRejected,
-  whyResumeWasRejected,
-} from './zaptec/charging';
+import { isCharging, isCommandRejected, whyResumeWasRejected } from './zaptec/charging';
 import { InvalidCredentialsError, MissingCredentialsError } from './zaptec/error';
 import type { ZaptecApp } from '../app';
 
@@ -41,9 +37,7 @@ export abstract class ZaptecDevice extends Homey.Device {
         : `Zaptec rejected the credentials, repair the device to update them: ${e.message}`,
     );
     const reason = missing ? 'errors.missing_credentials' : 'errors.authentication_failed';
-    this.setUnavailable(this.homey.__(reason)).catch((err) =>
-      this.error('Failed to mark device unavailable', err),
-    );
+    this.setUnavailable(this.homey.__(reason)).catch((err) => this.error('Failed to mark device unavailable', err));
     return true;
   }
 
@@ -67,8 +61,7 @@ export abstract class ZaptecDevice extends Homey.Device {
       }
 
       this.logToDebug(`startCharging failure: ${e}`, e);
-      if (reason === undefined)
-        throw new Error(`Failed to turn on the charger: ${e}`);
+      if (reason === undefined) throw new Error(`Failed to turn on the charger: ${e}`);
       throw new Error(
         `${this.homey.__('errors.failed_resume_charging')}: ${this.homey.__(`errors.resume_${reason}`)}`,
         { cause: e },
@@ -107,10 +100,7 @@ export abstract class ZaptecDevice extends Homey.Device {
     try {
       return await this.api.getChargerState(this.getData().id);
     } catch (stateError) {
-      this.logToDebug(
-        `Failed to read state after rejected command: ${stateError}`,
-        stateError,
-      );
+      this.logToDebug(`Failed to read state after rejected command: ${stateError}`, stateError);
       return undefined;
     }
   }
@@ -137,9 +127,7 @@ export abstract class ZaptecDevice extends Homey.Device {
    * periodically.
    */
   protected updateDebugLog() {
-    this.setSettings({ log: this.debugLog.join('\n') }).catch((e) =>
-      this.error('Failed to update debug log', e),
-    );
+    this.setSettings({ log: this.debugLog.join('\n') }).catch((e) => this.error('Failed to update debug log', e));
   }
 
   /**
