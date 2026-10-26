@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { ZaptecApi } from './api';
+import { ZaptecApi, networkErrorDetails } from './api';
 import { InvalidCredentialsError } from './error';
 import assert from 'assert';
 
@@ -40,6 +40,35 @@ describe('Zaptec API Client', () => {
 
     const charger = await api.getCharger('abc');
     assert.strictEqual(charger.Id, 'abc');
+  });
+
+  it('should retry when DNS lookup fails', async function () {
+    this.timeout(5000);
+
+    nock('https://api.zaptec.com')
+      .get('/api/chargers/abc')
+      .replyWithError(Object.assign(new Error('getaddrinfo ENOTFOUND api.zaptec.com'), { code: 'ENOTFOUND' }))
+      .get('/api/chargers/abc')
+      .reply(200, { Id: 'abc' });
+
+    const charger = await api.getCharger('abc');
+    assert.strictEqual(charger.Id, 'abc');
+  });
+
+  it('should read errors serialized by the Homey runtime', () => {
+    // nock can't emit a non-Error, so the unwrapping is tested on its own
+    const serialized = {
+      $__type: 'Error',
+      data: { message: 'getaddrinfo ENOTFOUND api.zaptec.com', code: 'ENOTFOUND' },
+    };
+    assert.deepStrictEqual(networkErrorDetails(serialized), {
+      code: 'ENOTFOUND',
+      message: 'getaddrinfo ENOTFOUND api.zaptec.com',
+    });
+    assert.deepStrictEqual(
+      networkErrorDetails(Object.assign(new Error('reset'), { code: 'ECONNRESET' })),
+      { code: 'ECONNRESET', message: 'reset' },
+    );
   });
 
   describe('with credentials', () => {
