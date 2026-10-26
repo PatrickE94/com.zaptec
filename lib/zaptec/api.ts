@@ -495,52 +495,6 @@ export class ZaptecApi {
     return data;
   }
 
-  /**
-   * Get chargers filtered by model name based on deviceId prefix
-   * @param modelName Model name to filter by (e.g., 'Pro', 'Go')
-   * @param params Standard charger search parameters
-   * @returns Filtered list of chargers matching the model
-   */
-  public async getChargersByModel(
-    modelName: string,
-    params: {
-      Roles?: UserRole;
-      DeviceType?: DeviceType;
-      InstallationType?: InstallationType;
-      NameFilter?: string;
-      ReturnIdNameOnly?: boolean;
-      SortProperty?: string;
-      SortDescending?: boolean;
-      PageSize?: number;
-      PageIndex?: number;
-      IncludeDisabled?: boolean;
-      Exclude?: string[];
-    } = {}
-  ) {
-    // Define the mapping of model names to deviceId prefixes
-    const prefixes = MODEL_PREFIX_MAP[modelName];
-    if (!prefixes) {
-      throw new Error(`Unknown model name: ${modelName}`);
-    }
-
-    // Get all chargers first
-    const result = await this.getChargers(params);
-    
-    // Filter by deviceId prefix
-    if (result.Data) {
-      result.Data = result.Data.filter(charger => {
-        if (!charger.DeviceId || charger.DeviceId.length < 3) return false;
-        const prefix = charger.DeviceId.substring(0, 3);
-        return prefixes.includes(prefix);
-      });
-      
-      // Note: We don't update the Pages count as it's not part of our concern here
-      // and this is client-side filtering only
-    }
-
-    return result;
-  }
-
   public async getCharger(id: string) {
     const { data, response } = await this.get<ZapChargerViewModel>(
       `/api/chargers/${id}`,
@@ -786,4 +740,38 @@ export class ZaptecApi {
   private getUserAgent(): string {
     return `AthomHomey/com.zaptec/${this.version} (https://github.com/PatrickE94/com.zaptec)`;
   }
+}
+
+/**
+ * Keep the chargers of a model, recognised by their deviceId prefix
+ * @param chargers Chargers to filter
+ * @param modelName Model name to filter by (e.g., 'Pro', 'Go')
+ */
+export function chargersOfModel(chargers: ChargerListModel[], modelName: string) {
+  const prefixes = MODEL_PREFIX_MAP[modelName];
+  if (!prefixes) {
+    throw new Error(`Unknown model name: ${modelName}`);
+  }
+
+  return chargers.filter((charger) => {
+    if (!charger.DeviceId || charger.DeviceId.length < 3) return false;
+    return prefixes.includes(charger.DeviceId.substring(0, 3));
+  });
+}
+
+/**
+ * Describe a charger list for the log, to see why pairing finds no devices.
+ * Only the deviceId prefix is included, it is what models are matched on.
+ */
+export function describeChargers(chargers: PagedData<ChargerListModel>) {
+  const list = chargers.Data ?? [];
+  const lines = list.map(
+    (c) =>
+      `- prefix=${c.DeviceId?.substring(0, 3) ?? 'none'} DeviceType=${c.DeviceType} ` +
+      `Active=${c.Active} Roles=${c.CurrentUserRoles}`,
+  );
+  return [
+    `Got ${list.length} chargers over ${chargers.Pages} pages`,
+    ...lines,
+  ].join('\n');
 }

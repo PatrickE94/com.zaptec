@@ -3,6 +3,7 @@ import {
   ChargerOperationMode,
   chargerOperationModeStr,
   ZaptecApi,
+  describeChargers,
 } from '../../lib/zaptec';
 import type { HomeCharger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
@@ -149,6 +150,7 @@ class HomeDriver extends Homey.Driver {
         DeviceType: 3 /* home */,
         //InstallationType: 0 /* pro */,
       });
+      this.log(describeChargers(chargers));
 
       return (
         chargers.Data?.map((charger) => ({
