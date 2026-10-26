@@ -1,6 +1,6 @@
 import nock from 'nock';
 import { ZaptecApi, networkErrorDetails } from './api';
-import { InvalidCredentialsError } from './error';
+import { InvalidCredentialsError, MissingCredentialsError } from './error';
 import assert from 'assert';
 
 // Mock Homey object for tests
@@ -69,6 +69,12 @@ describe('Zaptec API Client', () => {
       networkErrorDetails(Object.assign(new Error('reset'), { code: 'ECONNRESET' })),
       { code: 'ECONNRESET', message: 'reset' },
     );
+  });
+
+  it('should fail without contacting Zaptec when no credentials are stored', async () => {
+    const emptyApi = new ZaptecApi('1.0.0', mockHomey);
+    // Any request reaching nock would fail with "No match" instead
+    await assert.rejects(emptyApi.getCharger('abc'), MissingCredentialsError);
   });
 
   describe('with credentials', () => {

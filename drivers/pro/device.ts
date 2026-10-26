@@ -8,7 +8,11 @@ import {
   chargerOperationModeStr,
   chargerOperationModeFromStr,
 } from '../../lib/zaptec';
-import { ApiError, InvalidCredentialsError } from '../../lib/zaptec/error';
+import {
+  ApiError,
+  InvalidCredentialsError,
+  MissingCredentialsError,
+} from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 import { Feature } from '../../lib/zaptec/enums';
 import type { ZaptecApp } from '../../app';
@@ -16,7 +20,7 @@ import type { ZaptecApp } from '../../app';
 export class ProCharger extends Homey.Device {
   private debugLog: string[] = [];
   private cronTasks: cron.ScheduledTask[] = [];
-  private api?: ZaptecApi;
+  private api!: ZaptecApi;
   private credentialsRejected = false;
 
   /**
@@ -90,8 +94,6 @@ export class ProCharger extends Homey.Device {
    * If the deviceid setting is empty, poll the charger info and store the device id.
    */
   private async migrateSettings() {
-    if (this.api === undefined) return;
-
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
@@ -197,7 +199,6 @@ export class ProCharger extends Homey.Device {
       else await this.lockCable(false);
     });
     this.registerCapabilityListener('charging_mode', async (value) => {
-      if (this.api === undefined) return;
       await this.setInstallationChargingMode(Number(value) as Feature);
     });
     this.registerCapabilityListener(
@@ -300,8 +301,6 @@ export class ProCharger extends Homey.Device {
    */
   protected pollValues() {
     try {
-      if (this.api === undefined) return;
-      
       // Poll charger info
       this.api
         .getCharger(this.getData().id)
@@ -362,7 +361,6 @@ export class ProCharger extends Homey.Device {
    * E.g. yearly charging consumption.
    */
   protected pollSlowValues() {
-    if (this.api === undefined) return;
     const year = new Date().getFullYear();
 
     this.api
@@ -561,7 +559,7 @@ export class ProCharger extends Homey.Device {
    * Poll the available current for the installation.
    */
   protected async pollInstallationValues() {
-    if (this.api === undefined || !this.hasCapability('available_installation_current')) return;
+    if (!this.hasCapability('available_installation_current')) return;
     const info = await this.api
       .getInstallation(this.getData().installationId)
       .catch((e) => {     
@@ -770,7 +768,6 @@ export class ProCharger extends Homey.Device {
     current2: number,
     current3: number,
   ) {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     if (!this.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
@@ -798,7 +795,6 @@ export class ProCharger extends Homey.Device {
    * @param {number} current - Switch current in Ampere
    */
   public async setInstallationThreeToOnePhaseSwitchCurrent(current: number) {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     if (!this.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
@@ -821,7 +817,6 @@ export class ProCharger extends Homey.Device {
    * Send command to start/resume a charging session.
    */
   public async startCharging() {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     // TODO: Send different command if it has old firmware
     return this.api
       .sendCommand(this.getData().id, Command.ResumeCharging)
@@ -836,7 +831,6 @@ export class ProCharger extends Homey.Device {
    * Send command to pause/stop an ongoing charging session.
    */
   public async stopCharging() {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     // TODO: Send different command if it has old firmware
     return this.api
       .sendCommand(this.getData().id, Command.StopChargingFinal)
@@ -848,7 +842,6 @@ export class ProCharger extends Homey.Device {
   }
 
   public async lockCable(lockCable: boolean) {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     return this.api
       .lockCharger(this.getData().id, lockCable)
       .then(() => true)
@@ -865,7 +858,6 @@ export class ProCharger extends Homey.Device {
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async setInstallationAuthenticationRequirement(requireAuthentication: boolean) {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     if (!this.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
@@ -886,7 +878,6 @@ export class ProCharger extends Homey.Device {
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async rebootCharger() {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     return this.api
       .sendCommand(this.getData().id, Command.RestartCharger)
       .then(() => true)
@@ -903,7 +894,6 @@ export class ProCharger extends Homey.Device {
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async setInstallationChargingMode(chargingMode: Feature) {
-    if (this.api === undefined) throw new Error(`API not initialized!`);
     if (!this.hasCapability('available_installation_current'))
       throw new Error(this.homey.__('errors.missing_installation_access'));
     return this.api
@@ -921,20 +911,27 @@ export class ProCharger extends Homey.Device {
   }
 
   /**
-   * Handle a request failing because the credentials were rejected.
+   * Handle a request failing because the credentials were rejected or are
+   * missing.
    *
    * The device becomes unavailable and the failure is logged once, until new
    * credentials are set through repair.
    *
-   * @returns {boolean} - true if the error was a rejected login
+   * @returns {boolean} - true if the error was a rejected or missing login
    */
   protected handleAuthFailure(e: unknown): boolean {
-    if (!(e instanceof InvalidCredentialsError)) return false;
+    const missing = e instanceof MissingCredentialsError;
+    if (!missing && !(e instanceof InvalidCredentialsError)) return false;
     if (this.credentialsRejected) return true;
 
     this.credentialsRejected = true;
-    this.logToDebug(`Zaptec rejected the credentials, repair the device to update them: ${e.message}`);
-    this.setUnavailable(this.homey.__('errors.authentication_failed')).catch((err) =>
+    this.logToDebug(
+      missing
+        ? `No credentials stored for this account, repair the device to log in`
+        : `Zaptec rejected the credentials, repair the device to update them: ${e.message}`,
+    );
+    const reason = missing ? 'errors.missing_credentials' : 'errors.authentication_failed';
+    this.setUnavailable(this.homey.__(reason)).catch((err) =>
       this.error('Failed to mark device unavailable', err),
     );
     return true;
@@ -982,13 +979,7 @@ export class ProCharger extends Homey.Device {
       await this.setSettings({ password: '' });
     }
 
-    try {
-      this.api = app.getApi(username);
-    } catch (e) {
-      this.api = undefined;
-      this.logToDebug(`${e}, repair the device to log in again`);
-      await this.setUnavailable(this.homey.__('errors.authentication_failed'));
-    }
+    this.api = app.getApi(username);
   }
 
   /**

@@ -101,3 +101,12 @@ export class InvalidCredentialsError extends Error {
     super('Username or password is invalid');
   }
 }
+
+/**
+ * No credentials are stored for the account, so we can't log in.
+ */
+export class MissingCredentialsError extends Error {
+  constructor() {
+    super('No credentials stored for this account');
+  }
+}
