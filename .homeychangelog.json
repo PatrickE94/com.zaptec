@@ -106,5 +106,8 @@
   },
   "1.10.4": {
     "en": "Add missing scope parameter to authentication"
+  },
+  "1.11.0": {
+    "en": "Homey Energy can now start, stop and steer charging. Charging now uses Homey's standard EV charger capabilities, so flows using the old Charging button or Charge mode need to be updated."
   }
 }
