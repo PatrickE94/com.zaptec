@@ -96,94 +96,72 @@ export class HomeCharger extends ZaptecDevice {
         });
     }
 
-    if (this.getSetting('showVoltage')) {
-      await this.addCapability('measure_voltage.phase1');
-      await this.addCapability('measure_voltage.phase2');
-      await this.addCapability('measure_voltage.phase3');
-    } else {
-      await this.removeCapability('measure_voltage.phase1');
-      await this.removeCapability('measure_voltage.phase2');
-      await this.removeCapability('measure_voltage.phase3');
-    }
+    await this.showCapabilities(
+      ['measure_voltage.phase1', 'measure_voltage.phase2', 'measure_voltage.phase3'],
+      Boolean(this.getSetting('showVoltage')),
+    );
 
-    if (this.getSetting('showCurrent')) {
-      await this.addCapability('measure_current.phase1');
-      await this.addCapability('measure_current.phase2');
-      await this.addCapability('measure_current.phase3');
-    } else {
-      await this.removeCapability('measure_current.phase1');
-      await this.removeCapability('measure_current.phase2');
-      await this.removeCapability('measure_current.phase3');
-    }
+    await this.showCapabilities(
+      ['measure_current.phase1', 'measure_current.phase2', 'measure_current.phase3'],
+      Boolean(this.getSetting('showCurrent')),
+    );
   }
 
   /**
-   * Verify all expected capabilities and apply changes to capabilities.
+   * Replace the capabilities 1.7.2 renamed and put them back in order, for
+   * devices paired before then.
    *
-   * This avoids having to re-add the device when modifying capabilities.
+   * Only devices that still have a capability 1.7.2 dropped need it.
+   * Removing a capability also removes its flow cards, so this mustn't run on
+   * devices that are already migrated.
    */
   private async migrateCapabilities() {
-    //get lastInstalledVersion from settings
-    const lastInstalledVersion = this.getSetting('lastInstalledVersion') || '0.0.0';
+    const remove = [
+      'measure_temperature',
+      'meter_power.this_year',
+      'meter_power.current_session',
+      'meter_power',
+      'meter_power.last_session',
+      'measure_power',
+      'alarm_generic.car_connected',
+      'measure_humidity',
+      'measure_temperature.sensor1',
+      'measure_temperature.sensor2',
+      'measure_signal_strength',
+      'communication_method',
+    ];
 
-    if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
-      await this.addCapability('charging_mode');
-    }
+    const add = [
+      'measure_power',
+      'meter_power.current_session',
+      'meter_power',
+      'meter_power.last_session',
+      'alarm_generic.car_connected',
+      'measure_humidity',
+      'measure_temperature.sensor1',
+      'measure_temperature.sensor2',
+      'cable_permanent_lock',
+      'meter_power.signed_meter_value',
+      'measure_signal_strength',
+      'communication_method',
+    ];
 
-    // Log version information for debugging
-    this.logToDebug(
-      `Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`,
-    );
+    const dropped = remove.filter((cap) => !add.includes(cap));
+    if (!dropped.some((cap) => this.hasCapability(cap))) return;
 
-    // Only run migrations if needed
-    if (lastInstalledVersion < '1.7.2') {
-      const remove: string[] = [
-        'measure_temperature',
-        'meter_power.this_year',
-        'meter_power.current_session',
-        'meter_power',
-        'meter_power.last_session',
-        'measure_power',
-        'alarm_generic.car_connected',
-        'measure_humidity',
-        'measure_temperature.sensor1',
-        'measure_temperature.sensor2',
-        'measure_signal_strength',
-        'communication_method',
-      ];
+    this.logToDebug('Migrating capabilities from before 1.7.2');
 
-      for (const cap of remove) {
-        if (this.hasCapability(cap)) {
-          await this.removeCapability(cap);
-        }
-      }
-
-      const add = [
-        'measure_power',
-        'meter_power.current_session',
-        'meter_power',
-        'meter_power.last_session',
-        'alarm_generic.car_connected',
-        'measure_humidity',
-        'measure_temperature.sensor1',
-        'measure_temperature.sensor2',
-        'cable_permanent_lock',
-        'meter_power.signed_meter_value',
-        'measure_signal_strength',
-        'communication_method',
-      ];
-
-      for (const cap of add) {
-        if (!this.hasCapability(cap)) {
-          await this.addCapability(cap);
-        }
+    for (const cap of remove) {
+      if (this.hasCapability(cap)) {
+        await this.removeCapability(cap);
       }
     }
 
-    // Store current version as "last installed" after migration
-    await this.setSettings({ lastInstalledVersion: this.homey.app.manifest.version }).catch((e) =>
-      this.logToDebug(`Error storing version information: ${e}`),
-    );
+    for (const cap of add) {
+      if (!this.hasCapability(cap)) {
+        await this.addCapability(cap);
+      }
+    }
   }
 
   /**
@@ -231,28 +209,18 @@ export class HomeCharger extends ZaptecDevice {
   }): Promise<string | void> {
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
-      if (changes.newSettings.showVoltage) {
-        await this.addCapability('measure_voltage.phase1');
-        await this.addCapability('measure_voltage.phase2');
-        await this.addCapability('measure_voltage.phase3');
-      } else {
-        await this.removeCapability('measure_voltage.phase1');
-        await this.removeCapability('measure_voltage.phase2');
-        await this.removeCapability('measure_voltage.phase3');
-      }
+      await this.showCapabilities(
+        ['measure_voltage.phase1', 'measure_voltage.phase2', 'measure_voltage.phase3'],
+        Boolean(changes.newSettings.showVoltage),
+      );
     }
 
     // Allow user to select if they want phase current as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showCurrent')) {
-      if (changes.newSettings.showCurrent) {
-        await this.addCapability('measure_current.phase1');
-        await this.addCapability('measure_current.phase2');
-        await this.addCapability('measure_current.phase3');
-      } else {
-        await this.removeCapability('measure_current.phase1');
-        await this.removeCapability('measure_current.phase2');
-        await this.removeCapability('measure_current.phase3');
-      }
+      await this.showCapabilities(
+        ['measure_current.phase1', 'measure_current.phase2', 'measure_current.phase3'],
+        Boolean(changes.newSettings.showCurrent),
+      );
     }
 
     // Handle changes to authentication requirement

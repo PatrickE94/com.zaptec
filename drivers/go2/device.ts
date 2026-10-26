@@ -19,8 +19,6 @@ export class Go2Charger extends ZaptecDevice {
     await this.useAccount();
 
     await this.migrateEnergy();
-    await this.migrateCapabilities();
-
     await this.migrateChargingCapabilities();
     this.registerCapabilityListeners();
 
@@ -44,24 +42,6 @@ export class Go2Charger extends ZaptecDevice {
     this.log('Go2Charger has been initialized');
   }
 
-  /**
-   * Verify all expected capabilities and apply changes to capabilities.
-   *
-   * This avoids having to re-add the device when modifying capabilities.
-   */
-  private async migrateCapabilities() {
-    //get lastInstalledVersion from settings
-    const lastInstalledVersion = this.getSetting('lastInstalledVersion') || '0.0.0';
-
-    // Log version information for debugging
-    this.logToDebug(
-      `Migration: Current version is ${this.homey.app.manifest.version}, previously installed version was ${lastInstalledVersion}`,
-    );
-
-    if (lastInstalledVersion <= '1.8.1' && !this.hasCapability('charging_mode')) {
-      await this.addCapability('charging_mode');
-    }
-  }
   /**
    * Migrate energy settings from the old settings format to the new one.
    */
@@ -126,28 +106,18 @@ export class Go2Charger extends ZaptecDevice {
   }): Promise<string | void> {
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
-      if (changes.newSettings.showVoltage) {
-        await this.addCapability('measure_voltage.phase1');
-        await this.addCapability('measure_voltage.phase2');
-        await this.addCapability('measure_voltage.phase3');
-      } else {
-        await this.removeCapability('measure_voltage.phase1');
-        await this.removeCapability('measure_voltage.phase2');
-        await this.removeCapability('measure_voltage.phase3');
-      }
+      await this.showCapabilities(
+        ['measure_voltage.phase1', 'measure_voltage.phase2', 'measure_voltage.phase3'],
+        Boolean(changes.newSettings.showVoltage),
+      );
     }
 
     // Allow user to select if they want phase current as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showCurrent')) {
-      if (changes.newSettings.showCurrent) {
-        await this.addCapability('measure_current.phase1');
-        await this.addCapability('measure_current.phase2');
-        await this.addCapability('measure_current.phase3');
-      } else {
-        await this.removeCapability('measure_current.phase1');
-        await this.removeCapability('measure_current.phase2');
-        await this.removeCapability('measure_current.phase3');
-      }
+      await this.showCapabilities(
+        ['measure_current.phase1', 'measure_current.phase2', 'measure_current.phase3'],
+        Boolean(changes.newSettings.showCurrent),
+      );
     }
 
     // Handle changes to authentication requirement
