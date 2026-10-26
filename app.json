@@ -18,6 +18,24 @@
   "category": [
     "energy"
   ],
+  "tags": {
+    "en": [
+      "ev charger",
+      "electric car",
+      "charging",
+      "load balancing",
+      "Zaptec Go",
+      "Zaptec Pro"
+    ],
+    "no": [
+      "elbillader",
+      "elbil",
+      "lading",
+      "lastbalansering",
+      "Zaptec Go",
+      "Zaptec Pro"
+    ]
+  },
   "permissions": [],
   "images": {
     "small": "/assets/images/app_small.jpg",

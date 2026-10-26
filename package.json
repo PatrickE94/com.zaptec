@@ -5,11 +5,11 @@
   "main": "app.ts",
   "author": "Patrick Wadström",
   "bugs": {
-    "url": "https://github.com/patricke94/dev.wdstrm.zaptec/issues"
+    "url": "https://github.com/PatrickE94/com.zaptec/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/patricke94/dev.wdstrm.zaptec.git"
+    "url": "git+https://github.com/PatrickE94/com.zaptec.git"
   },
   "keywords": [
     "zaptec",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@material/web": "^2.5.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
-    "@tsconfig/node16": "^16.1.9",
+    "@tsconfig/node22": "^22.0.6",
     "@types/homey": "npm:homey-apps-sdk-v3-types@^0.3.12",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.20.4",
