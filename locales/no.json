@@ -8,7 +8,7 @@
     "failed_charging_mode_update": "Kunne ikke oppdatere installasjonens lademodus",
     "username_missing": "Vennligst skriv inn en e-post adresse",
     "password_missing": "Vennligst skriv inn ditt passord",
-    "authentication_failed": "Kunne ikke autentisere med nye innloggingsopplysninger",
+    "authentication_failed": "Zaptec avviste innloggingen, reparer enheten for å logge inn på nytt",
     "missing_credentials": "Ingen Zaptec-innlogging er lagret for denne laderen, reparer enheten for å logge inn på nytt"
   },
   "widget": {

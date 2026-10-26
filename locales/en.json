@@ -8,7 +8,7 @@
     "failed_charging_mode_update": "Failed to update installation charging mode",
     "username_missing": "Please enter an e-mail address",
     "password_missing": "Please enter your password",
-    "authentication_failed": "Failed to authenticate with new credentials",
+    "authentication_failed": "Zaptec rejected the login, repair the device to log in again",
     "missing_credentials": "No Zaptec login is stored for this charger, repair the device to log in again"
   },
   "widget": {
