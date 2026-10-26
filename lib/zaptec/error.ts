@@ -88,7 +88,10 @@ function errToStr(code: number) {
 }
 
 export class ApiError extends Error {
-  constructor(code: number, details?: string | null) {
+  constructor(
+    public readonly code: number,
+    details?: string | null,
+  ) {
     super(`${errToStr(code)} ${details ? ': ' : ''} ${details}`);
   }
 }

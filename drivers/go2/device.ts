@@ -693,34 +693,6 @@ export class Go2Charger extends ZaptecDevice {
       });
   }
 
-  /**
-   * Send command to start/resume a charging session.
-   */
-  public async startCharging() {
-    // TODO: Send different command if it has old firmware
-    return this.api
-      .sendCommand(this.getData().id, Command.ResumeCharging)
-      .then(() => true)
-      .catch((e) => {
-        this.logToDebug(`startCharging failure: ${e}`);
-        throw new Error(`Failed to turn on the charger: ${e}`);
-      });
-  }
-
-  /**
-   * Send command to pause/stop an ongoing charging session.
-   */
-  public async stopCharging() {
-    // TODO: Send different command if it has old firmware
-    return this.api
-      .sendCommand(this.getData().id, Command.StopChargingFinal)
-      .then(() => true)
-      .catch((e) => {
-        this.logToDebug(`stopCharging failure: ${e}`);
-        throw new Error(`Failed to turn off the charger: ${e}`);
-      });
-  }
-
   public async lockCable(lockCable: boolean) {
     return this.api
       .lockCharger(this.getData().id, lockCable)

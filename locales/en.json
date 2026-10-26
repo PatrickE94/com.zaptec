@@ -9,7 +9,13 @@
     "username_missing": "Please enter an e-mail address",
     "password_missing": "Please enter your password",
     "authentication_failed": "Zaptec rejected the login, repair the device to log in again",
-    "missing_credentials": "No Zaptec login is stored for this charger, repair the device to log in again"
+    "missing_credentials": "No Zaptec login is stored for this charger, repair the device to log in again",
+    "failed_resume_charging": "Could not start charging",
+    "resume_disconnected": "no car is connected",
+    "resume_awaiting_authorization": "the charger is waiting for authorization. Zaptec can only resume a paused session, a new session starts once the car is authorized",
+    "resume_schedule_active": "a Zaptec charging schedule is active, and Zaptec does not resume charging while it is",
+    "resume_car_stopped": "the car stopped charging by itself, for example because it is full",
+    "resume_not_paused": "Zaptec can only resume a session that was paused"
   },
   "widget": {
     "cable": "Cable",

@@ -9,7 +9,13 @@
     "username_missing": "Vennligst skriv inn en e-post adresse",
     "password_missing": "Vennligst skriv inn ditt passord",
     "authentication_failed": "Zaptec avviste innloggingen, reparer enheten for å logge inn på nytt",
-    "missing_credentials": "Ingen Zaptec-innlogging er lagret for denne laderen, reparer enheten for å logge inn på nytt"
+    "missing_credentials": "Ingen Zaptec-innlogging er lagret for denne laderen, reparer enheten for å logge inn på nytt",
+    "failed_resume_charging": "Kunne ikke starte lading",
+    "resume_disconnected": "ingen bil er tilkoblet",
+    "resume_awaiting_authorization": "laderen venter på autorisering. Zaptec kan bare gjenoppta en pauset økt, en ny økt starter når bilen er autorisert",
+    "resume_schedule_active": "en ladeplan i Zaptec er aktiv, og Zaptec gjenopptar ikke lading mens den er det",
+    "resume_car_stopped": "bilen sluttet å lade av seg selv, for eksempel fordi den er full",
+    "resume_not_paused": "Zaptec kan bare gjenoppta en økt som er pauset"
   },
   "widget": {
     "cable": "Kabel",
