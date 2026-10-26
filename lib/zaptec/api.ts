@@ -176,7 +176,9 @@ async function requestWithBackoff(
       }
       
       // If it's not a retryable error, throw immediately
-      throw new Error(`Network error while communicating with charger: ${error.message}`);
+      throw new Error(`Network error while communicating with charger: ${error.message}`, {
+        cause: error,
+      });
     }
   }
 

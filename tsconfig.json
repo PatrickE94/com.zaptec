@@ -3,6 +3,7 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "lib": ["es2021", "es2022.error"],
     "outDir": ".homeybuild/",
     "sourceMap": true,
     "removeComments": true,

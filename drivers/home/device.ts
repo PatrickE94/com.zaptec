@@ -105,7 +105,7 @@ export class HomeCharger extends Homey.Device {
         })
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
-          this.logToDebug(`Failed to poll charger info: ${e}`);
+          this.logToDebug(`Failed to poll charger info: ${e}`, e);
         });
       }
       
@@ -311,7 +311,7 @@ export class HomeCharger extends Homey.Device {
         })
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
-          this.logToDebug(`Failed to poll charger info: ${e}`);
+          this.logToDebug(`Failed to poll charger info: ${e}`, e);
           this.setUnavailable(
             this.homey.__('errors.authentication_failed')
           );
@@ -335,7 +335,7 @@ export class HomeCharger extends Homey.Device {
         })
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
-          this.logToDebug(`Failed to poll charger state: ${e}`);
+          this.logToDebug(`Failed to poll charger state: ${e}`, e);
         });
 
       // Poll the available current for the installation.
@@ -343,7 +343,7 @@ export class HomeCharger extends Homey.Device {
       // It's more likely to be changed by us?
       this.pollInstallationValues().catch((e) => {
         if (this.handleAuthFailure(e)) return;
-        this.logToDebug(`Failed to poll available current: ${e}`);
+        this.logToDebug(`Failed to poll available current: ${e}`, e);
       });
     } catch (error) {
       this.logToDebug(`Unexpected error in pollValues: ${error}`);
@@ -374,7 +374,7 @@ export class HomeCharger extends Homey.Device {
       })
       .catch((e) => {
         if (this.handleAuthFailure(e)) return;
-        this.logToDebug(`Failed to poll installation: ${e}`);
+        this.logToDebug(`Failed to poll installation: ${e}`, e);
         if (this.hasCapability('available_installation_current')) 
           this.removeCapability('available_installation_current');
         if (this.hasCapability('charging_mode'))
@@ -398,7 +398,7 @@ export class HomeCharger extends Homey.Device {
       })
       .catch((e) => {
         if (this.handleAuthFailure(e)) return;
-        this.logToDebug(`Failed to poll charge history: ${e}`);
+        this.logToDebug(`Failed to poll charge history: ${e}`, e);
       });
   }
 
@@ -568,6 +568,7 @@ export class HomeCharger extends Homey.Device {
           this.removeCapability('available_installation_current');
         this.logToDebug(
           `Failed to get installation info when updating available current: ${e}`,
+          e,
         );
         throw e;
       });
@@ -914,11 +915,14 @@ export class HomeCharger extends Homey.Device {
    * Push a logline onto the debug log visible to user
    *
    * @param {string} line - Line to log
+   * @param {unknown} error - Error to print in full to the app log
    */
-  protected logToDebug(line: string) {
+  protected logToDebug(line: string, error?: unknown) {
     this.debugLog.push(`[${new Date().toJSON()}] ${line}`);
     if (this.debugLog.length > 50) this.debugLog.shift();
-    this.log(line);
+    // The debug log stays one line, the app log gets the stack and cause
+    if (error === undefined) this.log(line);
+    else this.log(line, error);
   }
 
   /**
