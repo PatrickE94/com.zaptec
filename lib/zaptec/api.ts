@@ -238,12 +238,15 @@ export class ZaptecApi {
 
   /**
    * Store the credentials used to log in when a request needs a token.
+   *
+   * Setting them again lets a rejected login be tried once more, as Zaptec
+   * can reject a correct password for a while.
    */
   public setCredentials(username: string, password: string) {
+    this.rejectedLogin = undefined;
     if (this.credentials?.username === username && this.credentials?.password === password) return;
     this.credentials = { username, password };
     this.bearerToken = undefined;
-    this.rejectedLogin = undefined;
   }
 
   /**

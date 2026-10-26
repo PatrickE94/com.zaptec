@@ -151,5 +151,25 @@ describe('Zaptec API Client', () => {
       const charger = await lazyApi.getCharger('abc');
       assert.strictEqual(charger.Id, 'abc');
     });
+
+    it('should log in again when the rejected credentials are set again', async function () {
+      this.timeout(10000);
+      const lazyApi = new ZaptecApi('1.0.0', mockHomey);
+      lazyApi.setCredentials('locked', 'secret');
+
+      nock('https://api.zaptec.com').post('/oauth/token').once().reply(400, {});
+      await assert.rejects(lazyApi.getCharger('abc'), InvalidCredentialsError);
+
+      // Zaptec can reject a correct password for a while, repair re-enters it
+      nock('https://api.zaptec.com')
+        .post('/oauth/token')
+        .reply(200, tokenReply('UNLOCKED_TOKEN'))
+        .get('/api/chargers/abc')
+        .reply(200, { Id: 'abc' });
+
+      lazyApi.setCredentials('locked', 'secret');
+      const charger = await lazyApi.getCharger('abc');
+      assert.strictEqual(charger.Id, 'abc');
+    });
   });
 });
