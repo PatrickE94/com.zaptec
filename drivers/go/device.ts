@@ -38,9 +38,7 @@ export class GoCharger extends ZaptecDevice {
         // 7AM every day
         // Random delay between 0 and 120 seconds
         const jitter = Math.floor(Math.random() * 120000);
-        setTimeout(() => {
-          this.pollSlowValues();
-        }, jitter);
+        setTimeout(() => this.pollSlowValues(), jitter);
       }),
     );
 
@@ -72,6 +70,7 @@ export class GoCharger extends ZaptecDevice {
    */
   private async migrateEnergy() {
     const energyConfig = this.getEnergy();
+
     if (
       energyConfig?.cumulative !== true
       || energyConfig?.evCharger !== true
@@ -80,9 +79,7 @@ export class GoCharger extends ZaptecDevice {
       this.setEnergy({
         evCharger: true,
         meterPowerImportedCapability: 'meter_power.signed_meter_value',
-      }).catch((e) => {
-        this.logToDebug(`Failed to migrate energy: ${e}`);
-      });
+      }).catch((e) => this.logToDebug(`Failed to migrate energy: ${e}`));
     }
   }
 
@@ -94,14 +91,8 @@ export class GoCharger extends ZaptecDevice {
     if (this.getSetting('deviceid') === '') {
       await this.api
         .getCharger(this.getData().id)
-        .then((charger) =>
-          this.setSettings({
-            deviceid: charger.DeviceId,
-          }),
-        )
-        .then(() => {
-          this.logToDebug(`Got charger info - added device id`);
-        })
+        .then((charger) => this.setSettings({ deviceid: charger.DeviceId }))
+        .then(() => this.logToDebug(`Got charger info - added device id`))
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger info: ${e}`, e);
@@ -117,6 +108,7 @@ export class GoCharger extends ZaptecDevice {
       await this.removeCapability('measure_voltage.phase2');
       await this.removeCapability('measure_voltage.phase3');
     }
+
     if (this.getSetting('showCurrent')) {
       await this.addCapability('measure_current.phase1');
       await this.addCapability('measure_current.phase2');
@@ -165,7 +157,11 @@ export class GoCharger extends ZaptecDevice {
         'communication_method',
       ];
 
-      for (const cap of remove) if (this.hasCapability(cap)) await this.removeCapability(cap);
+      for (const cap of remove) {
+        if (this.hasCapability(cap)) {
+          await this.removeCapability(cap);
+        }
+      }
 
       const add = [
         'measure_power', // renamed from meter_power.this_year
@@ -183,15 +179,17 @@ export class GoCharger extends ZaptecDevice {
         'communication_method',
       ];
 
-      for (const cap of add) if (!this.hasCapability(cap)) await this.addCapability(cap);
+      for (const cap of add) {
+        if (!this.hasCapability(cap)) {
+          await this.addCapability(cap);
+        }
+      }
     }
 
     // Store current version as "last installed" after migration
-    await this.setSettings({
-      lastInstalledVersion: this.homey.app.manifest.version,
-    }).catch((e) => {
-      this.logToDebug(`Error storing version information: ${e}`);
-    });
+    await this.setSettings({ lastInstalledVersion: this.homey.app.manifest.version }).catch((e) =>
+      this.logToDebug(`Error storing version information: ${e}`),
+    );
   }
 
   /**
@@ -202,13 +200,16 @@ export class GoCharger extends ZaptecDevice {
       if (value) await this.startCharging();
       else await this.stopCharging();
     });
+
     this.registerCapabilityListener('cable_permanent_lock', async (value) => {
       if (value) await this.lockCable(true);
       else await this.lockCable(false);
     });
+
     this.registerCapabilityListener('charging_mode', async (value) => {
       await this.setInstallationChargingMode(Number(value) as Feature);
     });
+
     this.registerCapabilityListener('available_installation_current', async (value) => {
       await this.setInstallationAvailableCurrent(value, value, value);
     });
@@ -237,8 +238,6 @@ export class GoCharger extends ZaptecDevice {
     newSettings: { [key: string]: string };
     changedKeys: string[];
   }): Promise<string | void> {
-    //this.log('GoCharger settings where changed: ', JSON.stringify(changes));
-
     // Allow user to select if they want phase voltage as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showVoltage')) {
       if (changes.newSettings.showVoltage) {
@@ -251,6 +250,7 @@ export class GoCharger extends ZaptecDevice {
         await this.removeCapability('measure_voltage.phase3');
       }
     }
+
     // Allow user to select if they want phase current as a capability or not.
     if (changes.changedKeys.some((k) => k === 'showCurrent')) {
       if (changes.newSettings.showCurrent) {
@@ -266,17 +266,16 @@ export class GoCharger extends ZaptecDevice {
 
     // Handle changes to authentication requirement
     if (changes.changedKeys.some((k) => k === 'requireAuthentication')) {
-      try {
-        const requireAuthValue = changes.newSettings.requireAuthentication;
-        const requireAuth =
-          typeof requireAuthValue === 'string' ? requireAuthValue === 'true' : Boolean(requireAuthValue);
+      const requireAuthValue = changes.newSettings.requireAuthentication;
+      const requireAuth =
+        typeof requireAuthValue === 'string' ? requireAuthValue === 'true' : Boolean(requireAuthValue);
 
-        await this.setInstallationAuthenticationRequirement(requireAuth);
-        this.logToDebug(`Updated authentication requirement to ${requireAuth} via settings`);
-      } catch (e) {
-        this.logToDebug(`Failed to update authentication requirement via settings: ${e}`);
-        throw e;
-      }
+      await this.setInstallationAuthenticationRequirement(requireAuth)
+        .then(() => this.logToDebug(`Updated authentication requirement to ${requireAuth} via settings`))
+        .catch((e) => {
+          this.logToDebug(`Failed to update authentication requirement via settings: ${e}`);
+          throw e;
+        });
     }
   }
 
@@ -309,11 +308,7 @@ export class GoCharger extends ZaptecDevice {
       // Poll charger info
       this.api
         .getCharger(this.getData().id)
-        .then((charger) => {
-          this.setSettings({
-            requireAuthentication: charger.IsAuthorizationRequired,
-          });
-        })
+        .then((charger) => this.setSettings({ requireAuthentication: charger.IsAuthorizationRequired }))
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
           this.logToDebug(`Failed to poll charger info: ${e}`, e);
@@ -326,11 +321,9 @@ export class GoCharger extends ZaptecDevice {
           for (const state of states) {
             // Wrap each state handling individually so that a single bad state processing
             // doesn't drop all values. It makes the app more usable when it's failing.
-            try {
-              await this.handleState(state);
-            } catch (e) {
-              this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`);
-            }
+            await this.handleState(state).catch((e) =>
+              this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`),
+            );
           }
           this.log(`Polled charger state (${states.length} values)`);
         })
@@ -361,18 +354,33 @@ export class GoCharger extends ZaptecDevice {
 
     this.api
       .getInstallation(this.getData().installationId)
-      .then((installation) => {
-        if (installation.Id === this.getData().installationId)
-          if (!this.hasCapability('available_installation_current'))
-            this.addCapability('available_installation_current');
-        if (!this.hasCapability('charging_mode')) this.addCapability('charging_mode');
+      .then(async (installation) => {
+        if (installation.Id === this.getData().installationId) {
+          if (!this.hasCapability('available_installation_current')) {
+            await this.addCapability('available_installation_current');
+          }
+
+          if (!this.hasCapability('charging_mode')) {
+            await this.addCapability('charging_mode');
+          }
+        }
       })
-      .catch((e) => {
+      .catch(async (e) => {
         if (this.handleAuthFailure(e)) return;
+
         this.logToDebug(`Failed to poll installation: ${e}`, e);
-        if (this.hasCapability('available_installation_current'))
-          this.removeCapability('available_installation_current');
-        if (this.hasCapability('charging_mode')) this.removeCapability('charging_mode');
+
+        if (this.hasCapability('available_installation_current')) {
+          await this.removeCapability('available_installation_current').catch((err) =>
+            this.logToDebug(`Failed to remove available_installation_current: ${err}`),
+          );
+        }
+
+        if (this.hasCapability('charging_mode')) {
+          await this.removeCapability('charging_mode').catch((err) =>
+            this.logToDebug(`Failed to remove charging_mode: ${err}`),
+          );
+        }
       });
 
     this.api
@@ -386,11 +394,10 @@ export class GoCharger extends ZaptecDevice {
         const yearlyEnergy = charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
         return this.setCapabilityValue('meter_power', yearlyEnergy);
       })
-      .then(() => {
-        this.logToDebug(`Got yearly power history`);
-      })
+      .then(() => this.logToDebug(`Got yearly power history`))
       .catch((e) => {
         if (this.handleAuthFailure(e)) return;
+
         this.logToDebug(`Failed to poll charge history: ${e}`, e);
       });
   }
@@ -468,9 +475,7 @@ export class GoCharger extends ZaptecDevice {
         break;
 
       case ApolloDeviceObservation.SmartComputerSoftwareApplicationVersion:
-        await this.setSettings({
-          firmware: state.ValueAsString,
-        });
+        await this.setSettings({ firmware: state.ValueAsString });
         break;
 
       // The data for the previous session is JSON stringified into this state
@@ -480,7 +485,7 @@ export class GoCharger extends ZaptecDevice {
         break;
 
       case ApolloDeviceObservation.PermanentCableLock:
-        await this.setCapabilityValue('cable_permanent_lock', Number(state.ValueAsString) === 1);
+        await this.setCapabilityValue('cable_permanent_lock', state.ValueAsString === '1');
         break;
 
       case ApolloDeviceObservation.SignedMeterValue:
@@ -505,14 +510,18 @@ export class GoCharger extends ZaptecDevice {
    */
   protected async pollInstallationValues() {
     if (!this.hasCapability('available_installation_current')) return;
-    const info = await this.api.getInstallation(this.getData().installationId).catch((e) => {
+
+    const info = await this.api.getInstallation(this.getData().installationId).catch(async (e) => {
       if (this.handleAuthFailure(e)) throw e;
+
       if (
         e instanceof ApiError
         && e.message.indexOf('Unknown object') >= 0
         && this.hasCapability('available_installation_current')
-      )
-        this.removeCapability('available_installation_current');
+      ) {
+        await this.removeCapability('available_installation_current');
+      }
+
       this.logToDebug(`Failed to get installation info when updating available current: ${e}`, e);
       throw e;
     });
@@ -529,11 +538,13 @@ export class GoCharger extends ZaptecDevice {
 
     // Update the charging mode capability to match the actual value from the installation
     if (info.EnabledFeatures !== undefined) {
-      if (info.EnabledFeatures === Feature.None) await this.setCapabilityValue('charging_mode', '0');
-      else if (info.EnabledFeatures === Feature.PowerManagement_Schedule)
+      if (info.EnabledFeatures === Feature.None) {
+        await this.setCapabilityValue('charging_mode', '0');
+      } else if (info.EnabledFeatures === Feature.PowerManagement_Schedule) {
         await this.setCapabilityValue('charging_mode', '16');
-      else if (info.EnabledFeatures === Feature.PowerManagement_Apm)
+      } else if (info.EnabledFeatures === Feature.PowerManagement_Apm) {
         await this.setCapabilityValue('charging_mode', '4');
+      }
     }
 
     const isNumber = (n: number | undefined | null): n is number => n !== undefined && n !== null;
@@ -546,8 +557,6 @@ export class GoCharger extends ZaptecDevice {
       isNumber(info.AvailableCurrentPhase3) ? info.AvailableCurrentPhase3 : maxCurrent,
     );
 
-    // TODO: Is this interesting as a capability or should we expose it as a
-    // global token only?
     await this.setCapabilityValue('available_installation_current', availableCurrent);
   }
 
@@ -555,11 +564,9 @@ export class GoCharger extends ZaptecDevice {
    * Update the charge_mode capability and trigger relevant flow cards
    */
   protected async updateChargeMode(newMode: ChargerOperationMode) {
-    await this.setCapabilityValue(
-      'charging_button',
-      // We only consider us charging if we are connected AND charging.
-      newMode === ChargerOperationMode.Connected_Charging,
-    );
+    // We only consider us charging if we are connected AND charging.
+    const charging = newMode === ChargerOperationMode.Connected_Charging;
+    await this.setCapabilityValue('charging_button', charging);
 
     const previousMode = chargerOperationModeFromStr(this.getCapabilityValue('charge_mode'));
 
@@ -655,15 +662,9 @@ export class GoCharger extends ZaptecDevice {
       if (rv !== undefined) {
         const num = Number(rv);
         const formatted = Number.isInteger(num) ? num.toString() : num.toFixed(2);
-        this.setSettings({
-          signedMeterValue: formatted,
-        })
-          .then(() => {
-            this.setCapabilityValue('meter_power.signed_meter_value', num);
-          })
-          .catch((e) => {
-            this.logToDebug(`Failed to get OCMF-signed value: ${e}`);
-          });
+        this.setSettings({ signedMeterValue: formatted })
+          .then(() => this.setCapabilityValue('meter_power.signed_meter_value', num))
+          .catch((e) => this.logToDebug(`Failed to get OCMF-signed value: ${e}`));
       }
     } catch (e) {
       this.logToDebug(`onSignedMeterValue fail: ${e}`);
@@ -678,8 +679,10 @@ export class GoCharger extends ZaptecDevice {
    * @param {number} current3 - Phase 3 current in Ampere
    */
   public async setInstallationAvailableCurrent(current1: number, current2: number, current3: number) {
-    if (!this.hasCapability('available_installation_current'))
+    if (!this.hasCapability('available_installation_current')) {
       throw new Error(this.homey.__('errors.missing_installation_access'));
+    }
+
     return this.api
       .updateInstallation(this.getData().installationId, {
         AvailableCurrentPhase1: current1,
@@ -715,8 +718,10 @@ export class GoCharger extends ZaptecDevice {
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async setInstallationAuthenticationRequirement(requireAuthentication: boolean) {
-    if (!this.hasCapability('available_installation_current'))
+    if (!this.hasCapability('available_installation_current')) {
       throw new Error(this.homey.__('errors.missing_installation_access'));
+    }
+
     return this.api
       .updateInstallationAuthenticationRequirement(this.getData().installationId, requireAuthentication)
       .then(() => {
@@ -751,12 +756,12 @@ export class GoCharger extends ZaptecDevice {
    * @returns {Promise<boolean>} - true if the operation succeeded
    */
   public async setInstallationChargingMode(chargingMode: Feature) {
-    if (!this.hasCapability('available_installation_current'))
+    if (!this.hasCapability('available_installation_current')) {
       throw new Error(this.homey.__('errors.missing_installation_access'));
+    }
+
     return this.api
-      .updateInstallationProperties(this.getData().installationId, {
-        EnabledFeatures: chargingMode,
-      })
+      .updateInstallationProperties(this.getData().installationId, { EnabledFeatures: chargingMode })
       .then(() => {
         this.logToDebug(`Updated charging mode to ${chargingMode}`);
         return true;
