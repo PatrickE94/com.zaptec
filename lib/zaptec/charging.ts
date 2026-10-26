@@ -56,14 +56,16 @@ export function whyResumeWasRejected(states: ChargerStateModel[]): ResumeRejecti
     mode === ChargerOperationMode.Connected_Requesting
     && stateValue(states, Observation.SessionIdentifier) === undefined
     && stateValue(states, Observation.ChargerCurrentUserUuid) === undefined
-  )
+  ) {
     return 'awaiting_authorization';
+  }
 
   if (stateValue(states, Observation.NextScheduleEvent) !== undefined) return 'schedule_active';
 
   // Not every charger reports FinalStopActive, so only trust an explicit 0
-  if (mode === ChargerOperationMode.Connected_Finishing && stateValue(states, Observation.FinalStopActive) === '0')
+  if (mode === ChargerOperationMode.Connected_Finishing && stateValue(states, Observation.FinalStopActive) === '0') {
     return 'car_stopped';
+  }
 
   return 'not_paused';
 }

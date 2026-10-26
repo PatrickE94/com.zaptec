@@ -299,7 +299,7 @@ export class ZaptecApi {
     let responseData;
     try {
       responseData = response.data.length > 0 ? JSON.parse(response.data) : response.data;
-    } catch (e) {
+    } catch {
       throw new Error(`Failed to parse response: ${response.data}`);
     }
 
@@ -325,8 +325,9 @@ export class ZaptecApi {
       'User-Agent': this.getUserAgent(),
     };
 
-    if (method !== 'GET')
+    if (method !== 'GET') {
       headers['Content-Type'] = typeof data === 'object' ? 'application/json' : 'application/x-www-form-urlencoded';
+    }
 
     if (this.bearerToken !== undefined) headers.Authorization = `Bearer ${this.bearerToken}`;
 
@@ -489,7 +490,7 @@ export class ZaptecApi {
   }
 
   public async lockCharger(chargerId: string, lock: boolean): Promise<void> {
-    const { data, response } = await this.post<TokenResponse>(`/api/chargers/${chargerId}/localSettings`, {
+    const { response } = await this.post<TokenResponse>(`/api/chargers/${chargerId}/localSettings`, {
       Cable: {
         PermanentLock: lock,
       },

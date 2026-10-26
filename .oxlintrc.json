@@ -15,6 +15,6 @@
     "promise/prefer-catch": "error",
     "typescript/no-floating-promises": "error",
     "typescript/no-misused-promises": ["error", { "checksVoidReturn": false }],
-    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_" }]
+    "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }]
   }
 }
