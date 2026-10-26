@@ -3,6 +3,8 @@ import {
   ChargerOperationMode,
   chargerOperationModeStr,
   ZaptecApi,
+  chargersOfModel,
+  describeChargers,
 } from '../../lib/zaptec';
 import type { ProCharger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
@@ -161,21 +163,21 @@ class ProDriver extends Homey.Driver {
     });
 
     session.setHandler('list_devices', async () => {
-      const chargers = await api.getChargersByModel('Pro');
+      const chargers = await api.getChargers({});
+      this.log(describeChargers(chargers));
+      const matching = chargersOfModel(chargers.Data ?? [], 'Pro');
 
-      return (
-        chargers.Data?.map((charger) => ({
-          name: `${charger.Name}`,
-          data: {
-            id: charger.Id,
-            installationId: charger.InstallationId,
-          },
-          settings: {
-            username,
-            deviceid: charger.DeviceId,
-          },
-        })) || []
-      );
+      return matching.map((charger) => ({
+        name: `${charger.Name}`,
+        data: {
+          id: charger.Id,
+          installationId: charger.InstallationId,
+        },
+        settings: {
+          username,
+          deviceid: charger.DeviceId,
+        },
+      }));
     });
   }
 

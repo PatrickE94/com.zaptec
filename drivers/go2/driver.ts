@@ -3,6 +3,8 @@ import {
   ChargerOperationMode,
   chargerOperationModeStr,
   ZaptecApi,
+  chargersOfModel,
+  describeChargers,
 } from '../../lib/zaptec';
 import type { Go2Charger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
@@ -163,21 +165,21 @@ class Go2Driver extends Homey.Driver {
     });
 
     session.setHandler('list_devices', async () => {
-      const chargers = await api.getChargersByModel('Go2');
+      const chargers = await api.getChargers({});
+      this.log(describeChargers(chargers));
+      const matching = chargersOfModel(chargers.Data ?? [], 'Go2');
 
-      return (
-        chargers.Data?.map((charger) => ({
-          name: `${charger.Name}`,
-          data: {
-            id: charger.Id,
-            installationId: charger.InstallationId,
-          },
-          settings: {
-            username,
-            deviceid: charger.DeviceId,
-          },
-        })) || []
-      );
+      return matching.map((charger) => ({
+        name: `${charger.Name}`,
+        data: {
+          id: charger.Id,
+          installationId: charger.InstallationId,
+        },
+        settings: {
+          username,
+          deviceid: charger.DeviceId,
+        },
+      }));
     });
   }
 
