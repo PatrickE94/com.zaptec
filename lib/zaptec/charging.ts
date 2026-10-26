@@ -69,3 +69,27 @@ export function whyResumeWasRejected(states: ChargerStateModel[]): ResumeRejecti
 
   return 'not_paused';
 }
+
+/**
+ * Homey's evcharger_charging_state for a charger operation mode.
+ *
+ * Zaptec reports a paused session and a car that stopped charging both as
+ * finishing.
+ */
+const chargingStates: [ChargerOperationMode, string][] = [
+  [ChargerOperationMode.Disconnected, 'plugged_out'],
+  [ChargerOperationMode.Connected_Requesting, 'plugged_in'],
+  [ChargerOperationMode.Connected_Charging, 'plugged_in_charging'],
+  [ChargerOperationMode.Connected_Finishing, 'plugged_in_paused'],
+];
+
+/**
+ * @returns null when the operation mode is unknown
+ */
+export function chargingStateFor(mode: ChargerOperationMode): string | null {
+  return chargingStates.find(([m]) => m === mode)?.[1] ?? null;
+}
+
+export function operationModeFor(chargingState: string | null): ChargerOperationMode {
+  return chargingStates.find(([, s]) => s === chargingState)?.[0] ?? ChargerOperationMode.Unknown;
+}

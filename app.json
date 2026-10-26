@@ -2,7 +2,7 @@
   "_comment": "This file is generated. Please edit .homeycompose/app.json instead.",
   "id": "com.zaptec",
   "version": "1.10.4",
-  "compatibility": ">=12.4.7",
+  "compatibility": ">=12.13.0",
   "sdk": 3,
   "brandColor": "#19312F",
   "platforms": [
@@ -2178,11 +2178,13 @@
         "meter_power",
         "meter_power.last_session",
         "measure_power",
-        "charging_button",
+        "evcharger_charging",
         "cable_permanent_lock",
-        "charge_mode",
+        "evcharger_charging_state",
         "alarm_generic.car_connected",
         "available_installation_current",
+        "target_power",
+        "target_power_mode",
         "measure_current.phase1",
         "measure_current.phase2",
         "measure_current.phase3",
@@ -2197,6 +2199,13 @@
         "charging_mode"
       ],
       "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 22080,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380
+        },
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
@@ -2442,11 +2451,13 @@
         "meter_power",
         "meter_power.last_session",
         "measure_power",
-        "charging_button",
+        "evcharger_charging",
         "cable_permanent_lock",
-        "charge_mode",
+        "evcharger_charging_state",
         "alarm_generic.car_connected",
         "available_installation_current",
+        "target_power",
+        "target_power_mode",
         "measure_current.phase1",
         "measure_current.phase2",
         "measure_current.phase3",
@@ -2461,6 +2472,13 @@
         "charging_mode"
       ],
       "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 22080,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380
+        },
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
@@ -2706,11 +2724,13 @@
         "meter_power",
         "meter_power.last_session",
         "measure_power",
-        "charging_button",
+        "evcharger_charging",
         "cable_permanent_lock",
-        "charge_mode",
+        "evcharger_charging_state",
         "alarm_generic.car_connected",
         "available_installation_current",
+        "target_power",
+        "target_power_mode",
         "measure_current.phase1",
         "measure_current.phase2",
         "measure_current.phase3",
@@ -2726,6 +2746,13 @@
         "charging_mode"
       ],
       "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 22080,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380
+        },
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",
@@ -2983,11 +3010,13 @@
         "meter_power",
         "meter_power.last_session",
         "measure_power",
-        "charging_button",
+        "evcharger_charging",
         "cable_permanent_lock",
-        "charge_mode",
+        "evcharger_charging_state",
         "alarm_generic.car_connected",
         "available_installation_current",
+        "target_power",
+        "target_power_mode",
         "measure_current.phase1",
         "measure_current.phase2",
         "measure_current.phase3",
@@ -3003,6 +3032,13 @@
         "charging_mode"
       ],
       "capabilitiesOptions": {
+        "target_power": {
+          "min": 0,
+          "max": 22080,
+          "step": 230,
+          "excludeMin": 0,
+          "excludeMax": 1380
+        },
         "meter_power.current_session": {
           "title": {
             "en": "Energy current session",

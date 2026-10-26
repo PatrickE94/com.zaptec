@@ -29,10 +29,10 @@ module.exports = {
     }
 
     if (selectedDevice) {
-      const chargerOperationMode = selectedDevice.getCapabilityValue('charge_mode');
+      const chargerOperationMode = selectedDevice.getCapabilityValue('evcharger_charging_state');
       const cablePermanentLock = selectedDevice.getCapabilityValue('cable_permanent_lock');
       const chargingMode = selectedDevice.getCapabilityValue('charging_mode');
-      const chargingButton = selectedDevice.getCapabilityValue('charging_button');
+      const chargingButton = selectedDevice.getCapabilityValue('evcharger_charging');
       const measurePower = selectedDevice.getCapabilityValue('measure_power');
       const requireAuthentication = selectedDevice.getSetting('requireAuthentication');
       const carConnected = selectedDevice.getCapabilityValue('alarm_generic.car_connected');

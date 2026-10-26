@@ -1,11 +1,5 @@
 import Homey from 'homey';
-import {
-  ChargerOperationMode,
-  chargerOperationModeStr,
-  ZaptecApi,
-  chargersOfModel,
-  describeChargers,
-} from '../../lib/zaptec';
+import { ZaptecApi, chargersOfModel, describeChargers } from '../../lib/zaptec';
 import type { ProCharger } from './device';
 import { Feature } from '../../lib/zaptec/enums';
 import PairSession = require('homey/lib/PairSession');
@@ -55,7 +49,7 @@ class ProDriver extends Homey.Driver {
 
     this.homey.flow
       .getConditionCard('pro_is_charging')
-      .registerRunListener(async ({ device }) => device.getCapabilityValue('charging_button'));
+      .registerRunListener(async ({ device }) => device.getCapabilityValue('evcharger_charging'));
 
     this.homey.flow
       .getConditionCard('pro_is_connected')
@@ -64,9 +58,7 @@ class ProDriver extends Homey.Driver {
     this.homey.flow
       .getConditionCard('pro_charging_is_finished')
       .registerRunListener(
-        async ({ device }) =>
-          device.getCapabilityValue('charge_mode')
-          === chargerOperationModeStr(ChargerOperationMode.Connected_Finishing),
+        async ({ device }) => device.getCapabilityValue('evcharger_charging_state') === 'plugged_in_paused',
       );
 
     this.homey.flow
