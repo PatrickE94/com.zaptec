@@ -13,7 +13,6 @@
     "./**/*.ts",
     "./**/*.js",
     "./**/*.json",
-    "./.eslintrc.js",
     "package.json"
   ],
   "exclude": ["./build", "./app.json", "./package-lock.json"]
