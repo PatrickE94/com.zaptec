@@ -1,5 +1,10 @@
 import Homey from 'homey';
-import { ZaptecApi } from './zaptec';
+import { Command, ZaptecApi } from './zaptec';
+import {
+  isCharging,
+  isCommandRejected,
+  whyResumeWasRejected,
+} from './zaptec/charging';
 import { InvalidCredentialsError, MissingCredentialsError } from './zaptec/error';
 import type { ZaptecApp } from '../app';
 
@@ -40,6 +45,74 @@ export abstract class ZaptecDevice extends Homey.Device {
       this.error('Failed to mark device unavailable', err),
     );
     return true;
+  }
+
+  /**
+   * Send command to resume a paused charging session.
+   *
+   * Zaptec has no command to start a new session, so when it rejects the
+   * resume we read the charger state to tell the user why.
+   */
+  public async startCharging() {
+    try {
+      // TODO: Send different command if it has old firmware
+      await this.api.sendCommand(this.getData().id, Command.ResumeCharging);
+      return true;
+    } catch (e) {
+      const states = await this.stateAfterRejection(e);
+      const reason = states && whyResumeWasRejected(states);
+      if (reason === 'charging') {
+        this.logToDebug(`Resume rejected, the charger is already charging`);
+        return true;
+      }
+
+      this.logToDebug(`startCharging failure: ${e}`, e);
+      if (reason === undefined)
+        throw new Error(`Failed to turn on the charger: ${e}`);
+      throw new Error(
+        `${this.homey.__('errors.failed_resume_charging')}: ${this.homey.__(`errors.resume_${reason}`)}`,
+        { cause: e },
+      );
+    }
+  }
+
+  /**
+   * Send command to pause an ongoing charging session.
+   */
+  public async stopCharging() {
+    try {
+      // TODO: Send different command if it has old firmware
+      await this.api.sendCommand(this.getData().id, Command.StopChargingFinal);
+      return true;
+    } catch (e) {
+      const states = await this.stateAfterRejection(e);
+      if (states && !isCharging(states)) {
+        this.logToDebug(`Pause rejected, the charger is not charging`);
+        return true;
+      }
+
+      this.logToDebug(`stopCharging failure: ${e}`, e);
+      throw new Error(`Failed to turn off the charger: ${e}`);
+    }
+  }
+
+  /**
+   * Read the charger state after Zaptec rejected a command for it.
+   *
+   * @returns undefined if the command failed for another reason, or the
+   * state can't be read either
+   */
+  private async stateAfterRejection(e: unknown) {
+    if (!isCommandRejected(e)) return undefined;
+    try {
+      return await this.api.getChargerState(this.getData().id);
+    } catch (stateError) {
+      this.logToDebug(
+        `Failed to read state after rejected command: ${stateError}`,
+        stateError,
+      );
+      return undefined;
+    }
   }
 
   /**
