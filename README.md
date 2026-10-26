@@ -10,6 +10,10 @@ Integration guide is found [here](https://zaptec.readme.io/)
 ## Github actions
 Homey validate the code automatically when pushing to the main branch.
 
+Before submitting a release for review, `npm run review` checks the app
+against the Homey App Store guidelines. It needs `ANTHROPIC_API_KEY` or
+`OPENAI_API_KEY`; add `-- --model anthropic/<model>` to use an Anthropic model.
+
 To use the github action for versioning, tagging, changelog and publishing, one need to aquire a personal access token (PAT) from [Developer portal](https://tools.developer.homey.app/me) and save it as a secret in your repository named `HOMEY_PAT`.
 
 ## Links
