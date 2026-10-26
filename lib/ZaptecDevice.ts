@@ -33,6 +33,17 @@ export abstract class ZaptecDevice extends Homey.Device {
   ): Promise<boolean>;
 
   /**
+   * Add or remove capabilities, leaving the ones already as wanted alone so
+   * this is safe to call on every start.
+   */
+  protected async showCapabilities(capabilities: string[], show: boolean) {
+    for (const cap of capabilities) {
+      if (show && !this.hasCapability(cap)) await this.addCapability(cap);
+      if (!show && this.hasCapability(cap)) await this.removeCapability(cap);
+    }
+  }
+
+  /**
    * Replace our own charging capabilities with Homey's EV charger ones, which
    * come with Homey's flow cards and are what Homey Energy reads.
    */
