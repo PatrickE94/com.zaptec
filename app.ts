@@ -49,6 +49,28 @@ export class ZaptecApp extends App {
     return api;
   }
 
+  /**
+   * Forget an account when no device uses it any more.
+   */
+  releaseAccount(username: string, ignoreChargerId?: string) {
+    const inUse = Object.values(this.homey.drivers.getDrivers())
+      .flatMap((driver) => driver.getDevices())
+      .some(
+        (device) =>
+          device.getData().id !== ignoreChargerId &&
+          device.getSetting('username') === username,
+      );
+    if (inUse) {
+      this.log('Keeping account, a device still uses it');
+      return;
+    }
+
+    const { [username]: _, ...accounts } = this.homey.settings.get(ACCOUNTS) ?? {};
+    this.homey.settings.set(ACCOUNTS, accounts);
+    this.clients.delete(username);
+    this.log('Forgot an account no device uses');
+  }
+
   async onUninit(): Promise<void> {
     this.log('ZaptecApp is stopping');
   }
