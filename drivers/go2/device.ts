@@ -233,6 +233,7 @@ export class Go2Charger extends Homey.Device {
               );
             }
           }
+          this.log(`Polled charger state (${states.length} values)`);
         })
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
