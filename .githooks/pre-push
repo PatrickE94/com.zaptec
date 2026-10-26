@@ -5,3 +5,4 @@ npm run -s check
 npm run -s lint
 npm run -s format:check
 npm test --silent
+npm run -s validate

@@ -21,12 +21,13 @@
     "test": "mocha",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
-    "validate": "homey app validate --level verified",
+    "validate": "npx --yes homey@4 app validate --level verified",
+    "review": "npx --yes homey@4 app review --type update",
     "build": "tsc",
     "build:widget": "rollup -p @rollup/plugin-node-resolve widgets/control-charger/public/index.js -o widgets/control-charger/public/bundle.js",
-    "start": "homey app run",
+    "start": "npx --yes homey@4 app run",
     "prepare": "git config core.hooksPath .githooks || true",
-    "publish": "homey app publish"
+    "publish": "npx --yes homey@4 app publish"
   },
   "devDependencies": {
     "@material/web": "^2.5.0",
