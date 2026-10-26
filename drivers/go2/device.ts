@@ -1,11 +1,6 @@
 import cron from 'node-cron';
-import {
-  ApolloDeviceObservation,
-  Command,
-  ChargerOperationMode,
-  chargerOperationModeStr,
-  chargerOperationModeFromStr,
-} from '../../lib/zaptec';
+import { ApolloDeviceObservation, Command, ChargerOperationMode } from '../../lib/zaptec';
+import { chargingStateFor, operationModeFor } from '../../lib/zaptec/charging';
 import { ApiError } from '../../lib/zaptec/error';
 import { ChargerStateModel } from '../../lib/zaptec/models';
 import { Feature } from '../../lib/zaptec/enums';
@@ -14,6 +9,7 @@ import { ZaptecDevice } from '../../lib/ZaptecDevice';
 
 export class Go2Charger extends ZaptecDevice {
   private cronTasks: cron.ScheduledTask[] = [];
+  protected readonly switchesPhases = true;
 
   /**
    * onInit is called when the device is initialized.
@@ -25,6 +21,7 @@ export class Go2Charger extends ZaptecDevice {
     await this.migrateEnergy();
     await this.migrateCapabilities();
 
+    await this.migrateChargingCapabilities();
     this.registerCapabilityListeners();
 
     const pollOffset = Math.floor(Math.random() * 30);
@@ -87,10 +84,7 @@ export class Go2Charger extends ZaptecDevice {
    * Assign reactions to capability changes triggered by others.
    */
   protected registerCapabilityListeners() {
-    this.registerCapabilityListener('charging_button', async (value) => {
-      if (value) await this.startCharging();
-      else await this.stopCharging();
-    });
+    this.registerChargingListener();
 
     this.registerCapabilityListener('cable_permanent_lock', async (value) => {
       if (value) await this.lockCable(true);
@@ -269,6 +263,8 @@ export class Go2Charger extends ZaptecDevice {
           );
         }
 
+        await this.removePowerControl().catch((err) => this.logToDebug(`Failed to remove target power: ${err}`));
+
         if (this.hasCapability('charging_mode')) {
           await this.removeCapability('charging_mode').catch((err) =>
             this.logToDebug(`Failed to remove charging_mode: ${err}`),
@@ -393,6 +389,10 @@ export class Go2Charger extends ZaptecDevice {
         await this.setCapabilityValue('communication_method', state.ValueAsString);
         break;
 
+      case ApolloDeviceObservation.MaxPhases:
+        this.chargerMaxPhases = Number(state.ValueAsString);
+        break;
+
       default:
         break;
     }
@@ -413,6 +413,7 @@ export class Go2Charger extends ZaptecDevice {
         && this.hasCapability('available_installation_current')
       ) {
         await this.removeCapability('available_installation_current');
+        await this.removePowerControl();
       }
 
       this.logToDebug(`Failed to get installation info when updating available current: ${e}`, e);
@@ -451,17 +452,18 @@ export class Go2Charger extends ZaptecDevice {
     );
 
     await this.setCapabilityValue('available_installation_current', availableCurrent);
+    await this.updatePowerLimits(info);
   }
 
   /**
-   * Update the charge_mode capability and trigger relevant flow cards
+   * Update the charging state and trigger relevant flow cards
    */
   protected async updateChargeMode(newMode: ChargerOperationMode) {
     // We only consider us charging if we are connected AND charging.
     const charging = newMode === ChargerOperationMode.Connected_Charging;
-    await this.setCapabilityValue('charging_button', charging);
+    await this.setCapabilityValue('evcharger_charging', charging);
 
-    const previousMode = chargerOperationModeFromStr(this.getCapabilityValue('charge_mode'));
+    const previousMode = operationModeFor(this.getCapabilityValue('evcharger_charging_state'));
 
     const previouslyDisconnected =
       previousMode === ChargerOperationMode.Unknown || previousMode === ChargerOperationMode.Disconnected;
@@ -471,7 +473,7 @@ export class Go2Charger extends ZaptecDevice {
       || newMode === ChargerOperationMode.Connected_Charging
       || newMode === ChargerOperationMode.Connected_Finishing;
 
-    await this.setCapabilityValue('charge_mode', chargerOperationModeStr(newMode));
+    await this.setCapabilityValue('evcharger_charging_state', chargingStateFor(newMode));
     await this.setCapabilityValue('alarm_generic.car_connected', newModeConnected);
 
     // If no mode change occurs, don't run the triggers

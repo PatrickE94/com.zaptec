@@ -1,6 +1,6 @@
 import assert from 'assert';
-import { isCharging, isCommandRejected, whyResumeWasRejected } from './charging';
-import { ErrorCode, Observation } from './enums';
+import { chargingStateFor, isCharging, isCommandRejected, operationModeFor, whyResumeWasRejected } from './charging';
+import { ChargerOperationMode, ErrorCode, Observation } from './enums';
 import { ApiError } from './error';
 
 function states(values: Partial<Record<Observation, string | null>>) {
@@ -57,5 +57,27 @@ describe('Rejected resume', () => {
     assert.ok(isCommandRejected(new ApiError(ErrorCode.DeviceCommandRejected, 'Charging is not paused')));
     assert.ok(!isCommandRejected(new ApiError(ErrorCode.Forbidden)));
     assert.ok(!isCommandRejected(new Error('Network error')));
+  });
+});
+
+describe('Charging state', () => {
+  it('maps every known operation mode and back', () => {
+    for (const mode of [
+      ChargerOperationMode.Disconnected,
+      ChargerOperationMode.Connected_Requesting,
+      ChargerOperationMode.Connected_Charging,
+      ChargerOperationMode.Connected_Finishing,
+    ]) {
+      assert.strictEqual(operationModeFor(chargingStateFor(mode)), mode);
+    }
+  });
+
+  it('reports a paused session as paused', () => {
+    assert.strictEqual(chargingStateFor(ChargerOperationMode.Connected_Finishing), 'plugged_in_paused');
+  });
+
+  it('leaves the state empty when the mode is unknown', () => {
+    assert.strictEqual(chargingStateFor(ChargerOperationMode.Unknown), null);
+    assert.strictEqual(operationModeFor(null), ChargerOperationMode.Unknown);
   });
 });

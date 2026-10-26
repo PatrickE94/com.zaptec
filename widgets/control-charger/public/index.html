@@ -226,7 +226,7 @@
               // Oppdater charge mode basert på charging_mode capability
               $chargeModeStatusText.textContent = getChargingModeText(data.chargingMode);
 
-              // Oppdater charging indicator basert på charging_button capability
+              // Oppdater charging indicator basert på evcharger_charging capability
               if (data.chargingButton === true) {
                 $chargingIndicator.style.display = 'flex';
               } else {
