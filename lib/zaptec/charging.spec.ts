@@ -1,9 +1,5 @@
 import assert from 'assert';
-import {
-  isCharging,
-  isCommandRejected,
-  whyResumeWasRejected,
-} from './charging';
+import { isCharging, isCommandRejected, whyResumeWasRejected } from './charging';
 import { ErrorCode, Observation } from './enums';
 import { ApiError } from './error';
 
@@ -58,11 +54,7 @@ describe('Rejected resume', () => {
   });
 
   it('only looks into errors where Zaptec refused the command', () => {
-    assert.ok(
-      isCommandRejected(
-        new ApiError(ErrorCode.DeviceCommandRejected, 'Charging is not paused'),
-      ),
-    );
+    assert.ok(isCommandRejected(new ApiError(ErrorCode.DeviceCommandRejected, 'Charging is not paused')));
     assert.ok(!isCommandRejected(new ApiError(ErrorCode.Forbidden)));
     assert.ok(!isCommandRejected(new Error('Network error')));
   });

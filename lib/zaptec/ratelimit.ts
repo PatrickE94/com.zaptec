@@ -90,16 +90,18 @@ export class RateLimiter {
       this.queue.shift()!();
     }
 
-    if (this.queue.length > 0)
-      this.schedule((1 - this.tokens) * this.intervalMs);
+    if (this.queue.length > 0) this.schedule((1 - this.tokens) * this.intervalMs);
   }
 
   private schedule(ms: number) {
     if (this.timer !== undefined) clearTimeout(this.timer);
-    this.timer = setTimeout(() => {
-      this.timer = undefined;
-      this.drain();
-    }, Math.max(0, Math.ceil(ms)));
+    this.timer = setTimeout(
+      () => {
+        this.timer = undefined;
+        this.drain();
+      },
+      Math.max(0, Math.ceil(ms)),
+    );
   }
 }
 

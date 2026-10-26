@@ -20,23 +20,19 @@ export type ResumeRejection =
  */
 export function isCommandRejected(e: unknown): boolean {
   return (
-    e instanceof ApiError &&
-    (e.code === ErrorCode.DeviceCommandRejected ||
-      e.code === ErrorCode.OperationFailedDueToChargerState)
+    e instanceof ApiError
+    && (e.code === ErrorCode.DeviceCommandRejected || e.code === ErrorCode.OperationFailedDueToChargerState)
   );
 }
 
 function stateValue(states: ChargerStateModel[], id: Observation) {
   const value = states.find((s) => s.StateId === id)?.ValueAsString;
-  return value === null || value === undefined || value === ''
-    ? undefined
-    : value;
+  return value === null || value === undefined || value === '' ? undefined : value;
 }
 
 function operationMode(states: ChargerStateModel[]) {
   return Number(
-    stateValue(states, Observation.ChargerOperationMode) ??
-      ChargerOperationMode.Unknown,
+    stateValue(states, Observation.ChargerOperationMode) ?? ChargerOperationMode.Unknown,
   ) as ChargerOperationMode;
 }
 
@@ -51,28 +47,22 @@ export function isCharging(states: ChargerStateModel[]) {
  * while a schedule is active. There is no command to start a new session.
  * See https://docs.zaptec.com/docs/approaches-to-start-and-stop-charging-during-a-session
  */
-export function whyResumeWasRejected(
-  states: ChargerStateModel[],
-): ResumeRejection {
+export function whyResumeWasRejected(states: ChargerStateModel[]): ResumeRejection {
   const mode = operationMode(states);
   if (mode === ChargerOperationMode.Connected_Charging) return 'charging';
   if (mode === ChargerOperationMode.Disconnected) return 'disconnected';
 
   if (
-    mode === ChargerOperationMode.Connected_Requesting &&
-    stateValue(states, Observation.SessionIdentifier) === undefined &&
-    stateValue(states, Observation.ChargerCurrentUserUuid) === undefined
+    mode === ChargerOperationMode.Connected_Requesting
+    && stateValue(states, Observation.SessionIdentifier) === undefined
+    && stateValue(states, Observation.ChargerCurrentUserUuid) === undefined
   )
     return 'awaiting_authorization';
 
-  if (stateValue(states, Observation.NextScheduleEvent) !== undefined)
-    return 'schedule_active';
+  if (stateValue(states, Observation.NextScheduleEvent) !== undefined) return 'schedule_active';
 
   // Not every charger reports FinalStopActive, so only trust an explicit 0
-  if (
-    mode === ChargerOperationMode.Connected_Finishing &&
-    stateValue(states, Observation.FinalStopActive) === '0'
-  )
+  if (mode === ChargerOperationMode.Connected_Finishing && stateValue(states, Observation.FinalStopActive) === '0')
     return 'car_stopped';
 
   return 'not_paused';
