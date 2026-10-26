@@ -213,10 +213,7 @@ export class Go2Charger extends Homey.Device {
         })
         .catch((e) => {
           if (this.handleAuthFailure(e)) return;
-          this.logToDebug(`Failed to poll charger info: ${e}`, e);        
-          this.setUnavailable(
-            this.homey.__('errors.authentication_failed')
-          );
+          this.logToDebug(`Failed to poll charger info: ${e}`, e);
         });
 
       // Poll state variables from the API.
@@ -250,10 +247,6 @@ export class Go2Charger extends Homey.Device {
       });
     } catch (error) {
       this.logToDebug(`Unexpected error in pollValues: ${error}`);
-      // Avoid setting device unavailable for every error to prevent flapping
-      if (error instanceof Error && error.message.includes('authentication')) {
-        this.setUnavailable(this.homey.__('errors.authentication_failed'));
-      }
     }
   }
 
