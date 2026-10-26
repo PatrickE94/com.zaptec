@@ -1,0 +1,7 @@
+#!/bin/sh
+# Run the same checks as CI before pushing. Skip with `git push --no-verify`.
+set -e
+npm run -s check
+npm run -s lint
+npm run -s format:check
+npm test --silent

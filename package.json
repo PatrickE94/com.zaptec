@@ -25,6 +25,7 @@
     "build": "tsc",
     "build:widget": "rollup -p @rollup/plugin-node-resolve widgets/control-charger/public/index.js -o widgets/control-charger/public/bundle.js",
     "start": "homey app run",
+    "prepare": "git config core.hooksPath .githooks || true",
     "publish": "homey app publish"
   },
   "devDependencies": {
