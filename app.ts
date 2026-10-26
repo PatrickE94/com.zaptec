@@ -41,12 +41,10 @@ export class ZaptecApp extends App {
     let api = this.clients.get(username);
     if (api !== undefined) return api;
 
-    const password = this.homey.settings.get(ACCOUNTS)?.[username];
-    if (password === undefined)
-      throw new Error(`No credentials stored for ${username}`);
-
     api = new ZaptecApi(this.homey.manifest.version, this.homey);
-    api.setCredentials(username, password);
+    // Without a stored password requests fail until the account is repaired
+    const password = this.homey.settings.get(ACCOUNTS)?.[username];
+    if (password !== undefined) api.setCredentials(username, password);
     this.clients.set(username, api);
     return api;
   }

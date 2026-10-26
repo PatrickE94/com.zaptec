@@ -1,7 +1,7 @@
 import http from 'http';
 import https from 'https';
 import querystring from 'querystring';
-import { ApiError, InvalidCredentialsError } from './error';
+import { ApiError, InvalidCredentialsError, MissingCredentialsError } from './error';
 import {
   RateLimiter,
   apiLimiterFor,
@@ -266,7 +266,11 @@ export class ZaptecApi {
    * doesn't keep the shared token endpoint busy.
    */
   private async ensureToken() {
-    if (this.credentials === undefined) return;
+    if (this.credentials === undefined) {
+      // Pairing logs in directly with authenticate() instead
+      if (this.bearerToken !== undefined) return;
+      throw new MissingCredentialsError();
+    }
     if (this.rejectedLogin !== undefined) throw this.rejectedLogin;
     if (this.bearerToken !== undefined && Date.now() < this.tokenExpiresAt - 60_000)
       return;
