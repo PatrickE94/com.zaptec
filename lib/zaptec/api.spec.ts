@@ -1,5 +1,5 @@
 import nock from 'nock';
-import { ZaptecApi, networkErrorDetails } from './api';
+import { ZaptecApi, chargersOfModel, networkErrorDetails } from './api';
 import { InvalidCredentialsError, MissingCredentialsError } from './error';
 import assert from 'assert';
 
@@ -171,5 +171,13 @@ describe('Zaptec API Client', () => {
       const charger = await lazyApi.getCharger('abc');
       assert.strictEqual(charger.Id, 'abc');
     });
+  });
+});
+
+describe('chargersOfModel', () => {
+  it('should find a Go 2 with the undocumented GPH prefix', () => {
+    const chargers = [{ DeviceId: 'GPH123456' }, { DeviceId: 'ZAP123456' }];
+
+    assert.deepStrictEqual(chargersOfModel(chargers, 'Go2'), [{ DeviceId: 'GPH123456' }]);
   });
 });

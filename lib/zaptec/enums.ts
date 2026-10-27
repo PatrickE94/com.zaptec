@@ -1073,6 +1073,7 @@ export enum SensorType {
 export const MODEL_PREFIX_MAP: Record<string, string[]> = {
   Pro: ['ZCS', 'ZPR', 'ZCH', 'ZPG'],
   Go: ['ZAP', 'ZGB', 'ZAG'],
-  Go2: ['GPN', 'GPG'],
+  // GPH is not in Zaptec's list of prefixes, but a user paired a Go 2 with it
+  Go2: ['GPN', 'GPG', 'GPH'],
   Sense: ['APH', 'APG', 'APM'],
 };
