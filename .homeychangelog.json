@@ -109,5 +109,8 @@
   },
   "1.11.0": {
     "en": "Homey Energy can now start, stop and steer charging. Charging now uses Homey's standard EV charger capabilities, so flows using the old Charging button or Charge mode need to be updated."
+  },
+  "1.11.1": {
+    "en": "Fixed pairing of Zaptec Go 2 chargers whose serial number starts with GPH."
   }
 }
