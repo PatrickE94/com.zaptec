@@ -1,0 +1,85 @@
+{
+  "name": {
+    "en": "Zaptec Sense (beta)",
+    "no": "Zaptec Sense (beta)"
+  },
+  "$extends": [
+    "defaults"
+  ],
+  "class": "sensor",
+  "energy": {
+    "cumulative": true,
+    "cumulativeImportedCapability": "meter_power.imported",
+    "cumulativeExportedCapability": "meter_power.exported"
+  },
+  "capabilities": [
+    "measure_power",
+    "meter_power.imported",
+    "meter_power.exported",
+    "measure_current.phase1",
+    "measure_current.phase2",
+    "measure_current.phase3",
+    "measure_voltage.phase1",
+    "measure_voltage.phase2",
+    "measure_voltage.phase3",
+    "measure_signal_strength",
+    "communication_method"
+  ],
+  "capabilitiesOptions": {
+    "meter_power.imported": {
+      "title": {
+        "en": "Energy imported",
+        "no": "Energi importert"
+      }
+    },
+    "meter_power.exported": {
+      "title": {
+        "en": "Energy exported",
+        "no": "Energi eksportert"
+      }
+    },
+    "measure_current.phase1": {
+      "title": {
+        "en": "Current L1",
+        "no": "Strøm fase L1"
+      }
+    },
+    "measure_current.phase2": {
+      "title": {
+        "en": "Current L2",
+        "no": "Strøm fase L2"
+      }
+    },
+    "measure_current.phase3": {
+      "title": {
+        "en": "Current L3",
+        "no": "Strøm fase L3"
+      }
+    },
+    "measure_voltage.phase1": {
+      "title": {
+        "en": "Voltage L1",
+        "no": "Spenningsfase L1"
+      }
+    },
+    "measure_voltage.phase2": {
+      "title": {
+        "en": "Voltage L2",
+        "no": "Spenningsfase L2"
+      }
+    },
+    "measure_voltage.phase3": {
+      "title": {
+        "en": "Voltage L3",
+        "no": "Spenningsfase L3"
+      }
+    },
+    "measure_signal_strength": {
+      "title": {
+        "en": "Signal strength",
+        "no": "Signalstyrke"
+      },
+      "units" : "%"
+    }
+  }
+}

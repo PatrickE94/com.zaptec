@@ -874,6 +874,31 @@ export enum GenericApmDeviceObservation {
   ReadingUpdate = -500,
 }
 
+/**
+ * Observations of a Zaptec Sense, from the HomeApm, GenericApm and TicApm
+ * schemas in https://api.zaptec.com/api/constants. The models share ids, but
+ * not all of them: only a HAN (HomeApm) Sense reports the meter's cumulative
+ * energy, and a French TIC Sense reports apparent instead of active power.
+ */
+export enum SenseObservation {
+  IsOnline = -2,
+  CommunicationMode = 150,
+  VoltagePhase1 = 501,
+  VoltagePhase2 = 502,
+  VoltagePhase3 = 503,
+  CurrentPhase1 = 507,
+  CurrentPhase2 = 508,
+  CurrentPhase3 = 509,
+  CommunicationSignalStrength = 809,
+  SoftwareApplicationVersion = 911,
+  MeterType = 1001,
+  ScalingFactor = 1003,
+  AMSCumulativeEnergyImport = 1020,
+  AMSCumulativeEnergyExport = 1021,
+  SenseStatusMessage = 1133,
+  ActivePowerKw = 1161,
+}
+
 export enum GenericApmDeviceCommand {
   Unknown = 0,
   Restart = 102,
@@ -1011,6 +1036,7 @@ export enum DeviceType {
   OtherApm = 5,
   GenericApm = 6,
   HanApm = 7,
+  TicApm = 8,
 }
 
 export enum InstallationAuthenticationType {
@@ -1077,3 +1103,12 @@ export const MODEL_PREFIX_MAP: Record<string, string[]> = {
   Go2: ['GPN', 'GPG', 'GPH'],
   Sense: ['APH', 'APG', 'APM'],
 };
+
+/** Device types of Zaptec Sense, called APM (Automatic Power Management) in the API */
+export const SENSE_DEVICE_TYPES = [
+  DeviceType.HomeApm,
+  DeviceType.OtherApm,
+  DeviceType.GenericApm,
+  DeviceType.HanApm,
+  DeviceType.TicApm,
+];

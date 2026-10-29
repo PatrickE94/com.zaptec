@@ -3242,6 +3242,202 @@
           ]
         }
       ]
+    },
+    {
+      "icon": "/drivers/sense/assets/icon.svg",
+      "images": {
+        "small": "/drivers/sense/assets/images/driver_small.png",
+        "large": "/drivers/sense/assets/images/driver_large.png",
+        "xlarge": "/drivers/sense/assets/images/driver_xlarge.png"
+      },
+      "platforms": [
+        "local"
+      ],
+      "connectivity": [
+        "cloud"
+      ],
+      "class": "sensor",
+      "energy": {
+        "cumulative": true,
+        "cumulativeImportedCapability": "meter_power.imported",
+        "cumulativeExportedCapability": "meter_power.exported"
+      },
+      "pair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            }
+          }
+        },
+        {
+          "id": "list_devices",
+          "template": "list_devices",
+          "navigation": {
+            "next": "add_devices"
+          }
+        },
+        {
+          "id": "add_devices",
+          "template": "add_devices"
+        }
+      ],
+      "repair": [
+        {
+          "id": "login_credentials",
+          "template": "login_credentials",
+          "options": {
+            "logo": "../../../assets/icon.svg",
+            "title": {
+              "en": "Zaptec Login",
+              "no": "Zaptec innlogging"
+            },
+            "usernameLabel": {
+              "en": "E-mail address",
+              "no": "E-post adresse"
+            },
+            "usernamePlaceholder": {
+              "en": "john@doe.com",
+              "no": "ola@normann.com"
+            }
+          }
+        }
+      ],
+      "name": {
+        "en": "Zaptec Sense (beta)",
+        "no": "Zaptec Sense (beta)"
+      },
+      "capabilities": [
+        "measure_power",
+        "meter_power.imported",
+        "meter_power.exported",
+        "measure_current.phase1",
+        "measure_current.phase2",
+        "measure_current.phase3",
+        "measure_voltage.phase1",
+        "measure_voltage.phase2",
+        "measure_voltage.phase3",
+        "measure_signal_strength",
+        "communication_method"
+      ],
+      "capabilitiesOptions": {
+        "meter_power.imported": {
+          "title": {
+            "en": "Energy imported",
+            "no": "Energi importert"
+          }
+        },
+        "meter_power.exported": {
+          "title": {
+            "en": "Energy exported",
+            "no": "Energi eksportert"
+          }
+        },
+        "measure_current.phase1": {
+          "title": {
+            "en": "Current L1",
+            "no": "Strøm fase L1"
+          }
+        },
+        "measure_current.phase2": {
+          "title": {
+            "en": "Current L2",
+            "no": "Strøm fase L2"
+          }
+        },
+        "measure_current.phase3": {
+          "title": {
+            "en": "Current L3",
+            "no": "Strøm fase L3"
+          }
+        },
+        "measure_voltage.phase1": {
+          "title": {
+            "en": "Voltage L1",
+            "no": "Spenningsfase L1"
+          }
+        },
+        "measure_voltage.phase2": {
+          "title": {
+            "en": "Voltage L2",
+            "no": "Spenningsfase L2"
+          }
+        },
+        "measure_voltage.phase3": {
+          "title": {
+            "en": "Voltage L3",
+            "no": "Spenningsfase L3"
+          }
+        },
+        "measure_signal_strength": {
+          "title": {
+            "en": "Signal strength",
+            "no": "Signalstyrke"
+          },
+          "units": "%"
+        }
+      },
+      "id": "sense",
+      "settings": [
+        {
+          "type": "group",
+          "label": {
+            "en": "Information",
+            "no": "Informasjon"
+          },
+          "children": [
+            {
+              "id": "firmware",
+              "type": "label",
+              "label": {
+                "en": "Firmware version",
+                "no": "Fastvare versjon"
+              },
+              "value": ""
+            },
+            {
+              "id": "deviceid",
+              "type": "label",
+              "label": {
+                "en": "Device ID",
+                "no": "Enhets ID"
+              },
+              "value": ""
+            },
+            {
+              "id": "meterType",
+              "type": "label",
+              "label": {
+                "en": "Meter type",
+                "no": "Målertype"
+              },
+              "value": ""
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "label": {
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
+          },
+          "children": [
+            {
+              "id": "log",
+              "type": "textarea",
+              "label": {
+                "en": "Log",
+                "no": "Logg"
+              },
+              "value": "Empty"
+            }
+          ]
+        }
+      ]
     }
   ],
   "widgets": {

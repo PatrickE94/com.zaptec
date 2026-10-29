@@ -1,0 +1,56 @@
+[
+    {
+        "type": "group",
+        "label": {
+            "en": "Information",
+            "no": "Informasjon"
+        },
+        "children": [
+            {
+                "id": "firmware",
+                "type": "label",
+                "label": {
+                    "en": "Firmware version",
+                    "no": "Fastvare versjon"
+                },
+                "value": ""
+            },
+            {
+                "id": "deviceid",
+                "type": "label",
+                "label": {
+                    "en": "Device ID",
+                    "no": "Enhets ID"
+                },
+                "value": ""
+            },
+            {
+                "id": "meterType",
+                "type": "label",
+                "label": {
+                    "en": "Meter type",
+                    "no": "Målertype"
+                },
+                "value": ""
+            }
+        ]
+    },
+    {
+        "type": "group",
+        "label": {
+            "en": "Troubleshooting",
+            "no": "Feilsøking"
+        },
+        "children": [
+            {
+                "id": "log",
+                "type": "textarea",
+                "label": {
+                    "en": "Log",
+                    "no": "Logg"
+                },
+                "value": "Empty"
+            }
+        ]
+    }
+]

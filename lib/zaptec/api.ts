@@ -10,7 +10,15 @@ import {
   sleep,
   tokenEndpointLimiter,
 } from './ratelimit';
-import { Command, DeviceType, InstallationType, UserRole, Feature, MODEL_PREFIX_MAP } from './enums';
+import {
+  Command,
+  DeviceType,
+  InstallationType,
+  UserRole,
+  Feature,
+  MODEL_PREFIX_MAP,
+  SENSE_DEVICE_TYPES,
+} from './enums';
 import {
   ChargePriority,
   ChargerExternalUpdateModel,
@@ -664,6 +672,21 @@ export function chargersOfModel(chargers: ChargerListModel[], modelName: string)
     if (!charger.DeviceId || charger.DeviceId.length < 3) return false;
     return prefixes.includes(charger.DeviceId.substring(0, 3));
   });
+}
+
+/**
+ * Find the Zaptec Sense devices among the chargers.
+ *
+ * Nobody has confirmed which prefixes a Sense has, so its device type counts
+ * too.
+ */
+export function senseDevices(chargers: ChargerListModel[]) {
+  const prefixes = MODEL_PREFIX_MAP.Sense;
+  return chargers.filter(
+    (charger) =>
+      (charger.DeviceType !== undefined && SENSE_DEVICE_TYPES.includes(charger.DeviceType))
+      || prefixes.includes(charger.DeviceId?.substring(0, 3) ?? ''),
+  );
 }
 
 /**
