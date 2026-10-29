@@ -112,5 +112,8 @@
   },
   "1.11.1": {
     "en": "Fixed pairing of Zaptec Go 2 chargers whose serial number starts with GPH."
+  },
+  "1.12.0": {
+    "en": "Beta support for Zaptec Sense: see your home's power, current per phase and meter totals in Homey Energy. Have a Sense? Please help us test it."
   }
 }
