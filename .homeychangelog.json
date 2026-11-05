@@ -115,5 +115,8 @@
   },
   "1.12.0": {
     "en": "Beta support for Zaptec Sense: see your home's power, current per phase and meter totals in Homey Energy. Have a Sense? Please help us test it."
+  },
+  "1.12.1": {
+    "en": "Updated Zaptec Sense detection."
   }
 }
