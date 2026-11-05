@@ -405,6 +405,7 @@ export interface InstallationModel {
   PropertyHomeApmOrdered?: boolean | null;
   /** Format: double */
   PropertyEnergySensorScalingFactor?: number | null;
+  PropertyEnergySensorIsOffline?: boolean | null;
   PropertyFirmwareAutomaticUpdates?: boolean | null;
   /** Format: double */
   PropertyMaxSinglePhaseChargeCurrent?: number | null;

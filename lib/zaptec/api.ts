@@ -690,6 +690,27 @@ export function senseDevices(chargers: ChargerListModel[]) {
 }
 
 /**
+ * Describe the energy sensors of installations for the log, to find out how
+ * a Zaptec Sense shows up. It isn't in the charger list, but may be the
+ * installation's energy sensor. Ids are cut to their prefix, like chargers.
+ */
+export function describeEnergySensors(installations: InstallationModel[]) {
+  const prefix = (id?: string | null) => (id ? `${id.substring(0, 3)}…` : 'none');
+  const lines = installations.map((installation) => {
+    const sensor = installation.EnergySensor;
+    if (!sensor && !installation.PropertyEnergySensorUniqueId) return '- no energy sensor';
+
+    return (
+      `- Type=${sensor?.Type} Provider=${sensor?.Provider} Vendor=${sensor?.Vendor} Model=${sensor?.Model} `
+      + `UniqueId=${prefix(sensor?.UniqueId)} SerialNo=${prefix(sensor?.SerialNo)} Id=${sensor?.Id ? 'set' : 'none'} `
+      + `PropertyUniqueId=${prefix(installation.PropertyEnergySensorUniqueId)} `
+      + `IsOffline=${installation.PropertyEnergySensorIsOffline}`
+    );
+  });
+  return [`Got ${installations.length} installations`, ...lines].join('\n');
+}
+
+/**
  * Describe a charger list for the log, to see why pairing finds no devices.
  * Only the deviceId prefix is included, it is what models are matched on.
  */

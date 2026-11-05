@@ -1,5 +1,5 @@
 import Homey from 'homey';
-import { ZaptecApi, describeChargers, senseDevices } from '../../lib/zaptec';
+import { ZaptecApi, describeChargers, describeEnergySensors, senseDevices } from '../../lib/zaptec';
 import type { Sense } from './device';
 import PairSession = require('homey/lib/PairSession');
 import type { ZaptecApp } from '../../app';
@@ -42,6 +42,9 @@ class SenseDriver extends Homey.Driver {
     session.setHandler('list_devices', async () => {
       const chargers = await api.getChargers({});
       this.log(describeChargers(chargers));
+
+      await this.logEnergySensors(api).catch((e) => this.log('Failed to look up energy sensors:', e));
+
       const matching = senseDevices(chargers.Data ?? []);
 
       return matching.map((sense) => ({
@@ -58,6 +61,22 @@ class SenseDriver extends Homey.Driver {
         },
       }));
     });
+  }
+
+  /**
+   * Log the energy sensor of each installation, for testers' diagnostic
+   * reports. Each installation is fetched, as the spec doesn't say whether
+   * the installation list includes the sensor.
+   */
+  private async logEnergySensors(api: ZaptecApi) {
+    const installations = await api.getInstallations({});
+    const details = await Promise.all(
+      (installations.Data ?? []).flatMap((installation) =>
+        installation.Id ? [api.getInstallation(installation.Id)] : [],
+      ),
+    );
+
+    this.log(describeEnergySensors(details));
   }
 
   async onRepair(session: PairSession, device: Sense) {
