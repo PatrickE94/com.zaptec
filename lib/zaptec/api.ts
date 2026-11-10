@@ -23,6 +23,7 @@ import {
   ChargePriority,
   ChargerExternalUpdateModel,
   ChargerListModel,
+  ChargerSenseModel,
   ChargerStateModel,
   ConnectionDescriptor,
   InstallationExternalUpdateModel,
@@ -488,6 +489,30 @@ export class ZaptecApi {
 
   public async getChargerState(id: string) {
     const { data, response } = await this.get<ChargerStateModel[]>(`/api/chargers/${id}/state`, {});
+
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  /**
+   * The Sense linked to a charger for load balancing. Undocumented, found in
+   * Zaptec's portal.
+   */
+  public async getChargerSense(id: string) {
+    const { data, response } = await this.get<ChargerSenseModel>(`/api/chargers/${id}/sense`, {});
+
+    if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+    return data;
+  }
+
+  /**
+   * The state of any device, such as a Sense. Undocumented, like
+   * getChargerSense.
+   */
+  public async getDeviceState(id: string) {
+    const { data, response } = await this.get<ChargerStateModel[]>(`/api/devices/${id}/state`, {});
 
     if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
 

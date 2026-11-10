@@ -184,6 +184,22 @@ export interface ZapChargerViewModel {
   IsAuthorizationRequired?: boolean | null;
 }
 
+/**
+ * The response of the undocumented /api/chargers/{id}/sense. Seen in camel
+ * case in the portal, while the rest of the API answers in Pascal case, so
+ * both are read.
+ */
+export interface ChargerSenseModel {
+  SenseId?: string | null;
+  senseId?: string | null;
+  InstallationId?: string | null;
+  installationId?: string | null;
+  IsTicPeakActive?: boolean | null;
+  isTicPeakActive?: boolean | null;
+  IsTicEnabled?: boolean | null;
+  isTicEnabled?: boolean | null;
+}
+
 export interface ChargerStateModel {
   /** Format: uuid */
   ChargerId?: string;

@@ -1,7 +1,7 @@
 import cron from 'node-cron';
 import { SenseObservation } from '../../lib/zaptec';
 import { ChargerStateModel } from '../../lib/zaptec/models';
-import { LOGGED_SENSE_OBSERVATIONS, senseCapabilityValue } from '../../lib/zaptec/sense';
+import { describeSenseStates, senseCapabilityValue } from '../../lib/zaptec/sense';
 import type { ZaptecApp } from '../../app';
 import { ZaptecAccountDevice } from '../../lib/ZaptecAccountDevice';
 
@@ -82,10 +82,7 @@ export class Sense extends ZaptecAccountDevice {
   private async onFirstStates(states: ChargerStateModel[]) {
     this.loggedObservations = true;
 
-    const logged = states
-      .filter((s) => LOGGED_SENSE_OBSERVATIONS.includes(s.StateId as SenseObservation))
-      .map((s) => `${s.StateName ?? s.StateId}=${s.ValueAsString}`);
-    this.logToDebug(`Sense reports ${states.length} values: ${logged.join(', ')}`);
+    this.logToDebug(describeSenseStates(states));
 
     const hasMeter = states.some((s) => s.StateId === SenseObservation.AMSCumulativeEnergyImport);
     await this.showCapabilities(METER_CAPABILITIES, hasMeter);

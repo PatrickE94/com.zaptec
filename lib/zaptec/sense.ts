@@ -16,6 +16,15 @@ export const LOGGED_SENSE_OBSERVATIONS = [
   SenseObservation.SenseStatusMessage,
 ];
 
+/** Describe the states a Sense reports, for testers' logs. */
+export function describeSenseStates(states: ChargerStateModel[]) {
+  const logged = states
+    .filter((s) => LOGGED_SENSE_OBSERVATIONS.includes(s.StateId as SenseObservation))
+    .map((s) => `${s.StateName ?? s.StateId}=${s.ValueAsString}`);
+  const ids = states.map((s) => s.StateId).join(',');
+  return `Sense reports ${states.length} values: ${logged.join(', ')} (StateIds ${ids})`;
+}
+
 const PHASE_CAPABILITIES: Partial<Record<SenseObservation, string>> = {
   [SenseObservation.CurrentPhase1]: 'measure_current.phase1',
   [SenseObservation.CurrentPhase2]: 'measure_current.phase2',

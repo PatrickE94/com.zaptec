@@ -1,6 +1,8 @@
 import Homey from 'homey';
 import { ZaptecApi, describeChargers, describeEnergySensors, senseDevices } from '../../lib/zaptec';
 import type { Sense } from './device';
+import type { ChargerListModel } from '../../lib/zaptec/models';
+import { describeSenseStates } from '../../lib/zaptec/sense';
 import PairSession = require('homey/lib/PairSession');
 import type { ZaptecApp } from '../../app';
 
@@ -45,6 +47,8 @@ class SenseDriver extends Homey.Driver {
 
       await this.logEnergySensors(api).catch((e) => this.log('Failed to look up energy sensors:', e));
 
+      await this.logSenseStates(api, chargers.Data ?? []);
+
       const matching = senseDevices(chargers.Data ?? []);
 
       return matching.map((sense) => ({
@@ -77,6 +81,37 @@ class SenseDriver extends Homey.Driver {
     );
 
     this.log(describeEnergySensors(details));
+  }
+
+  /**
+   * Log whether the state of the Sense linked to each charger can be read,
+   * for testers' diagnostic reports. Chargers sharing a Sense are only
+   * asked once.
+   */
+  private async logSenseStates(api: ZaptecApi, chargers: ChargerListModel[]) {
+    const senseIds = new Set<string>();
+
+    for (const charger of chargers) {
+      if (!charger.Id) continue;
+
+      const prefix = charger.DeviceId?.substring(0, 3) ?? 'none';
+      const sense = await api.getChargerSense(charger.Id).catch((e) => {
+        this.log(`Charger prefix=${prefix} has no Sense:`, e);
+        return undefined;
+      });
+      if (!sense) continue;
+
+      const senseId = sense.SenseId ?? sense.senseId;
+      this.log(`Charger prefix=${prefix} Sense: senseId=${senseId ? 'set' : 'none'}`);
+      if (senseId) senseIds.add(senseId);
+    }
+
+    for (const senseId of senseIds) {
+      await api
+        .getDeviceState(senseId)
+        .then((states) => this.log(`/api/devices/{senseId}/state works. ${describeSenseStates(states)}`))
+        .catch((e) => this.log('/api/devices/{senseId}/state failed:', e));
+    }
   }
 
   async onRepair(session: PairSession, device: Sense) {
