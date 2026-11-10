@@ -10,15 +10,7 @@ import {
   sleep,
   tokenEndpointLimiter,
 } from './ratelimit';
-import {
-  Command,
-  DeviceType,
-  InstallationType,
-  UserRole,
-  Feature,
-  MODEL_PREFIX_MAP,
-  SENSE_DEVICE_TYPES,
-} from './enums';
+import { Command, DeviceType, InstallationType, UserRole, Feature, MODEL_PREFIX_MAP } from './enums';
 import {
   ChargePriority,
   ChargerExternalUpdateModel,
@@ -672,42 +664,6 @@ export function chargersOfModel(chargers: ChargerListModel[], modelName: string)
     if (!charger.DeviceId || charger.DeviceId.length < 3) return false;
     return prefixes.includes(charger.DeviceId.substring(0, 3));
   });
-}
-
-/**
- * Find the Zaptec Sense devices among the chargers.
- *
- * Nobody has confirmed which prefixes a Sense has, so its device type counts
- * too.
- */
-export function senseDevices(chargers: ChargerListModel[]) {
-  const prefixes = MODEL_PREFIX_MAP.Sense;
-  return chargers.filter(
-    (charger) =>
-      (charger.DeviceType !== undefined && SENSE_DEVICE_TYPES.includes(charger.DeviceType))
-      || prefixes.includes(charger.DeviceId?.substring(0, 3) ?? ''),
-  );
-}
-
-/**
- * Describe the energy sensors of installations for the log, to find out how
- * a Zaptec Sense shows up. It isn't in the charger list, but may be the
- * installation's energy sensor. Ids are cut to their prefix, like chargers.
- */
-export function describeEnergySensors(installations: InstallationModel[]) {
-  const prefix = (id?: string | null) => (id ? `${id.substring(0, 3)}…` : 'none');
-  const lines = installations.map((installation) => {
-    const sensor = installation.EnergySensor;
-    if (!sensor && !installation.PropertyEnergySensorUniqueId) return '- no energy sensor';
-
-    return (
-      `- Type=${sensor?.Type} Provider=${sensor?.Provider} Vendor=${sensor?.Vendor} Model=${sensor?.Model} `
-      + `UniqueId=${prefix(sensor?.UniqueId)} SerialNo=${prefix(sensor?.SerialNo)} Id=${sensor?.Id ? 'set' : 'none'} `
-      + `PropertyUniqueId=${prefix(installation.PropertyEnergySensorUniqueId)} `
-      + `IsOffline=${installation.PropertyEnergySensorIsOffline}`
-    );
-  });
-  return [`Got ${installations.length} installations`, ...lines].join('\n');
 }
 
 /**
