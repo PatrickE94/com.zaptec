@@ -118,5 +118,8 @@
   },
   "1.12.1": {
     "en": "Updated Zaptec Sense detection."
+  },
+  "1.13.0": {
+    "en": "Release candidate for new and improved Zaptec app"
   }
 }
