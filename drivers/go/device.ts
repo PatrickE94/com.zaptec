@@ -287,6 +287,8 @@ export class GoCharger extends ZaptecDevice {
               this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`),
             );
           }
+
+          await this.trackSessions(states).catch((e) => this.logToDebug(`Failed to track sessions: ${e}`, e));
           this.log(`Polled charger state (${states.length} values)`);
         })
         .catch((e) => {
@@ -312,8 +314,6 @@ export class GoCharger extends ZaptecDevice {
    * E.g. yearly charging consumption.
    */
   protected pollSlowValues() {
-    const year = new Date().getFullYear();
-
     this.api
       .getInstallation(this.getData().installationId)
       .then(async (installation) => {
@@ -347,22 +347,7 @@ export class GoCharger extends ZaptecDevice {
         }
       });
 
-    this.api
-      .getArchivedSessions({
-        ChargerId: this.getData().id,
-        From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
-        To: new Date().toJSON(),
-      })
-      .then((sessions) => {
-        const yearlyEnergy = sessions.filter((s) => !s.voided).reduce((sum, s) => sum + (s.energy ?? 0), 0);
-        return this.setCapabilityValue('meter_power', yearlyEnergy);
-      })
-      .then(() => this.logToDebug(`Got yearly power history`))
-      .catch((e) => {
-        if (this.handleAuthFailure(e)) return;
-
-        this.logToDebug(`Failed to poll charge history: ${e}`, e);
-      });
+    this.pollYearlyEnergy();
   }
 
   /**

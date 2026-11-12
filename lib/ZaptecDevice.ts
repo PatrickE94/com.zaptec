@@ -1,6 +1,7 @@
 import { chargerOperationModeFromStr, Command } from './zaptec';
 import { chargingStateFor, isCharging, isCommandRejected, whyResumeWasRejected } from './zaptec/charging';
-import { InstallationModel } from './zaptec/models';
+import { archivedYear, ArchivedYear, chargerSessions, ChargerSessions, yearlyEnergy } from './zaptec/energy';
+import { ChargerStateModel, InstallationModel } from './zaptec/models';
 import { currentForPower, PowerLimits, powerLimits, targetPowerOptions } from './zaptec/power';
 import { ZaptecAccountDevice } from './ZaptecAccountDevice';
 
@@ -14,6 +15,13 @@ export abstract class ZaptecDevice extends ZaptecAccountDevice {
   private powerLimits?: PowerLimits;
   /** Per-phase current last set for target_power, so setpoints that don't change it aren't sent */
   private targetCurrent?: number;
+
+  /** This year's archived sessions, once fetched */
+  private archived?: ArchivedYear;
+  /** The sessions in the last charger state */
+  private sessions: ChargerSessions = { energy: new Map() };
+  /** What the archive was last fetched again for, so it's fetched once per completed session */
+  private refetchedFor?: string;
 
   /** Whether the model charges on one phase below the installation's switch current */
   protected abstract readonly switchesPhases: boolean;
@@ -166,6 +174,59 @@ export abstract class ZaptecDevice extends ZaptecAccountDevice {
         await this.removeCapability(capability);
       }
     }
+  }
+
+  /**
+   * Fetch this year's archived sessions, the base of this year's energy.
+   */
+  protected pollYearlyEnergy() {
+    const year = new Date().getFullYear();
+
+    this.api
+      .getArchivedSessions({
+        ChargerId: this.getData().id,
+        From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
+        To: new Date().toJSON(),
+      })
+      .then((sessions) => {
+        this.archived = archivedYear(year, sessions);
+        this.logToDebug(`Got yearly power history`);
+        return this.updateYearlyEnergy();
+      })
+      .catch((e) => {
+        if (this.handleAuthFailure(e)) return;
+
+        this.logToDebug(`Failed to poll charge history: ${e}`, e);
+      });
+  }
+
+  /**
+   * Add the sessions in the charger state that aren't archived yet to this
+   * year's energy, so it grows while charging instead of once a day.
+   */
+  protected async trackSessions(states: ChargerStateModel[]) {
+    const year = new Date().getFullYear();
+    this.sessions = chargerSessions(states, year);
+    if (!this.archived) return;
+
+    // The archive has a session once it completes, and starts over each year
+    const { completed } = this.sessions;
+    const stale = this.archived.year !== year || (completed !== undefined && !this.archived.ids.has(completed));
+    const key = `${year}:${completed}`;
+    if (stale && this.refetchedFor !== key) {
+      this.refetchedFor = key;
+      this.pollYearlyEnergy();
+    }
+
+    await this.updateYearlyEnergy();
+  }
+
+  private async updateYearlyEnergy() {
+    // Last year's archive would count this year's sessions on top of it
+    if (!this.archived || this.archived.year !== new Date().getFullYear()) return;
+
+    const energy = Math.round(yearlyEnergy(this.archived, this.sessions) * 1000) / 1000;
+    await this.setCapabilityValue('meter_power', energy);
   }
 
   /**
