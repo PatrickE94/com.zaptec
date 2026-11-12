@@ -24,7 +24,8 @@ import {
   SessionEndData,
   TokenResponse,
   ZapChargerViewModel,
-  SessionListModel,
+  ArchivedSession,
+  ArchivedSessionsPage,
 } from './models';
 
 // Configure global https agent with proper maxSockets
@@ -384,57 +385,50 @@ export class ZaptecApi {
   }
 
   // -------------------------- //
-  //  Charge History
+  //  Archived sessions
   // -------------------------- //
 
-  public async getChargeHistory(params: {
+  /**
+   * Fetch every completed session in a time range, following the page cursor.
+   *
+   * `From` and `To` bound the session end time (`To` exclusive). Exactly one
+   * of `InstallationId`, `ChargerId` or `AuthorizedUserId` is required, and
+   * the first two require the owner role.
+   */
+  public async getArchivedSessions(params: {
+    From: string;
+    To: string;
     InstallationId?: string;
-    UserId?: string;
     ChargerId?: string;
-    From?: string;
-    To?: string;
-    GroupBy?: 0 | 1 | 2;
-    DetailLevel?: 0 | 1;
-    SortProperty?: string;
-    SortDescending?: boolean;
+    AuthorizedUserId?: string;
     PageSize?: number;
-    PageIndex?: number;
-    IncludeDisabled?: boolean;
-    Exclude?: string[];
-  }): Promise<SessionListModel[]> {
-    let allData: SessionListModel[] = [];
-    let currentPage = 0;
-    const pageSize = params.PageSize || 50;
-    let totalPages = 1;
+  }): Promise<ArchivedSession[]> {
+    const sessions: ArchivedSession[] = [];
+    let cursor: string | undefined;
 
-    while (currentPage < totalPages) {
-      const { data, response } = await this.get<PagedData<SessionListModel>>(
-        `/api/chargehistory?${querystring.stringify({
+    do {
+      const { data, response } = await this.get<ArchivedSessionsPage>(
+        `/api/sessions/archived?${querystring.stringify({
+          PageSize: 200,
           ...params,
-          PageSize: pageSize,
-          PageIndex: currentPage,
+          ...(cursor ? { Cursor: cursor } : {}),
         })}`,
         {},
       );
 
-      if (response.statusCode !== 200) {
-        throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+      if (response.statusCode !== 200) throw new Error(`Unexpected response statusCode ${response.statusCode}`);
+
+      const page = data.sessions ?? [];
+      if (!Array.isArray(page)) {
+        throw new Error(`Expected sessions to be an array, but got ${typeof page}`);
       }
 
-      const pageData = data.Data ?? [];
-      if (!Array.isArray(pageData)) {
-        throw new Error(`Expected Data to be an array, but got ${typeof pageData}`);
-      }
+      sessions.push(...page);
 
-      allData = allData.concat(pageData);
+      cursor = data.hasMore ? (data.cursor ?? undefined) : undefined;
+    } while (cursor);
 
-      totalPages = data.Pages ?? 0;
-      if (currentPage >= totalPages - 1) break;
-
-      currentPage += 1;
-    }
-
-    return allData;
+    return sessions;
   }
 
   // -------------------------- //

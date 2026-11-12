@@ -243,14 +243,13 @@ export class Go2Charger extends ZaptecDevice {
       });
 
     this.api
-      .getChargeHistory({
+      .getArchivedSessions({
         ChargerId: this.getData().id,
         From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
-        DetailLevel: 0,
-        PageSize: 50,
+        To: new Date().toJSON(),
       })
-      .then((charges) => {
-        const yearlyEnergy = charges?.reduce((sum, charge) => sum + charge.Energy, 0) || 0;
+      .then((sessions) => {
+        const yearlyEnergy = sessions.filter((s) => !s.voided).reduce((sum, s) => sum + (s.energy ?? 0), 0);
         return this.setCapabilityValue('meter_power', yearlyEnergy);
       })
       .then(() => this.logToDebug(`Got yearly power history`))

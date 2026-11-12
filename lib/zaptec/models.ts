@@ -617,36 +617,37 @@ export interface TokenResponse {
   expires_in: number;
 }
 
-export interface SessionListModel {
-  Id: string;
-  DeviceId?: string | null;
-  StartDateTime: string;
-  EndDateTime?: string | null;
-  Energy: number;
-  CommitMetadata: number;
-  CommitEndDateTime?: string | null;
-  UserFullName?: string | null;
-  ChargerId: string;
-  DeviceName?: string | null;
-  UserEmail?: string | null;
-  UserId?: string | null;
-  TokenName?: string | null;
-  ExternalId?: string | null;
-  ExternallyEnded: boolean;
-  EnergyDetails?:
-    | {
-        Timestamp: string;
-        Energy: number;
-      }[]
-    | null;
-  ChargerFirmwareVersion: {
-    major: number;
-    minor: number;
-    build: number;
-    revision: number;
-    majorRevision: number;
-    minorRevision: number;
-  };
-  SignedSession?: boolean | null;
-  ReplacedBySessionId?: string | null;
+/**
+ * A completed charge session from `GET /api/sessions/archived`.
+ *
+ * Unlike most Zaptec models, this endpoint uses camelCase.
+ */
+export interface ArchivedSession {
+  id: string;
+  externalId?: string | null;
+  /** Set when a corrected session replaced this one, which is then voided. */
+  replacedBySessionId?: string | null;
+  authorizedUser?: { id: string; email?: string | null; fullName?: string | null };
+  tokenName?: string | null;
+  chargerId: string;
+  deviceId?: string | null;
+  deviceName?: string | null;
+  installationId?: string | null;
+  startDateTime: string;
+  endDateTime?: string | null;
+  recognizedDateTime: string;
+  offline: boolean;
+  /** Voided sessions have no meaningful duration or energy. */
+  voided: boolean;
+  aborted: boolean;
+  /** Energy delivered during the session, in kWh. */
+  energy: number;
+  energyDetails?: { timestamp: string; energy: number }[] | null;
+}
+
+export interface ArchivedSessionsPage {
+  sessions?: ArchivedSession[] | null;
+  /** Send as `Cursor` on the next request while `hasMore` is true. */
+  cursor?: string | null;
+  hasMore: boolean;
 }

@@ -71,6 +71,24 @@ describe('Zaptec API Client', () => {
     });
   });
 
+  it('should follow the cursor through every page of archived sessions', async () => {
+    const range = { ChargerId: 'abc', From: '2026-01-01T00:00:00.000Z', To: '2026-11-12T00:00:00.000Z' };
+
+    nock('https://api.zaptec.com')
+      .get('/api/sessions/archived')
+      .query({ ...range, PageSize: 200 })
+      .reply(200, { sessions: [{ id: '1', energy: 2 }], cursor: 'next', hasMore: true })
+      .get('/api/sessions/archived')
+      .query({ ...range, PageSize: 200, Cursor: 'next' })
+      .reply(200, { sessions: [{ id: '2', energy: 3 }], cursor: null, hasMore: false });
+
+    const sessions = await api.getArchivedSessions(range);
+    assert.deepStrictEqual(
+      sessions.map((s) => s.id),
+      ['1', '2'],
+    );
+  });
+
   it('should fail without contacting Zaptec when no credentials are stored', async () => {
     const emptyApi = new ZaptecApi('1.0.0', mockHomey);
     // Any request reaching nock would fail with "No match" instead
