@@ -1,8 +1,21 @@
 import { chargerOperationModeFromStr, Command } from './zaptec';
 import { chargingStateFor, isCharging, isCommandRejected, whyResumeWasRejected } from './zaptec/charging';
-import { InstallationModel } from './zaptec/models';
+import {
+  archivedYear,
+  ArchivedYear,
+  chargerSessions,
+  ChargerSessions,
+  liveMeter,
+  MeterSession,
+  yearlyEnergy,
+} from './zaptec/energy';
+import { ChargerStateModel, InstallationModel } from './zaptec/models';
 import { currentForPower, PowerLimits, powerLimits, targetPowerOptions } from './zaptec/power';
 import { ZaptecAccountDevice } from './ZaptecAccountDevice';
+
+/** The meter Homey Energy reads, moving while charging */
+const LIVE_METER = 'meter_power.charged';
+const SIGNED_METER = 'meter_power.signed_meter_value';
 
 /**
  * What every Zaptec charger device shares: starting, stopping and steering
@@ -15,6 +28,13 @@ export abstract class ZaptecDevice extends ZaptecAccountDevice {
   /** Per-phase current last set for target_power, so setpoints that don't change it aren't sent */
   private targetCurrent?: number;
 
+  /** This year's archived sessions, once fetched */
+  private archived?: ArchivedYear;
+  /** The sessions in the last charger state */
+  private sessions: ChargerSessions = { energy: new Map() };
+  /** What the archive was last fetched again for, so it's fetched once per completed session */
+  private refetchedFor?: string;
+
   /** Whether the model charges on one phase below the installation's switch current */
   protected abstract readonly switchesPhases: boolean;
 
@@ -24,6 +44,30 @@ export abstract class ZaptecDevice extends ZaptecAccountDevice {
     current2: number,
     current3: number,
   ): Promise<boolean>;
+
+  /**
+   * Point Homey Energy at the live meter, starting it from the signed meter
+   * so Energy sees no jump.
+   */
+  protected async migrateEnergy() {
+    if (!this.hasCapability(LIVE_METER)) {
+      await this.addCapability(LIVE_METER);
+
+      const signed = this.getCapabilityValue(SIGNED_METER);
+      if (typeof signed === 'number') await this.setCapabilityValue(LIVE_METER, signed);
+    }
+
+    const energyConfig = this.getEnergy();
+    if (
+      energyConfig?.cumulative === true
+      || energyConfig?.evCharger !== true
+      || energyConfig?.meterPowerImportedCapability !== LIVE_METER
+    ) {
+      await this.setEnergy({ evCharger: true, meterPowerImportedCapability: LIVE_METER }).catch((e) =>
+        this.logToDebug(`Failed to migrate energy: ${e}`),
+      );
+    }
+  }
 
   /**
    * Replace our own charging capabilities with Homey's EV charger ones, which
@@ -166,6 +210,78 @@ export abstract class ZaptecDevice extends ZaptecAccountDevice {
         await this.removeCapability(capability);
       }
     }
+  }
+
+  /**
+   * Fetch this year's archived sessions, the base of this year's energy.
+   */
+  protected pollYearlyEnergy() {
+    const year = new Date().getFullYear();
+
+    this.api
+      .getArchivedSessions({
+        ChargerId: this.getData().id,
+        From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
+        To: new Date().toJSON(),
+      })
+      .then((sessions) => {
+        this.archived = archivedYear(year, sessions);
+        this.logToDebug(`Got yearly power history`);
+        return this.updateYearlyEnergy();
+      })
+      .catch((e) => {
+        if (this.handleAuthFailure(e)) return;
+
+        this.logToDebug(`Failed to poll charge history: ${e}`, e);
+      });
+  }
+
+  /**
+   * Add the sessions in the charger state that aren't archived yet to this
+   * year's energy, so it grows while charging instead of once a day.
+   */
+  protected async trackSessions(states: ChargerStateModel[]) {
+    const year = new Date().getFullYear();
+    this.sessions = chargerSessions(states, year);
+    await this.updateLiveMeter();
+    if (!this.archived) return;
+
+    // The archive has a session once it completes, and starts over each year
+    const { completed } = this.sessions;
+    const stale = this.archived.year !== year || (completed !== undefined && !this.archived.ids.has(completed));
+    const key = `${year}:${completed}`;
+    if (stale && this.refetchedFor !== key) {
+      this.refetchedFor = key;
+      this.pollYearlyEnergy();
+    }
+
+    await this.updateYearlyEnergy();
+  }
+
+  private async updateLiveMeter() {
+    const previous = this.getCapabilityValue(LIVE_METER);
+    const signed = this.getCapabilityValue(SIGNED_METER);
+    // Without a reading to start from, the meter would start at zero
+    if (typeof previous !== 'number' && typeof signed !== 'number') return;
+
+    const saved: MeterSession | null = this.getStoreValue('meterSession');
+    const { value, session } = liveMeter(
+      typeof previous === 'number' ? previous : signed,
+      typeof signed === 'number' ? signed : undefined,
+      saved ?? undefined,
+      this.sessions,
+    );
+
+    if (session?.id !== saved?.id) await this.setStoreValue('meterSession', session ?? null);
+    await this.setCapabilityValue(LIVE_METER, Math.round(value * 1000) / 1000);
+  }
+
+  private async updateYearlyEnergy() {
+    // Last year's archive would count this year's sessions on top of it
+    if (!this.archived || this.archived.year !== new Date().getFullYear()) return;
+
+    const energy = Math.round(yearlyEnergy(this.archived, this.sessions) * 1000) / 1000;
+    await this.setCapabilityValue('meter_power', energy);
   }
 
   /**

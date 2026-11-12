@@ -43,24 +43,6 @@ export class Go2Charger extends ZaptecDevice {
   }
 
   /**
-   * Migrate energy settings from the old settings format to the new one.
-   */
-  private async migrateEnergy() {
-    const energyConfig = this.getEnergy();
-
-    if (
-      energyConfig?.cumulative === true
-      || energyConfig?.evCharger !== true
-      || energyConfig?.meterPowerImportedCapability !== 'meter_power.signed_meter_value'
-    ) {
-      this.setEnergy({
-        evCharger: true,
-        meterPowerImportedCapability: 'meter_power.signed_meter_value',
-      }).catch((e) => this.logToDebug(`Failed to migrate energy: ${e}`));
-    }
-  }
-
-  /**
    * Assign reactions to capability changes triggered by others.
    */
   protected registerCapabilityListeners() {
@@ -181,6 +163,8 @@ export class Go2Charger extends ZaptecDevice {
               this.logToDebug(`Failed to handle charger state ${state.StateId}: ${e}`),
             );
           }
+
+          await this.trackSessions(states).catch((e) => this.logToDebug(`Failed to track sessions: ${e}`, e));
           this.log(`Polled charger state (${states.length} values)`);
         })
         .catch((e) => {
@@ -206,8 +190,6 @@ export class Go2Charger extends ZaptecDevice {
    * E.g. yearly charging consumption.
    */
   protected pollSlowValues() {
-    const year = new Date().getFullYear();
-
     this.api
       .getInstallation(this.getData().installationId)
       .then(async (installation) => {
@@ -242,22 +224,7 @@ export class Go2Charger extends ZaptecDevice {
         }
       });
 
-    this.api
-      .getArchivedSessions({
-        ChargerId: this.getData().id,
-        From: new Date(year, 0, 1, 0, 0, 1).toJSON(),
-        To: new Date().toJSON(),
-      })
-      .then((sessions) => {
-        const yearlyEnergy = sessions.filter((s) => !s.voided).reduce((sum, s) => sum + (s.energy ?? 0), 0);
-        return this.setCapabilityValue('meter_power', yearlyEnergy);
-      })
-      .then(() => this.logToDebug(`Got yearly power history`))
-      .catch((e) => {
-        if (this.handleAuthFailure(e)) return;
-
-        this.logToDebug(`Failed to poll charge history: ${e}`, e);
-      });
+    this.pollYearlyEnergy();
   }
 
   /**

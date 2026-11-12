@@ -2141,7 +2141,7 @@
       "class": "evcharger",
       "energy": {
         "evCharger": true,
-        "meterPowerImportedCapability": "meter_power.signed_meter_value"
+        "meterPowerImportedCapability": "meter_power.charged"
       },
       "pair": [
         {
@@ -2212,6 +2212,7 @@
         "measure_humidity",
         "measure_temperature",
         "meter_power.signed_meter_value",
+        "meter_power.charged",
         "measure_signal_strength",
         "communication_method",
         "charging_mode"
@@ -2302,6 +2303,13 @@
           "title": {
             "en": "Signed meter value",
             "no": "Målerstand"
+          },
+          "uiComponent": "none"
+        },
+        "meter_power.charged": {
+          "title": {
+            "en": "Energy charged",
+            "no": "Ladet energi"
           },
           "uiComponent": "none"
         },
@@ -2414,7 +2422,7 @@
       "class": "evcharger",
       "energy": {
         "evCharger": true,
-        "meterPowerImportedCapability": "meter_power.signed_meter_value"
+        "meterPowerImportedCapability": "meter_power.charged"
       },
       "pair": [
         {
@@ -2485,6 +2493,7 @@
         "measure_humidity",
         "measure_temperature",
         "meter_power.signed_meter_value",
+        "meter_power.charged",
         "measure_signal_strength",
         "communication_method",
         "charging_mode"
@@ -2575,6 +2584,13 @@
           "title": {
             "en": "Signed meter value",
             "no": "Målerstand"
+          },
+          "uiComponent": "none"
+        },
+        "meter_power.charged": {
+          "title": {
+            "en": "Energy charged",
+            "no": "Ladet energi"
           },
           "uiComponent": "none"
         },
@@ -2687,7 +2703,7 @@
       "class": "evcharger",
       "energy": {
         "evCharger": true,
-        "meterPowerImportedCapability": "meter_power.signed_meter_value"
+        "meterPowerImportedCapability": "meter_power.charged"
       },
       "pair": [
         {
@@ -2759,6 +2775,7 @@
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
         "meter_power.signed_meter_value",
+        "meter_power.charged",
         "measure_signal_strength",
         "communication_method",
         "charging_mode"
@@ -2861,6 +2878,13 @@
           "title": {
             "en": "Signed meter value",
             "no": "Målerstand"
+          },
+          "uiComponent": "none"
+        },
+        "meter_power.charged": {
+          "title": {
+            "en": "Energy charged",
+            "no": "Ladet energi"
           },
           "uiComponent": "none"
         },
@@ -2973,7 +2997,7 @@
       "class": "evcharger",
       "energy": {
         "evCharger": true,
-        "meterPowerImportedCapability": "meter_power.signed_meter_value"
+        "meterPowerImportedCapability": "meter_power.charged"
       },
       "pair": [
         {
@@ -3045,6 +3069,7 @@
         "measure_temperature.sensor1",
         "measure_temperature.sensor2",
         "meter_power.signed_meter_value",
+        "meter_power.charged",
         "measure_signal_strength",
         "communication_method",
         "charging_mode"
@@ -3147,6 +3172,13 @@
           "title": {
             "en": "Signed meter value",
             "no": "Målerstand"
+          },
+          "uiComponent": "none"
+        },
+        "meter_power.charged": {
+          "title": {
+            "en": "Energy charged",
+            "no": "Ladet energi"
           },
           "uiComponent": "none"
         },
