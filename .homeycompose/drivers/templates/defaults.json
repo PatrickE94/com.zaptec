@@ -14,7 +14,7 @@
   "class": "evcharger",
   "energy": {
     "evCharger": true,
-    "meterPowerImportedCapability": "meter_power.signed_meter_value"
+    "meterPowerImportedCapability": "meter_power.charged"
   },
   "pair": [
     {

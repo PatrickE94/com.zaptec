@@ -18,6 +18,8 @@ export interface ArchivedYear {
 export interface ChargerSessions {
   /** Energy by session id, in kWh */
   energy: Map<string, number>;
+  /** The session the charger is in now */
+  ongoing?: string;
   /** The last completed session, if it ended this year */
   completed?: string;
 }
@@ -46,7 +48,10 @@ export function chargerSessions(states: ChargerStateModel[], year: number): Char
   const sessions: ChargerSessions = { energy: new Map() };
 
   const ongoing = stateValue(states, Observation.SessionIdentifier);
-  if (ongoing) sessions.energy.set(ongoing, Number(stateValue(states, Observation.TotalChargePowerSession) ?? 0));
+  if (ongoing) {
+    sessions.energy.set(ongoing, Number(stateValue(states, Observation.TotalChargePowerSession) ?? 0));
+    sessions.ongoing = ongoing;
+  }
 
   const completed = stateValue(states, Observation.CompletedSession);
   if (completed) {
@@ -81,4 +86,57 @@ function unarchived(archived: ArchivedYear, sessions: ChargerSessions): string[]
  */
 export function yearlyEnergy(archived: ArchivedYear, sessions: ChargerSessions): number {
   return unarchived(archived, sessions).reduce((sum, id) => sum + (sessions.energy.get(id) ?? 0), archived.energy);
+}
+
+/**
+ * The session the live meter counts on top of, saved so a restart doesn't
+ * count it twice.
+ */
+export interface MeterSession {
+  id: string;
+  /** The meter at the start of the session, in kWh */
+  base: number;
+}
+
+/**
+ * A lifetime meter for Homey Energy that moves while charging.
+ *
+ * Zaptec updates the signed meter about once an hour. Between sessions the
+ * meter follows it. During a session it counts the session's energy on top of
+ * where the session started and ignores the signed meter, which may already
+ * hold part of the session. After a session it holds until the signed meter
+ * passes it. It never decreases, as Homey Energy requires.
+ *
+ * @param previous - the meter so far, in kWh
+ * @param signed - the latest signed meter reading, in kWh
+ * @param session - the session counted at the previous poll
+ */
+export function liveMeter(
+  previous: number,
+  signed: number | undefined,
+  session: MeterSession | undefined,
+  sessions: ChargerSessions,
+): { value: number; session?: MeterSession } {
+  let value = previous;
+  let counting = session;
+
+  // The session ended: count its final energy, reported once it completes
+  if (counting && counting.id !== sessions.ongoing) {
+    const final = sessions.energy.get(counting.id);
+    if (final !== undefined) value = Math.max(value, counting.base + final);
+    counting = undefined;
+  }
+
+  if (sessions.ongoing) {
+    const energy = sessions.energy.get(sessions.ongoing) ?? 0;
+    // Picking up a session midway, the signed meter may already hold part of
+    // it, so start below rather than count it twice. The meter holds until the
+    // signed meter catches up after the session.
+    counting ??= { id: sessions.ongoing, base: Math.max(value, signed ?? 0) - energy };
+    value = Math.max(value, counting.base + energy);
+  } else if (signed !== undefined) {
+    value = Math.max(value, signed);
+  }
+
+  return { value, session: counting };
 }

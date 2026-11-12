@@ -28,6 +28,7 @@
     "measure_temperature.sensor1",
     "measure_temperature.sensor2",
     "meter_power.signed_meter_value",
+    "meter_power.charged",
     "measure_signal_strength",
     "communication_method",
     "charging_mode"
@@ -130,6 +131,13 @@
       "title": {
         "en": "Signed meter value",
         "no": "Målerstand"
+      },
+      "uiComponent": "none"
+    },
+    "meter_power.charged": {
+      "title": {
+        "en": "Energy charged",
+        "no": "Ladet energi"
       },
       "uiComponent": "none"
     },

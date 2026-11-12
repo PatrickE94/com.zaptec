@@ -43,24 +43,6 @@ export class Go2Charger extends ZaptecDevice {
   }
 
   /**
-   * Migrate energy settings from the old settings format to the new one.
-   */
-  private async migrateEnergy() {
-    const energyConfig = this.getEnergy();
-
-    if (
-      energyConfig?.cumulative === true
-      || energyConfig?.evCharger !== true
-      || energyConfig?.meterPowerImportedCapability !== 'meter_power.signed_meter_value'
-    ) {
-      this.setEnergy({
-        evCharger: true,
-        meterPowerImportedCapability: 'meter_power.signed_meter_value',
-      }).catch((e) => this.logToDebug(`Failed to migrate energy: ${e}`));
-    }
-  }
-
-  /**
    * Assign reactions to capability changes triggered by others.
    */
   protected registerCapabilityListeners() {
